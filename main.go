@@ -10,14 +10,12 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func main() {
-	//port := "8080" // webserver port
-	database, _ := sql.Open("sqlite3", "./members.db")
-	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, firstname TEXT, lastname TEXT)")
-	statement.Exec()
-	statement, _ = database.Prepare("INSERT INTO people (firstname, lastname) VALUES (?,?)")
-	statement.Exec("Red", "Ferrari") //exec first name, last name
-	rows, _ := database.Query("SELECT id, firstname, lastname FROM people")
+func sendRegister(database *sql.DB, username string, password string) {
+	statement, _ := database.Prepare("INSERT INTO memberlist (username, password) VALUES (?,?)")
+	statement.Exec(username, password) //exec first name, last name
+}
+func printDatabase(database *sql.DB) {
+	rows, _ := database.Query("SELECT id, username, password FROM memberlist")
 
 	var id int
 	var name string
@@ -26,6 +24,17 @@ func main() {
 		rows.Scan(&id, &name, &password)
 		fmt.Println(id, " ", name, " ", password)
 	}
+}
+
+func main() {
+	//port := "8080" // webserver port
+	database, err := sql.Open("sqlite3", "./members.db")
+	if err != nil {
+		fmt.Println("ERROR: Faulty database! ", err)
+	}
+	//sendRegister(database, "username", "password")
+	printDatabase(database)
+
 	// fmt.Println("statement: ", statement)
 	// fmt.Println("database: ", database)
 
