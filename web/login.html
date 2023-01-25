@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forum</title>
+    <!-- <link rel="stylesheet" href="style.css" type="text/css"> -->
+</head>
+
+<body>
+    <header>
+        <a href="/">Home</a>
+        <a class="active" href="/login">
+            <a href="/web/register.html">Register</a>
+    </header>
+
+    <form method="POST" class="loginform">
+        <br>
+        <br>
+        <label for="username">Username:</label>
+        <br>
+        <input id="username" name="username" type="text" required pattern="[a-zA-Z0-9]+" minlength="3" maxlength="15">
+        <br>
+        <label for="pw">Password:</label>
+        <br>
+        <input id="pw" name="pw" type="password" required minlength="5" maxlength="15">
+        <br>
+        <br>
+        <input class="button" type="submit" value="Login">
+    </form>
+</body>
+
+</html>

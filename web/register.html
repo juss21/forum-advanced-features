@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forum</title>
+    <!-- <link rel="stylesheet" href="style.css" type="text/css"> -->
+</head>
+
+<body>
+    <header>
+        <a href="/">Home</a>
+        <a href="/web/login.html">Login</a>
+        <a class="active" href="/register">Register</a>
+    </header>
+
+    <form method="POST" action="/register" class="loginform">
+        <br>
+        <br>
+        <label for="username">Username:</label>
+        <br>
+        <input id="username" name="username" type="text" required pattern="[a-zA-Z0-9]+" minlength="3" maxlength="15">
+        <br>
+        <label for="pw">Password:</label>
+        <br>
+        <input id="pw" name="pw" type="password" required minlength="5" maxlength="15"
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}"
+            title="Must contain at least one number and one uppercase and lowercase letter, and at least 5 or more characters">
+        <br>
+        <label for="pw">Confirm password:</label>
+        <br>
+        <input id="pw" name="pw" type="password" required minlength="5" maxlength="15"
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}"
+            title="Must contain at least one number and one uppercase and lowercase letter, and at least 5 or more characters">
+        <br>
+        <label for="E-mail">E-mail</label>
+        <br>
+        <input type="email" input name="email">
+        <br>
+        <label for="E-mail">Confirm e-mail</label>
+        <br>
+        <input type="email" input name="email">
+        <br>
+        <br>
+        <input class="button" type="submit" value="Register">
+    </form>
+</body>
+
+</html>
