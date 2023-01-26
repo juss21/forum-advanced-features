@@ -159,11 +159,11 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 		} else {
 			commentor := forum_op
 			if commentor != "" {
-				// forum_commentbox := r.FormValue("forum_commentbox")
-				// currenturl := r.URL.Path[1:]
+				forum_commentbox := r.FormValue("forum_commentbox")
+				currenturl := r.URL.Path[1:]
 
-				// fmt.Println(commentor, forum_commentbox, currenturl)
-				// sendComment(sqlbase, forum_op, forum_commentbox, currenturl)
+				fmt.Println(commentor, forum_commentbox, currenturl)
+				sendComment(sqlbase, forum_op, forum_commentbox, currenturl)
 				// fmt.Println(currenturl, commentor_data[0].Post_header)
 
 				forumpage.Execute(w, forum_data)
