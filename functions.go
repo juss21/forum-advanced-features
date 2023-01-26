@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 func errorCheck(err error, exit bool) {
@@ -28,16 +29,24 @@ func getLogin(uid string, password string) bool {
 }
 
 func getRegister(uid string, password string, email string) (bool, string) {
+	str := ""
 	for i := 0; i < len(userlist); i++ {
 		// TODO add email check aswell?
 		// check if user already exists
-		if userlist[i].Username == uid && userlist[i].Email == email {
-			return false, "This username and e-mail is already in use!"
-		} else if userlist[i].Username == uid {
-			return false, "This username is already taken!"
+		if userlist[i].Username == uid {
+			str += "u"
 		} else if userlist[i].Email == email {
-			return false, "This e-mail is already in use!"
+			str += "e"
 		}
 	}
+	if strings.Contains(str, "u") {
+		if strings.Contains(str, "e") {
+			return false, "This username and e-mail is already in use!"
+		}
+		return false, "This username is already taken!"
+	} else if strings.Contains(str, "e") && !strings.Contains(str, "u") {
+		return false, "This e-mail is already in use!"
+	}
+
 	return true, "Account has been created!"
 }
