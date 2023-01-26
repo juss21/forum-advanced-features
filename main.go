@@ -129,8 +129,10 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("Server:", user_name, "has logged in!")
 				forum_op = user_name
 				loggedin = true
+				http.Redirect(w, r, "/", http.StatusSeeOther)
+			} else {
+				loginpage.Execute(w, str)
 			}
-			loginpage.Execute(w, str)
 		}
 		if r.URL.Path == "/register" {
 			user_name := r.FormValue("user_name")         // text input
@@ -146,9 +148,11 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 				isValid, output = getRegister(user_name, user_password, user_email)
 				if isValid {
 					sendRegister(sqlbase, user_name, user_password, user_email)
+					http.Redirect(w, r, "/login", http.StatusSeeOther)
+				} else {
+					registerpage.Execute(w, output)
 				}
 			}
-			registerpage.Execute(w, output)
 		}
 	}
 }

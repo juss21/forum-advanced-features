@@ -31,11 +31,12 @@ func getRegister(uid string, password string, email string) (bool, string) {
 	for i := 0; i < len(userlist); i++ {
 		// TODO add email check aswell?
 		// check if user already exists
-		if userlist[i].Username == uid {
-			if userlist[i].Email == email {
-				return false, "This e-mail is already used!"
-			}
-			return false, "This username is taken!"
+		if userlist[i].Username == uid && userlist[i].Email == email {
+			return false, "This username and e-mail is already in use!"
+		} else if userlist[i].Username == uid {
+			return false, "This username is already taken!"
+		} else if userlist[i].Email == email {
+			return false, "This e-mail is already in use!"
 		}
 	}
 	return true, "Account has been created!"
