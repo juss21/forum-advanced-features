@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forum</title>
+    <link rel="stylesheet" href="web/style.css" type="text/css">
+</head>
+
+<body>
+    <header>
+        <a href="/">Home</a>
+    </header>
+    <h1>{{.Post_title}}</h1>
+    <h2>by: {{.Originalposter}}</h2>
+
+    <!--form method="POST">
+        TITLE: <textarea name="post_header" cols="50" rows="1"></textarea><br>
+        TEXT : <textarea name="post_content" cols="50" rows="4"></textarea><br>
+        <input class="button" type="submit" value="New Post">
+    </form-->
+    {{.Post_content}}
+</body>
+
+</html>

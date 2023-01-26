@@ -22,84 +22,14 @@ type forumfamily struct {
 	Post_content   string
 }
 
-var loggedin bool = false
-var forum_op string
-var sqlbase *sql.DB
-var userlist []memberlist
-var forum_data []forumfamily
+var (
+	loggedin   bool = false
+	forum_op   string
+	sqlbase    *sql.DB
+	userlist   []memberlist
+	forum_data []forumfamily
+)
 
-func getLogin(uid string, password string) bool {
-	for i := 0; i < len(userlist); i++ {
-		//if username or email correct
-		if userlist[i].Username == uid || userlist[i].Email == uid {
-			// if password correct
-			if password == userlist[i].Password {
-				return true
-			}
-		}
-	}
-	return false
-}
-func getRegister(uid string, password string, email string) bool {
-	for i := 0; i < len(userlist); i++ {
-		//TODO add email check aswell?
-		//check if user already exists
-		if userlist[i].Username == uid {
-			return false
-		}
-	}
-	return true
-}
-
-func sendPost(database *sql.DB, originalposter string, header string, content string) {
-	statement, _ := database.Prepare("INSERT INTO forum (originalposter, post_header, post_content) VALUES (?,?,?)")
-	statement.Exec(originalposter, header, content) //exec first name, last name
-	forum_data = append(forum_data, forumfamily{Originalposter: originalposter, Post_title: header, Post_content: content})
-	fmt.Println("Server:", header, "has been posted!", " by <", originalposter, ">")
-
-	//foorumi sisu printimine konsooli
-	for i := 0; i < len(forum_data); i++ {
-		fmt.Println(forum_data[i])
-	}
-}
-
-func sendRegister(database *sql.DB, username string, password string, email string) {
-	statement, _ := database.Prepare("INSERT INTO userdata (username, password, email) VALUES (?,?,?)")
-	statement.Exec(username, password, email) //exec first name, last name
-	userlist = append(userlist, memberlist{ID: len(userlist) + 1, Username: username, Password: password, Email: email})
-	fmt.Println("Server:", username, "has successfully registered!", " <", email, ">")
-
-	//kasutajate printimine konsooli
-	for i := 0; i < len(userlist); i++ {
-		fmt.Println(userlist[i])
-	}
-}
-
-func saveAllPosts(database *sql.DB) {
-	rows, _ := database.Query("SELECT originalposter, post_header, post_content FROM forum")
-	var originalposter string
-	var post_header string
-	var post_content string
-
-	for rows.Next() {
-		rows.Scan(&originalposter, &post_header, &post_content)
-		forum_data = append(forum_data, forumfamily{Originalposter: originalposter, Post_title: post_header, Post_content: post_content})
-	}
-
-}
-func saveAllUsers(database *sql.DB) {
-	rows, _ := database.Query("SELECT id, username, password, email FROM userdata")
-	var id int
-	var username string
-	var password string
-	var email string
-
-	for rows.Next() {
-		rows.Scan(&id, &username, &password, &email)
-		userlist = append(userlist, memberlist{ID: id, Username: username, Password: password, Email: email})
-	}
-
-}
 func main() {
 	/*IDEED ja TODO
 	  ideed: login/register võivad pesitseda samal lehel
@@ -141,66 +71,131 @@ func main() {
 func serverHandle(w http.ResponseWriter, r *http.Request) {
 	homepage, err := template.ParseFiles("web/index.html") // home template
 	errorCheck(err, true)
-	loginpage, err2 := template.ParseFiles("web/login.html") //login template
+	loginpage, err2 := template.ParseFiles("web/login.html") // login template
 	errorCheck(err2, true)
-	registerpage, err3 := template.ParseFiles("web/register.html") //register template
+	registerpage, err3 := template.ParseFiles("web/register.html") // register template
 	errorCheck(err3, true)
-	errorpage, err4 := template.ParseFiles("web/error.html") //error template
+	errorpage, err4 := template.ParseFiles("web/error.html") // error template
 	errorCheck(err4, true)
-	memberspage, err5 := template.ParseFiles("web/members.html") //memberlist template
+	memberspage, err5 := template.ParseFiles("web/members.html") // memberlist template
 	errorCheck(err5, true)
+	forumpage, err6 := template.ParseFiles("web/forumpage.html") // memberlist template
+	errorCheck(err6, true)
+
+	errorp := true
+
 	if r.Method == "GET" {
 		if r.URL.Path == "/" {
+			errorp = true
 			homepage.Execute(w, forum_data) // at homepage print homepage
-		} else if r.URL.Path == "/login" {
-			loginpage.Execute(w, "")
-		} else if r.URL.Path == "/register" {
-			registerpage.Execute(w, "")
-		} else if r.URL.Path == "/members" {
-			memberspage.Execute(w, userlist)
 		} else {
-			errorpage.Execute(w, "")
-		}
-
-	} else if r.Method == "POST" {
-		if r.URL.Path == "/login" {
-			user_name := r.FormValue("user_name")         //text input
-			user_password := r.FormValue("user_password") //font type
-			if getLogin(user_name, user_password) {
-				homepage.Execute(w, forum_data)
-				fmt.Println("Server:", user_name, "has logged in!")
-				forum_op = user_name
-				loggedin = true
-			} else {
-				loginpage.Execute(w, "Please check your password and account name and try again.")
-			}
-		}
-		if r.URL.Path == "/register" {
-			user_name := r.FormValue("user_name")         //text input
-			user_password := r.FormValue("user_password") //font type
-			password_confirmation := r.FormValue("user_password_confirmation")
-			user_email := r.FormValue("user_email")
-			email_confirmation := r.FormValue("user_email_confirmation")
-			fmt.Println(user_email)
-			if user_password == password_confirmation && user_email == email_confirmation {
-				if getRegister(user_name, user_password, user_email) {
-					sendRegister(sqlbase, user_name, user_password, user_email)
-					homepage.Execute(w, forum_data)
+			//looping forum data
+			for i := 0; i < len(forum_data); i++ {
+				if forum_data[i].Post_title == r.URL.Path[1:] {
+					errorp = false
+					forumpage.Execute(w, forum_data[i])
 				}
+			}
+			if r.URL.Path == "/login" {
+				loginpage.Execute(w, "")
+			} else if r.URL.Path == "/register" {
+				registerpage.Execute(w, "")
+			} else if r.URL.Path == "/members" {
+				memberspage.Execute(w, userlist)
 			} else {
-				registerpage.Execute(w, "Password or E-mail does not match!")
+				if errorp {
+					errorpage.Execute(w, "404 Page not found!")
+				}
 			}
 		}
+	} else if r.Method == "POST" {
 		if r.URL.Path == "/" {
 			post_header := r.FormValue("post_header")
 			post_content := r.FormValue("post_content")
 			fmt.Println(loggedin, forum_op, post_header, post_content)
-			if loggedin {
+			if !loggedin {
+				errorpage.Execute(w, "You must be logged in before you post!")
+			} else {
 				sendPost(sqlbase, forum_op, post_header, post_content)
 				homepage.Execute(w, forum_data)
-			} else {
-				errorpage.Execute(w, "You must be logged in before you post!")
 			}
 		}
+		if r.URL.Path == "/login" {
+			user_name := r.FormValue("user_name")         // text input
+			user_password := r.FormValue("user_password") // font type
+			str := "Please check your password and account name and try again."
+			if getLogin(user_name, user_password) {
+				str = "Sign in was successful"
+				fmt.Println("Server:", user_name, "has logged in!")
+				forum_op = user_name
+				loggedin = true
+			}
+			loginpage.Execute(w, str)
+		}
+		if r.URL.Path == "/register" {
+			user_name := r.FormValue("user_name")         // text input
+			user_password := r.FormValue("user_password") // font type
+			password_confirmation := r.FormValue("user_password_confirmation")
+			user_email := r.FormValue("user_email")
+			email_confirmation := r.FormValue("user_email_confirmation")
+			str := "Password or E-mail does not match!"
+			fmt.Println(user_email)
+			if user_password == password_confirmation && user_email == email_confirmation {
+				if getRegister(user_name, user_password, user_email) {
+					str = "Account has been created!!"
+					sendRegister(sqlbase, user_name, user_password, user_email)
+				}
+			}
+			registerpage.Execute(w, str)
+		}
+	}
+}
+
+func sendPost(database *sql.DB, originalposter string, header string, content string) {
+	statement, _ := database.Prepare("INSERT INTO forum (originalposter, post_header, post_content) VALUES (?,?,?)")
+	statement.Exec(originalposter, header, content) // exec first name, last name
+	forum_data = append(forum_data, forumfamily{Originalposter: originalposter, Post_title: header, Post_content: content})
+	fmt.Println("Server:", header, "has been posted!", " by <", originalposter, ">")
+
+	// foorumi sisu printimine konsooli
+	for i := 0; i < len(forum_data); i++ {
+		fmt.Println(forum_data[i])
+	}
+}
+
+func sendRegister(database *sql.DB, username string, password string, email string) {
+	statement, _ := database.Prepare("INSERT INTO userdata (username, password, email) VALUES (?,?,?)")
+	statement.Exec(username, password, email) // exec first name, last name
+	userlist = append(userlist, memberlist{ID: len(userlist) + 1, Username: username, Password: password, Email: email})
+	fmt.Println("Server:", username, "has successfully registered!", " <", email, ">")
+
+	// kasutajate printimine konsooli
+	for i := 0; i < len(userlist); i++ {
+		fmt.Println(userlist[i])
+	}
+}
+
+func saveAllPosts(database *sql.DB) {
+	rows, _ := database.Query("SELECT originalposter, post_header, post_content FROM forum")
+	var originalposter string
+	var post_header string
+	var post_content string
+
+	for rows.Next() {
+		rows.Scan(&originalposter, &post_header, &post_content)
+		forum_data = append(forum_data, forumfamily{Originalposter: originalposter, Post_title: post_header, Post_content: post_content})
+	}
+}
+
+func saveAllUsers(database *sql.DB) {
+	rows, _ := database.Query("SELECT id, username, password, email FROM userdata")
+	var id int
+	var username string
+	var password string
+	var email string
+
+	for rows.Next() {
+		rows.Scan(&id, &username, &password, &email)
+		userlist = append(userlist, memberlist{ID: id, Username: username, Password: password, Email: email})
 	}
 }

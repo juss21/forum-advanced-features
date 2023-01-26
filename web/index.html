@@ -23,11 +23,9 @@
         TEXT : <textarea name="post_content" cols="50" rows="4"></textarea><br>
         <input class="button" type="submit" value="New Post">
     </form>
-    {{range .}}<br>
+    {{range .}}
     <div id="collection">
-        Posted by: {{.Originalposter}}<br>
-        Topic: {{.Post_title}}<br>
-        Content:<br>{{.Post_content}}
+        <a href="/{{.Post_title}}">{{.Post_title}}</a>{{.Originalposter}}
     </div>
     {{end}}
 </body>
