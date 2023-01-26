@@ -20,7 +20,7 @@ type forumfamily struct {
 	Originalposter string
 	Post_title     string
 	Post_content   string
-	commentor_data []commentpandemic
+	Commentor_data []commentpandemic
 }
 type commentpandemic struct {
 	Commentor     string
@@ -165,6 +165,7 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 				fmt.Println(commentor, forum_commentbox, currenturl)
 				sendComment(sqlbase, forum_op, forum_commentbox, currenturl)
 				// fmt.Println(currenturl, commentor_data[0].Post_header)
+				http.Redirect(w, r, currenturl, http.StatusSeeOther)
 
 				forumpage.Execute(w, forum_data)
 
@@ -188,7 +189,7 @@ func sendComment(database *sql.DB, commenter string, forum_Commentbox string, fo
 
 	for i := 0; i < len(forum_data); i++ {
 		if forum_data[i].Post_title == forum_header {
-			forum_data[i].commentor_data = append(forum_data[i].commentor_data, commentpandemic{Commentor: commenter, Forum_comment: forum_Commentbox, Post_header: forum_header})
+			forum_data[i].Commentor_data = append(forum_data[i].Commentor_data, commentpandemic{Commentor: commenter, Forum_comment: forum_Commentbox, Post_header: forum_header})
 		}
 	}
 
@@ -241,7 +242,7 @@ func saveAllComments(database *sql.DB) {
 		rows.Scan(&commentor, &forum_comments, &post_header)
 		for i := 0; i < len(forum_data); i++ {
 			if forum_data[i].Post_title == post_header {
-				forum_data[i].commentor_data = append(forum_data[i].commentor_data, commentpandemic{Commentor: commentor, Forum_comment: forum_comments, Post_header: post_header})
+				forum_data[i].Commentor_data = append(forum_data[i].Commentor_data, commentpandemic{Commentor: commentor, Forum_comment: forum_comments, Post_header: post_header})
 			}
 		}
 	}

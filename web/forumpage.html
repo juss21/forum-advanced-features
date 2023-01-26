@@ -31,14 +31,11 @@
         <!--/fieldset-->
     </form>
 
-    {{.}}<br>
-    <h1>test</h1>
-    {{range .}}
 
-    {{.Commentor}}
-    {{.Forum_comment}}
-    {{.Post_header}}
+    <h1>test</h1>
+    {{range .Commentor_data}}<br>{{.Commentor}} {{.Forum_comment}} {{.Post_header}}
     {{end}}
+
 </body>
 
 </html>
