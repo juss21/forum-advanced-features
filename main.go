@@ -138,15 +138,17 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 			password_confirmation := r.FormValue("user_password_confirmation")
 			user_email := r.FormValue("user_email")
 			email_confirmation := r.FormValue("user_email_confirmation")
-			str := "Password or E-mail does not match!"
+			//str := "Password or E-mail does not match!"
+			isValid := false
+			output := ""
 			fmt.Println(user_email)
 			if user_password == password_confirmation && user_email == email_confirmation {
-				if getRegister(user_name, user_password, user_email) {
-					str = "Account has been created!!"
+				isValid, output = getRegister(user_name, user_password, user_email)
+				if isValid {
 					sendRegister(sqlbase, user_name, user_password, user_email)
 				}
 			}
-			registerpage.Execute(w, str)
+			registerpage.Execute(w, output)
 		}
 	}
 }

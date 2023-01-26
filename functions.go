@@ -27,13 +27,16 @@ func getLogin(uid string, password string) bool {
 	return false
 }
 
-func getRegister(uid string, password string, email string) bool {
+func getRegister(uid string, password string, email string) (bool, string) {
 	for i := 0; i < len(userlist); i++ {
 		// TODO add email check aswell?
 		// check if user already exists
 		if userlist[i].Username == uid {
-			return false
+			if userlist[i].Email == email {
+				return false, "This e-mail is already used!"
+			}
+			return false, "This username is taken!"
 		}
 	}
-	return true
+	return true, "Account has been created!"
 }
