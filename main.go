@@ -20,6 +20,12 @@ type forumfamily struct {
 	Originalposter string
 	Post_title     string
 	Post_content   string
+	commentor_data []commentpandemic
+}
+type commentpandemic struct {
+	Commentor     string
+	Forum_comment string
+	Post_header   string
 }
 
 var (
@@ -34,7 +40,7 @@ func main() {
 	/*IDEED ja TODO
 	  ideed: login/register võivad pesitseda samal lehel
 
-		todo: 
+		todo:
 		kommentaarideks ja like/dislike jaoks tuleb sqli täiendada aga selle jätaks hiljemaks | delete pole vist veel required?
 		Hetkel: Loggedin bool muutub true'ks kui sisse logida see ja võiks ära kaotada html'is login/register nupu aga kuidas seda teha?
 
@@ -56,8 +62,9 @@ func main() {
 		fmt.Println("ERROR: Faulty database! ", err)
 	}
 	sqlbase = database
-	saveAllUsers(database) // salvestame kõik kasutajad mällu, et hiljem oleks võimalik neid veebilehel lohistada
-	saveAllPosts(database) // salvestame kõik postitused mällu, et hiljem oleks võimalik neid veebilehel lohistada
+	saveAllUsers(database)    // salvestame kõik kasutajad mällu, et hiljem oleks võimalik neid veebilehel lohistada
+	saveAllPosts(database)    // salvestame kõik postitused mällu, et hiljem oleks võimalik neid veebilehel lohistada
+	saveAllComments(database) // salvestame kõik kommentaarid mällu, et hilje oleks võimalik neid veebilehel lohistada
 
 	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web")))) // handling web folder
 	http.HandleFunc("/", serverHandle)                                                // server handle
@@ -118,8 +125,7 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 				sendPost(sqlbase, forum_op, post_header, post_content)
 				homepage.Execute(w, forum_data)
 			}
-		}
-		if r.URL.Path == "/login" {
+		} else if r.URL.Path == "/login" {
 			user_name := r.FormValue("user_name")         // text input
 			user_password := r.FormValue("user_password") // font type
 			str := "Please check your password and account name and try again."
@@ -132,8 +138,7 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 			} else {
 				loginpage.Execute(w, str)
 			}
-		}
-		if r.URL.Path == "/register" {
+		} else if r.URL.Path == "/register" {
 			user_name := r.FormValue("user_name")         // text input
 			user_password := r.FormValue("user_password") // font type
 			password_confirmation := r.FormValue("user_password_confirmation")
@@ -151,6 +156,21 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 					registerpage.Execute(w, output)
 				}
 			}
+		} else {
+			commentor := forum_op
+			if commentor != "" {
+				// forum_commentbox := r.FormValue("forum_commentbox")
+				// currenturl := r.URL.Path[1:]
+
+				// fmt.Println(commentor, forum_commentbox, currenturl)
+				// sendComment(sqlbase, forum_op, forum_commentbox, currenturl)
+				// fmt.Println(currenturl, commentor_data[0].Post_header)
+
+				forumpage.Execute(w, forum_data)
+
+			} else {
+				errorpage.Execute(w, "You must be logged in to do that!")
+			}
 		}
 	}
 }
@@ -158,13 +178,20 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 func sendPost(database *sql.DB, originalposter string, header string, content string) {
 	statement, _ := database.Prepare("INSERT INTO forum (originalposter, post_header, post_content) VALUES (?,?,?)")
 	statement.Exec(originalposter, header, content) // exec first name, last name
-	forum_data = append(forum_data, forumfamily{Originalposter: originalposter, Post_title: header, Post_content: content})
-	//fmt.Println("Server:", header, "has been posted!", " by <", originalposter, ">")
+	forum_data = append(forum_data, forumfamily{Originalposter: originalposter, Post_title: header})
 
-	// foorumi sisu printimine konsooli
-	// for i := 0; i < len(forum_data); i++ {
-	// 	fmt.Println(forum_data[i])
-	// }
+}
+
+func sendComment(database *sql.DB, commenter string, forum_Commentbox string, forum_header string) {
+	statement, _ := database.Prepare("INSERT INTO commentdb (commentor, forum_comments, post_header) VALUES (?,?,?)")
+	statement.Exec(commenter, forum_Commentbox, forum_header) // exec first name, last name
+
+	for i := 0; i < len(forum_data); i++ {
+		if forum_data[i].Post_title == forum_header {
+			forum_data[i].commentor_data = append(forum_data[i].commentor_data, commentpandemic{Commentor: commenter, Forum_comment: forum_Commentbox, Post_header: forum_header})
+		}
+	}
+
 }
 
 func sendRegister(database *sql.DB, username string, password string, email string) {
@@ -201,5 +228,21 @@ func saveAllUsers(database *sql.DB) {
 	for rows.Next() {
 		rows.Scan(&id, &username, &password, &email)
 		userlist = append(userlist, memberlist{ID: id, Username: username, Password: password, Email: email})
+	}
+}
+
+func saveAllComments(database *sql.DB) {
+	rows, _ := database.Query("SELECT commentor, forum_comments, post_header FROM commentdb")
+	var commentor string
+	var forum_comments string
+	var post_header string
+
+	for rows.Next() {
+		rows.Scan(&commentor, &forum_comments, &post_header)
+		for i := 0; i < len(forum_data); i++ {
+			if forum_data[i].Post_title == post_header {
+				forum_data[i].commentor_data = append(forum_data[i].commentor_data, commentpandemic{Commentor: commentor, Forum_comment: forum_comments, Post_header: post_header})
+			}
+		}
 	}
 }

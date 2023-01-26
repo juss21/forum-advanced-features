@@ -24,12 +24,20 @@
     </form-->
     {{.Post_content}}
 
-    <form method="post">
-        <fieldset style="background: #f6f8ff; border: 2px solid #4238ca;">
-            <textarea name="comments" id="comments"></textarea>
+    <form method="POST">
+        <!--fieldset style="background: #f6f8ff; border: 2px solid #4238ca;"-->
+            <textarea name="forum_commentbox" id="comments"></textarea><br>
             <input class="button" type="submit" value="Add comment">
-        </fieldset>
+        <!--/fieldset-->
     </form>
+    {{range .}}
+    {{.}}<br>
+    {{end}}
+<h1>test</h1>
+    {{.Commentor}}
+    {{.Forum_comment}}
+    {{.Post_header}}
+
 </body>
 
 </html>
