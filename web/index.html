@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Forum</title>
-    <!-- <link rel="stylesheet" href="style.css" type="text/css"> -->
+    <link rel="stylesheet" href="web/style.css" type="text/css">
 </head>
 
 <body>
@@ -17,6 +17,19 @@
         <a href="/members">Members</a>
     </header>
     <h1>Welcome to our forum!</h1>
+
+    <form method="POST">
+        TITLE: <textarea name="post_header" cols="50" rows="1"></textarea><br>
+        TEXT : <textarea name="post_content" cols="50" rows="4"></textarea><br>
+        <input class="button" type="submit" value="New Post">
+    </form>
+    {{range .}}<br>
+    <div id="collection">
+        Posted by: {{.Originalposter}}<br>
+        Topic: {{.Post_title}}<br>
+        Content:<br>{{.Post_content}}
+    </div>
+    {{end}}
 </body>
 
 </html>

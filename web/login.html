@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Forum</title>
-    <!-- <link rel="stylesheet" href="style.css" type="text/css"> -->
+    <link rel="stylesheet" href="web/style.css" type="text/css">
 </head>
 
 <body>
@@ -22,14 +22,16 @@
         <br>
         <label for="username">Username:</label>
         <br>
-        <input id="username" name="username" type="text" required pattern="[a-zA-Z0-9]+" minlength="3" maxlength="15">
+        <input id="username" name="user_name" type="text" required pattern="[a-zA-Z0-9]+" minlength="3" maxlength="15">
         <br>
         <label for="pw">Password:</label>
         <br>
-        <input id="pw" name="pw" type="password" required minlength="5" maxlength="15">
+        <input id="pw" name="user_password" type="password" required minlength="5" maxlength="15">
         <br>
+        {{.}}
         <br>
-        <input class="button" type="submit" value="Login">
+        <input type="submit" value="Login" class="button">
+
     </form>
 </body>
 
