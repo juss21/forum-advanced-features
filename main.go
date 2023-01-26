@@ -34,7 +34,7 @@ func main() {
 	/*IDEED ja TODO
 	  ideed: login/register võivad pesitseda samal lehel
 
-		todo:  teha forum topicu html page hiljem saadame sinna infot nagu groupie-tracker'is
+		todo: 
 		kommentaarideks ja like/dislike jaoks tuleb sqli täiendada aga selle jätaks hiljemaks | delete pole vist veel required?
 		Hetkel: Loggedin bool muutub true'ks kui sisse logida see ja võiks ära kaotada html'is login/register nupu aga kuidas seda teha?
 
@@ -112,7 +112,6 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
 			post_header := r.FormValue("post_header")
 			post_content := r.FormValue("post_content")
-			fmt.Println(loggedin, forum_op, post_header, post_content)
 			if !loggedin {
 				errorpage.Execute(w, "You must be logged in before you post!")
 			} else {
@@ -143,7 +142,6 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 			//str := "Password or E-mail does not match!"
 			isValid := false
 			output := ""
-			fmt.Println(user_email)
 			if user_password == password_confirmation && user_email == email_confirmation {
 				isValid, output = getRegister(user_name, user_password, user_email)
 				if isValid {
@@ -161,24 +159,24 @@ func sendPost(database *sql.DB, originalposter string, header string, content st
 	statement, _ := database.Prepare("INSERT INTO forum (originalposter, post_header, post_content) VALUES (?,?,?)")
 	statement.Exec(originalposter, header, content) // exec first name, last name
 	forum_data = append(forum_data, forumfamily{Originalposter: originalposter, Post_title: header, Post_content: content})
-	fmt.Println("Server:", header, "has been posted!", " by <", originalposter, ">")
+	//fmt.Println("Server:", header, "has been posted!", " by <", originalposter, ">")
 
 	// foorumi sisu printimine konsooli
-	for i := 0; i < len(forum_data); i++ {
-		fmt.Println(forum_data[i])
-	}
+	// for i := 0; i < len(forum_data); i++ {
+	// 	fmt.Println(forum_data[i])
+	// }
 }
 
 func sendRegister(database *sql.DB, username string, password string, email string) {
 	statement, _ := database.Prepare("INSERT INTO userdata (username, password, email) VALUES (?,?,?)")
 	statement.Exec(username, password, email) // exec first name, last name
 	userlist = append(userlist, memberlist{ID: len(userlist) + 1, Username: username, Password: password, Email: email})
-	fmt.Println("Server:", username, "has successfully registered!", " <", email, ">")
+	//fmt.Println("Server:", username, "has successfully registered!", " <", email, ">")
 
 	// kasutajate printimine konsooli
-	for i := 0; i < len(userlist); i++ {
-		fmt.Println(userlist[i])
-	}
+	// for i := 0; i < len(userlist); i++ {
+	// 	fmt.Println(userlist[i])
+	// }
 }
 
 func saveAllPosts(database *sql.DB) {
