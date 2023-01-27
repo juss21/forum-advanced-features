@@ -13,13 +13,17 @@
 <body>
     <header>
         <a href="/">Home</a>
+        <a class="active" href="/members">Members</a>
+        {{ if .Loggedin }}
+        <a href="/logout">Logout</a>
+        {{.Currentuser}}
+        {{ else }}
         <a href="/login">Login</a>
         <a href="/register">Register</a>
-        <a class="active" href="/members">Members</a>
-
+        {{end}}
     </header>
     <h1>List of members:</h1>
-    {{range .}}
+    {{range .Userlist}}
     <div id="collection">
         {{.ID}}
         {{.Username}}

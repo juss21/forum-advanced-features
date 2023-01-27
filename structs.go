@@ -8,10 +8,12 @@ import (
 )
 
 type memberlist struct {
-	ID       int
-	Username string
-	Password string
-	Email    string
+	ID              int
+	Username        string
+	Password        string
+	Email           string
+	Likedcontent    string
+	Dislikedcontent string
 }
 type forumfamily struct {
 	Originalposter string
@@ -31,13 +33,16 @@ type commentpandemic struct {
 	Comment_disLikes int
 }
 
-var (
-	loggedin   bool = false
-	forum_op   string
-	sqlbase    *sql.DB
-	userlist   []memberlist
-	forum_data []forumfamily
-)
+type webstuff struct {
+	Loggedin    bool
+	Currentuser string
+	Currentpage string
+	Sqlbase     *sql.DB
+	Userlist    []memberlist
+	Forum_data  []forumfamily
+}
+
+var Web webstuff
 
 func errorCheck(err error, exit bool) {
 	if err != nil {
@@ -49,11 +54,11 @@ func errorCheck(err error, exit bool) {
 }
 
 func getLogin(uid string, password string) bool {
-	for i := 0; i < len(userlist); i++ {
+	for i := 0; i < len(Web.Userlist); i++ {
 		// if username or email correct
-		if userlist[i].Username == uid || userlist[i].Email == uid {
+		if Web.Userlist[i].Username == uid || Web.Userlist[i].Email == uid {
 			// if password correct
-			if password == userlist[i].Password {
+			if password == Web.Userlist[i].Password {
 				return true
 			}
 		}
@@ -63,12 +68,12 @@ func getLogin(uid string, password string) bool {
 
 func getRegister(uid string, password string, email string) (bool, string) {
 	str := ""
-	for i := 0; i < len(userlist); i++ {
+	for i := 0; i < len(Web.Userlist); i++ {
 		// TODO add email check aswell?
 		// check if user already exists
-		if userlist[i].Username == uid {
+		if Web.Userlist[i].Username == uid {
 			str += "u"
-		} else if userlist[i].Email == email {
+		} else if Web.Userlist[i].Email == email {
 			str += "e"
 		}
 	}

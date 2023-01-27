@@ -14,15 +14,13 @@
         <a href="/">Home</a>
     </header>
     <h1>{{.Post_title}}</h1>
-    <h2>by: {{.Originalposter}}     {{.Date_posted}}</h2>
+    <h2>by: {{.Originalposter}}</h2>
+    {{.Date_posted}}
     {{.Post_content}}<br>
 
-    <form action={{.Post_title}}/like>
-        <button>{{.Post_likes}} 👍Like</button>
-    </form>
-
-    <form action={{.Post_title}}/dislike>
-        <button>{{.Post_disLikes}} 👎DisLike</button> 
+    <form method="GET">
+        <input name="like" type="submit" value="{{.Post_likes}} 👍Like">
+        <input name="dislike" type="submit" value="{{.Post_disLikes}} 👎DisLike" />
     </form>
     <!-- <form method="POST" action="/register" class="loginform"></form> -->
     <!--form method="POST">
@@ -30,7 +28,7 @@
         TEXT : <textarea name="post_content" cols="50" rows="4"></textarea><br>
         <input class="button" type="submit" value="New Post">
     </form-->
-    
+
 
     <form method="POST">
         <!--fieldset style="background: #f6f8ff; border: 2px solid #4238ca;"-->
@@ -39,7 +37,12 @@
         <!--/fieldset-->
     </form>
 
-    {{range .Commentor_data}}<br><button>{{.Comment_likes}} 👍Like</button> <button>{{.Comment_disLikes}} 👎DisLike</button> {{.Post_header}} > {{.Commentor}}:  {{.Forum_comment}} {{.Date}}
+    {{range .Commentor_data}}<br><button>
+        <form method="GET", action="{{.Post_header}}/##{{.}}">
+            <input name="comment_like" type="submit" value="{{.Comment_likes}}👍Like">
+            <input name="comment_dislike" type="submit" value="{{.Comment_disLikes}} 👎DisLike" />
+        </form>
+        {{.Post_header}} > {{.Commentor}}: {{.Forum_comment}} {{.Date}}
     {{end}}
 
 </body>
