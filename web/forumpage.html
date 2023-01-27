@@ -17,7 +17,13 @@
     <h2>by: {{.Originalposter}}     {{.Date_posted}}</h2>
     {{.Post_content}}<br>
 
-    <button>{{.Post_likes}} 👍Like</button> <button>{{.Post_disLikes}} 👎DisLike</button> 
+    <form action={{.Post_header}}/like>
+        <button>{{.Post_likes}} 👍Like</button>
+    </form>
+
+    <form action={{.Post_header}}/dislike>
+        <button>{{.Post_disLikes}} 👎DisLike</button> 
+    </form>
     <!-- <form method="POST" action="/register" class="loginform"></form> -->
     <!--form method="POST">
         TITLE: <textarea name="post_header" cols="50" rows="1"></textarea><br>
