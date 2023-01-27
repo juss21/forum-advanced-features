@@ -52,6 +52,9 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 	memberspage := ParseFiles("web/members.html")
 	forumpage := ParseFiles("web/forumpage.html")
 
+	forum_op = "Joel"
+	loggedin = true
+
 	errorp := true
 
 	if r.Method == "GET" {
@@ -129,7 +132,6 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 				forum_commentbox := r.FormValue("forum_commentbox")
 				currenturl := r.URL.Path[1:]
 
-				fmt.Println(commentor, forum_commentbox, currenturl)
 				sendComment(sqlbase, forum_op, forum_commentbox, currenturl)
 				// fmt.Println(currenturl, commentor_data[0].Post_header)
 				http.Redirect(w, r, currenturl, http.StatusSeeOther)

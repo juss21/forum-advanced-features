@@ -17,11 +17,11 @@
     <h2>by: {{.Originalposter}}     {{.Date_posted}}</h2>
     {{.Post_content}}<br>
 
-    <form action={{.Post_header}}/like>
+    <form action={{.Post_title}}/like>
         <button>{{.Post_likes}} 👍Like</button>
     </form>
 
-    <form action={{.Post_header}}/dislike>
+    <form action={{.Post_title}}/dislike>
         <button>{{.Post_disLikes}} 👎DisLike</button> 
     </form>
     <!-- <form method="POST" action="/register" class="loginform"></form> -->
