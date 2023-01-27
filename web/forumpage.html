@@ -14,15 +14,17 @@
         <a href="/">Home</a>
     </header>
     <h1>{{.Post_title}}</h1>
-    <h2>by: {{.Originalposter}}</h2>
+    <h2>by: {{.Originalposter}}     {{.Date_posted}}</h2>
+    {{.Post_content}}<br>
 
+    <button>{{.Post_likes}} 👍Like</button> <button>{{.Post_disLikes}} 👎DisLike</button> 
     <!-- <form method="POST" action="/register" class="loginform"></form> -->
     <!--form method="POST">
         TITLE: <textarea name="post_header" cols="50" rows="1"></textarea><br>
         TEXT : <textarea name="post_content" cols="50" rows="4"></textarea><br>
         <input class="button" type="submit" value="New Post">
     </form-->
-    {{.Post_content}}
+    
 
     <form method="POST">
         <!--fieldset style="background: #f6f8ff; border: 2px solid #4238ca;"-->
@@ -31,9 +33,7 @@
         <!--/fieldset-->
     </form>
 
-
-    <h1>test</h1>
-    {{range .Commentor_data}}<br>{{.Commentor}} {{.Forum_comment}} {{.Post_header}}
+    {{range .Commentor_data}}<br><button>{{.Comment_likes}} 👍Like</button> <button>{{.Comment_disLikes}} 👎DisLike</button> {{.Post_header}} > {{.Commentor}}:  {{.Forum_comment}} {{.Date}}
     {{end}}
 
 </body>
