@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"strings"
 )
 
 type memberlist struct {
 	ID              int
 	Username        string
 	Password        string
+	DateCreated     string
 	Email           string
 	Likedcontent    string
 	Dislikedcontent string
@@ -23,6 +23,8 @@ type forumfamily struct {
 	Date_posted    string
 	Post_likes     int
 	Post_disLikes  int
+	Loggedin       bool
+	Currentuser    string
 }
 type commentpandemic struct {
 	Date             string
@@ -31,6 +33,8 @@ type commentpandemic struct {
 	Post_header      string
 	Comment_likes    int
 	Comment_disLikes int
+	Likedby          string
+	Dislikedby       string
 }
 
 type webstuff struct {
@@ -40,10 +44,16 @@ type webstuff struct {
 	Sqlbase     *sql.DB
 	Userlist    []memberlist
 	Forum_data  []forumfamily
+	tempint     int
+	ErrorMsg    string
 }
 
-var Web webstuff
+var (
+	Web   webstuff
+	debug bool = true
+)
 
+// function for errorchecking
 func errorCheck(err error, exit bool) {
 	if err != nil {
 		fmt.Println(err)
@@ -53,38 +63,10 @@ func errorCheck(err error, exit bool) {
 	}
 }
 
-func getLogin(uid string, password string) bool {
-	for i := 0; i < len(Web.Userlist); i++ {
-		// if username or email correct
-		if Web.Userlist[i].Username == uid || Web.Userlist[i].Email == uid {
-			// if password correct
-			if password == Web.Userlist[i].Password {
-				return true
-			}
-		}
+// function for log printing, can be turned off by setting debug boolean to false
+func printLog(a ...any) (n int, err error) {
+	if debug {
+		return fmt.Fprintln(os.Stdout, a...)
 	}
-	return false
-}
-
-func getRegister(uid string, password string, email string) (bool, string) {
-	str := ""
-	for i := 0; i < len(Web.Userlist); i++ {
-		// TODO add email check aswell?
-		// check if user already exists
-		if Web.Userlist[i].Username == uid {
-			str += "u"
-		} else if Web.Userlist[i].Email == email {
-			str += "e"
-		}
-	}
-	if strings.Contains(str, "u") {
-		if strings.Contains(str, "e") {
-			return false, "This username and e-mail is already in use!"
-		}
-		return false, "This username is already taken!"
-	} else if strings.Contains(str, "e") && !strings.Contains(str, "u") {
-		return false, "This e-mail is already in use!"
-	}
-
-	return true, "Account has been created!"
+	return 0, nil
 }

@@ -12,16 +12,31 @@
 <body>
     <header>
         <a href="/">Home</a>
+        <a href="/members">Members</a>
+        {{ if .Loggedin }}
+        <a href="/logout">Logout</a>
+        {{.Currentuser}}
+        {{ else }}
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+        {{end}}
     </header>
-    <h1>{{.Post_title}}</h1>
-    <h2>by: {{.Originalposter}}</h2>
-    {{.Date_posted}}
+    <h1>Forum: {{.Post_title}}</h1>
+    <h3>Posted by: {{.Originalposter}}</h3>
+    <h3>Date posted: {{.Date_posted}}</h3>Content:<br>
     {{.Post_content}}<br>
+    <br><br>
 
-    <form method="GET">
+    {{ if .Loggedin }}
+    <form method="POST">
         <input name="like" type="submit" value="{{.Post_likes}} 👍Like">
         <input name="dislike" type="submit" value="{{.Post_disLikes}} 👎DisLike" />
     </form>
+    {{ else }}
+    Likes: {{.Post_likes}}
+    Dislikes: {{.Post_disLikes}}
+    {{end}}
+
     <!-- <form method="POST" action="/register" class="loginform"></form> -->
     <!--form method="POST">
         TITLE: <textarea name="post_header" cols="50" rows="1"></textarea><br>
@@ -29,22 +44,19 @@
         <input class="button" type="submit" value="New Post">
     </form-->
 
-
+    {{ if .Loggedin }}
     <form method="POST">
         <!--fieldset style="background: #f6f8ff; border: 2px solid #4238ca;"-->
         <textarea name="forum_commentbox" id="comments"></textarea><br>
         <input class="button" type="submit" value="Add comment">
         <!--/fieldset-->
     </form>
-
-    {{range .Commentor_data}}<br><button>
-        <form method="GET", action="{{.Post_header}}/##{{.}}">
-            <input name="comment_like" type="submit" value="{{.Comment_likes}}👍Like">
-            <input name="comment_dislike" type="submit" value="{{.Comment_disLikes}} 👎DisLike" />
-        </form>
-        {{.Post_header}} > {{.Commentor}}: {{.Forum_comment}} {{.Date}}
     {{end}}
 
+    {{range .Commentor_data}}<br>
+    {{.Date}} {{.Post_header}} > {{.Commentor}}: {{.Forum_comment}}
+
+    {{end}}
 </body>
 
 </html>

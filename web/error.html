@@ -11,12 +11,17 @@
 
 <body>
     <header>
-        <a class="active" href="/">Home</a>
+        <a href="/">Home</a>
+        <a href="/members">Members</a>
+        {{ if .Loggedin }}
+        <a href="/logout">Logout</a>
+        {{.Currentuser}}
+        {{ else }}
         <a href="/login">Login</a>
         <a href="/register">Register</a>
-        <a href="/members">Members</a>
+        {{end}}
     </header>
-    <h1>{{.}}</h1>
+    <h1>{{.ErrorMsg}}</h1>
 </body>
 
 </html>
