@@ -7,15 +7,14 @@ import (
 )
 
 type memberlist struct {
-	ID              int
-	Username        string
-	Password        string
-	DateCreated     string
-	Email           string
-	Likedcontent    string
-	Dislikedcontent string
+	ID          int
+	Username    string
+	Password    string
+	DateCreated string
+	Email       string
 }
 type forumfamily struct {
+	ID             int
 	Originalposter string
 	Post_title     string
 	Post_content   string
@@ -34,20 +33,33 @@ type commentpandemic struct {
 	Post_header      string
 	Comment_likes    int
 	Comment_disLikes int
-	Likedby          string
-	Dislikedby       string
+}
+
+type commentlikes struct {
+	CommentID int
+	UserID    int
+	Status    int
+}
+type commentdislikes struct {
+	CommentID int
+	UserID    int
+	Status    int
 }
 
 type webstuff struct {
-	Loggedin    bool
-	Currentuser string
-	Currentpage string
-	Sqlbase     *sql.DB
-	Userlist    []memberlist
-	Forum_data  []forumfamily
-	allcomments int
-	tempint     int
-	ErrorMsg    string
+	Loggedin        bool
+	Currentuser     string
+	Currentpage     string
+	Sqlbase         *sql.DB
+	CommentLikes    []commentlikes
+	CommentDisLikes []commentdislikes
+	Userlist        []memberlist
+	Forum_data      []forumfamily
+	allposts        int
+	allcomments     int
+	tempint         int
+	tempcomments    []commentpandemic
+	ErrorMsg        string
 }
 
 var (

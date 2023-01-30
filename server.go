@@ -121,29 +121,31 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 				}
 
 				//forum topic like/dislike
+				i := Web.tempint
 				like := r.FormValue("like")
 				dislike := r.FormValue("dislike")
 
 				if like != "" {
 					//in case it was "like" sendLike
-					sendLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage, false)
-					printLog("postitus: ", r.URL.Path, " sai like!")
+					//sendTopicLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage)
+					printLog("postitus: ", Web.Forum_data[i].ID, r.URL.Path, " sai like!")
 
 				} else if dislike != "" {
 					//in case it was "dislike" sendDisLike
-					sendDisLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage, false)
-					printLog("postitus: ", r.URL.Path, " sai dislike!")
+					//sendTopicDisLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage)
+					printLog("postitus: ", Web.Forum_data[i].ID, r.URL.Path, " sai dislike!")
 				}
 
 				//forum comment like/dislike
+				var commentIDs []int
 				var commentLikes []string
 				var commentDisLikes []string
-				i := Web.tempint
 
 				if len(Web.Forum_data[i].Commentor_data) != 0 {
 					// looping each comment to append formvalues to commentlikes/dislikes string slice
 					for c := 0; c < len(Web.Forum_data[i].Commentor_data); c++ {
 						commentid := Web.Forum_data[i].Commentor_data[c].ID
+						commentIDs = append(commentIDs, commentid)
 						commentLikes = append(commentLikes, strconv.Itoa(commentid)+"_like")
 						commentDisLikes = append(commentDisLikes, strconv.Itoa(commentid)+"_dislike")
 					}
@@ -156,11 +158,12 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 
 						if clike != "" {
 							//in case it was "like" sendLike
-							sendLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage, true)
+							//sendCommentLike(commentIDs[cl])
+							sendCommentLike(Web.Sqlbase, commentIDs[cl])
 							printLog("kommentaar: ", commentLikes[cl], " sai like!")
 						} else if cdlike != "" {
 							//in case it was "dislike" sendDisLike
-							sendLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage, true)
+							sendCommentDisLike(Web.Sqlbase, commentIDs[cl])
 							printLog("kommentaar: ", commentLikes[cl], " sai dislike!")
 						}
 					}
