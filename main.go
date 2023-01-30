@@ -7,10 +7,15 @@ import (
 	"net/http"
 )
 
+var login bool = true
+
 func main() {
-	Web.Loggedin = true
-	Web.Currentuser = "Joel"
-	port := "8081" // webserver port
+	if login {
+		Web.Loggedin = true
+		Web.Currentuser = "Joel"
+	}
+
+	port := "8080" // webserver port
 	database, err := sql.Open("sqlite3", "./database.db")
 	errorCheck(err, true)
 	Web.Sqlbase = database
