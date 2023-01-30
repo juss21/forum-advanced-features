@@ -25,9 +25,11 @@ func main() {
 	saveAllComments(database) // salvestame kõik kommentaarid mällu, et hiljem oleks võimalik neid veebilehel lohistada
 	buildLikesStruct(Web.allcomments, len(Web.Userlist))
 	buildDisLikesStruct(Web.allcomments, len(Web.Userlist))
+	buildTopicLikesStruct(Web.allposts, len(Web.Userlist))
+	buildTopicDisLikesStruct(Web.allposts, len(Web.Userlist))
 
-	for i := 0; i < len(Web.CommentLikes); i++ {
-		//	fmt.Println("links:", Web.CommentLikes[i].CommentID, Web.CommentLikes[i].UserID) //userid, roomid, status
+	for i := 0; i < len(Web.TopicLikes); i++ {
+		//	fmt.Println("links:", Web.TopicLikes[i].TopicID, Web.TopicLikes[i].UserID) //userid, roomid, status
 	}
 	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web")))) // handling web folder
 	http.HandleFunc("/", serverHandle)                                                // server handle

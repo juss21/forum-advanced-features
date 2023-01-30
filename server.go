@@ -127,12 +127,12 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 
 				if like != "" {
 					//in case it was "like" sendLike
-					//sendTopicLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage)
+					sendTopicLike(Web.Sqlbase, Web.Currentpage, true)
 					printLog("postitus: ", Web.Forum_data[i].ID, r.URL.Path, " sai like!")
 
 				} else if dislike != "" {
 					//in case it was "dislike" sendDisLike
-					//sendTopicDisLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage)
+					sendTopicLike(Web.Sqlbase, Web.Currentpage, false)
 					printLog("postitus: ", Web.Forum_data[i].ID, r.URL.Path, " sai dislike!")
 				}
 

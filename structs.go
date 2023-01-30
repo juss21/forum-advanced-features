@@ -46,11 +46,23 @@ type commentdislikes struct {
 	Status    int
 }
 
+type forumlikes struct {
+	TopicID int
+	UserID  int
+	Status  int
+}
+type forumdislikes struct {
+	TopicID int
+	UserID  int
+	Status  int
+}
 type webstuff struct {
 	Loggedin        bool
 	Currentuser     string
 	Currentpage     string
 	Sqlbase         *sql.DB
+	TopicDisLikes   []forumdislikes
+	TopicLikes      []forumlikes
 	CommentLikes    []commentlikes
 	CommentDisLikes []commentdislikes
 	Userlist        []memberlist

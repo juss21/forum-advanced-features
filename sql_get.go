@@ -4,6 +4,31 @@ import (
 	"database/sql"
 )
 
+func buildTopicLikesStruct(allcomments int, allusers int) {
+	// looping till lenght of commentlikes is equal to allcomments*allusers
+	for len(Web.TopicLikes) < Web.allposts*allusers {
+		//forum loop
+		for forum := 0; forum < len(Web.Forum_data); forum++ {
+			//looping all users
+			for u := 0; u < len(Web.Userlist); u++ {
+				Web.TopicLikes = append(Web.TopicLikes, forumlikes{TopicID: Web.Forum_data[forum].ID, UserID: Web.Userlist[u].ID, Status: 0})
+			}
+		}
+	}
+}
+
+func buildTopicDisLikesStruct(allcomments int, allusers int) {
+	// looping till lenght of commentlikes is equal to allcomments*allusers
+	for len(Web.TopicDisLikes) < Web.allposts*allusers {
+		//forum loop
+		for forum := 0; forum < len(Web.Forum_data); forum++ {
+			//looping all users
+			for u := 0; u < len(Web.Userlist); u++ {
+				Web.TopicDisLikes = append(Web.TopicDisLikes, forumdislikes{TopicID: Web.Forum_data[forum].ID, UserID: Web.Userlist[u].ID, Status: 0})
+			}
+		}
+	}
+}
 func buildLikesStruct(allcomments int, allusers int) {
 	// looping till lenght of commentlikes is equal to allcomments*allusers
 	for len(Web.CommentLikes) < Web.allcomments*allusers {
@@ -39,7 +64,6 @@ func buildDisLikesStruct(allcomments int, allusers int) {
 			}
 		}
 	}
-
 }
 
 func saveAllPosts(database *sql.DB) {

@@ -7,6 +7,67 @@ import (
 	"time"
 )
 
+func sendTopicLike(database *sql.DB, topic string, like bool) {
+	userid := getUserID(Web.Currentuser)
+	topicID := getTopicID(topic)
+	statement_tl, rror := database.Prepare("UPDATE forumlikes SET status = ?")
+	statement_tdl, rror := database.Prepare("UPDATE forumdislikes SET status = ?")
+	if rror != nil {
+		fmt.Println(rror)
+		os.Exit(-1)
+	}
+	for i := 0; i < len(Web.TopicLikes); i++ {
+		if Web.TopicLikes[i].TopicID == topicID && Web.TopicLikes[i].UserID == userid {
+			if like {
+				if Web.TopicLikes[i].Status == 0 {
+					if Web.TopicDisLikes[i].Status == 1 {
+						Web.TopicDisLikes[i].Status = 0
+						Web.Forum_data[topicID].Post_disLikes -= 1
+					}
+					Web.TopicLikes[i].Status = 1
+					Web.Forum_data[topicID].Post_likes += 1
+
+					statement_tl.Exec(Web.TopicLikes[i].Status)     // exec
+					statement_tdl.Exec(Web.TopicDisLikes[i].Status) // exec
+					continue
+				}
+				if Web.TopicLikes[i].Status == 1 {
+
+					Web.TopicLikes[i].Status = 0
+					Web.Forum_data[topicID].Post_likes -= 1
+
+					statement_tl.Exec(Web.TopicLikes[i].Status)     // exec
+					statement_tdl.Exec(Web.TopicDisLikes[i].Status) // exec
+					continue
+				}
+			} else {
+				if Web.TopicDisLikes[i].Status == 0 {
+					if Web.TopicLikes[i].Status == 1 {
+						Web.TopicLikes[i].Status = 0
+						Web.Forum_data[topicID].Post_likes -= 1
+					}
+
+					Web.TopicDisLikes[i].Status = 1
+					Web.Forum_data[topicID].Post_disLikes += 1
+
+					statement_tl.Exec(Web.CommentLikes[i].Status)     // exec
+					statement_tdl.Exec(Web.CommentDisLikes[i].Status) // exec
+					continue
+				}
+				if Web.TopicDisLikes[i].Status == 1 {
+
+					Web.TopicDisLikes[i].Status = 0
+					Web.Forum_data[topicID].Post_disLikes -= 1
+
+					statement_tl.Exec(Web.CommentLikes[i].Status)     // exec
+					statement_tdl.Exec(Web.CommentDisLikes[i].Status) // exec
+					continue
+				}
+			}
+		}
+	}
+}
+
 func sendCommentLike(database *sql.DB, commentid int, like bool) {
 	userid := getUserID(Web.Currentuser)
 	statement_cl, rror := database.Prepare("UPDATE commentlikes SET status = ?")
@@ -27,9 +88,10 @@ func sendCommentLike(database *sql.DB, commentid int, like bool) {
 	}
 
 	for i := 0; i < len(Web.CommentLikes); i++ {
-		if like {
-			// if commentid and userid match
-			if Web.CommentLikes[i].CommentID == commentid && Web.CommentLikes[i].UserID == userid {
+		if Web.CommentLikes[i].CommentID == commentid && Web.CommentLikes[i].UserID == userid {
+
+			if like {
+				// if commentid and userid match
 				if Web.CommentLikes[i].Status == 0 {
 					if Web.CommentDisLikes[i].Status == 1 {
 						Web.CommentDisLikes[i].Status = 0
@@ -48,10 +110,8 @@ func sendCommentLike(database *sql.DB, commentid int, like bool) {
 					statement_cdl.Exec(Web.CommentDisLikes[i].Status) // exec
 					continue
 				}
-			}
-		} else {
-			// if commentid and userid match
-			if Web.CommentDisLikes[i].CommentID == commentid && Web.CommentDisLikes[i].UserID == userid {
+			} else {
+				// if commentid and userid match
 				if Web.CommentDisLikes[i].Status == 0 {
 					if Web.CommentLikes[i].Status == 1 {
 						Web.CommentLikes[i].Status = 0
@@ -72,7 +132,6 @@ func sendCommentLike(database *sql.DB, commentid int, like bool) {
 				}
 			}
 		}
-
 	}
 
 }
