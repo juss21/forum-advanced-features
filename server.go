@@ -159,11 +159,11 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 						if clike != "" {
 							//in case it was "like" sendLike
 							//sendCommentLike(commentIDs[cl])
-							sendCommentLike(Web.Sqlbase, commentIDs[cl])
+							sendCommentLike(Web.Sqlbase, commentIDs[cl], true)
 							printLog("kommentaar: ", commentLikes[cl], " sai like!")
 						} else if cdlike != "" {
 							//in case it was "dislike" sendDisLike
-							sendCommentDisLike(Web.Sqlbase, commentIDs[cl])
+							sendCommentLike(Web.Sqlbase, commentIDs[cl], false)
 							printLog("kommentaar: ", commentLikes[cl], " sai dislike!")
 						}
 					}

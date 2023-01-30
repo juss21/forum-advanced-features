@@ -3,13 +3,20 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"time"
 )
 
-func sendCommentLike(database *sql.DB, commentid int) {
+func sendCommentLike(database *sql.DB, commentid int, like bool) {
 	userid := getUserID(Web.Currentuser)
-	statement, _ := database.Prepare("INSERT INTO commentlikes (comment_id, user_id, status) VALUES (?,?,?)")
-	var comment_id, status int
+	statement_cl, rror := database.Prepare("UPDATE commentlikes SET status = ?")
+	statement_cdl, rror := database.Prepare("UPDATE commentdislikes SET status = ?")
+
+	if rror != nil {
+		fmt.Println(rror)
+		os.Exit(-1)
+	}
+	//var comment_id, status int
 
 	topicID := getTopicID(Web.Currentpage)
 	temp := 0
@@ -18,56 +25,54 @@ func sendCommentLike(database *sql.DB, commentid int) {
 			temp = test
 		}
 	}
+
 	for i := 0; i < len(Web.CommentLikes); i++ {
-		// if commentid and userid match
-		if Web.CommentLikes[i].CommentID == commentid && Web.CommentLikes[i].UserID == userid {
-			if Web.CommentLikes[i].Status == 0 {
-				Web.CommentLikes[i].Status = 1
-				Web.Forum_data[topicID].Commentor_data[temp].Comment_likes += 1
-				fmt.Println(Web.CommentLikes[i].Status, Web.Forum_data[getTopicID(Web.Currentpage)].Post_likes)
-
-			} else if Web.CommentLikes[i].Status == 1 {
-				Web.CommentLikes[i].Status = 0
-				Web.Forum_data[topicID].Commentor_data[temp].Comment_likes -= 1
+		if like {
+			// if commentid and userid match
+			if Web.CommentLikes[i].CommentID == commentid && Web.CommentLikes[i].UserID == userid {
+				if Web.CommentLikes[i].Status == 0 {
+					if Web.CommentDisLikes[i].Status == 1 {
+						Web.CommentDisLikes[i].Status = 0
+						Web.Forum_data[topicID].Commentor_data[temp].Comment_disLikes -= 1
+					}
+					Web.CommentLikes[i].Status = 1
+					Web.Forum_data[topicID].Commentor_data[temp].Comment_likes += 1
+					statement_cl.Exec(Web.CommentLikes[i].Status)     // exec
+					statement_cdl.Exec(Web.CommentDisLikes[i].Status) // exec
+					continue
+				}
+				if Web.CommentLikes[i].Status == 1 {
+					Web.CommentLikes[i].Status = 0
+					Web.Forum_data[topicID].Commentor_data[temp].Comment_likes -= 1
+					statement_cl.Exec(Web.CommentLikes[i].Status)     // exec
+					statement_cdl.Exec(Web.CommentDisLikes[i].Status) // exec
+					continue
+				}
 			}
-			comment_id = commentid
-			status = Web.CommentLikes[i].Status
-			statement.Exec(comment_id, userid, status) // exec first name, last name
-			continue
-		}
-	}
-
-}
-func sendCommentDisLike(database *sql.DB, commentid int) {
-	userid := getUserID(Web.Currentuser)
-	statement, _ := database.Prepare("INSERT INTO commentdislikes (comment_id, user_id, status) VALUES (?,?,?)")
-	var comment_id, status int
-
-	topicID := getTopicID(Web.Currentpage)
-	temp := 0
-	for test := 0; test < len(Web.Forum_data[topicID].Commentor_data); test++ {
-		if Web.Forum_data[topicID].Commentor_data[test].ID == commentid {
-			temp = test
-		}
-	}
-
-	for i := 0; i < len(Web.CommentDisLikes); i++ {
-		// if commentid and userid match
-		if Web.CommentDisLikes[i].CommentID == commentid && Web.CommentDisLikes[i].UserID == userid {
-			if Web.CommentDisLikes[i].Status == 0 {
-				Web.CommentDisLikes[i].Status = 1
-				Web.Forum_data[topicID].Commentor_data[temp].Comment_disLikes += 1
-				fmt.Println(Web.CommentDisLikes[i].Status, Web.Forum_data[getTopicID(Web.Currentpage)].Post_disLikes)
-
-			} else if Web.CommentDisLikes[i].Status == 1 {
-				Web.CommentDisLikes[i].Status = 0
-				Web.Forum_data[topicID].Commentor_data[temp].Comment_likes -= 1
+		} else {
+			// if commentid and userid match
+			if Web.CommentDisLikes[i].CommentID == commentid && Web.CommentDisLikes[i].UserID == userid {
+				if Web.CommentDisLikes[i].Status == 0 {
+					if Web.CommentLikes[i].Status == 1 {
+						Web.CommentLikes[i].Status = 0
+						Web.Forum_data[topicID].Commentor_data[temp].Comment_likes -= 1
+					}
+					Web.CommentDisLikes[i].Status = 1
+					Web.Forum_data[topicID].Commentor_data[temp].Comment_disLikes += 1
+					statement_cdl.Exec(Web.CommentDisLikes[i].Status) // exec
+					statement_cl.Exec(Web.CommentLikes[i].Status)     // exec
+					continue
+				}
+				if Web.CommentDisLikes[i].Status == 1 {
+					Web.CommentDisLikes[i].Status = 0
+					Web.Forum_data[topicID].Commentor_data[temp].Comment_disLikes -= 1
+					statement_cdl.Exec(Web.CommentDisLikes[i].Status) // exec
+					statement_cl.Exec(Web.CommentLikes[i].Status)     // exec
+					continue
+				}
 			}
-			comment_id = commentid
-			status = Web.CommentDisLikes[i].Status
-			statement.Exec(comment_id, userid, status) // exec first name, last name
-			continue
 		}
+
 	}
 
 }
