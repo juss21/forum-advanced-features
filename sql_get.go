@@ -4,7 +4,7 @@ import (
 	"database/sql"
 )
 
-func buildTopicLikesStruct(allcomments int, allusers int) {
+func buildTopicLikesStruct(allposts int, allusers int) {
 	// looping till lenght of commentlikes is equal to allcomments*allusers
 	for len(Web.TopicLikes) < Web.allposts*allusers {
 		//forum loop
@@ -17,7 +17,7 @@ func buildTopicLikesStruct(allcomments int, allusers int) {
 	}
 }
 
-func buildTopicDisLikesStruct(allcomments int, allusers int) {
+func buildTopicDisLikesStruct(allposts int, allusers int) {
 	// looping till lenght of commentlikes is equal to allcomments*allusers
 	for len(Web.TopicDisLikes) < Web.allposts*allusers {
 		//forum loop

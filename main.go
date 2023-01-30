@@ -29,7 +29,7 @@ func main() {
 	buildTopicDisLikesStruct(Web.allposts, len(Web.Userlist))
 
 	for i := 0; i < len(Web.TopicLikes); i++ {
-		//	fmt.Println("links:", Web.TopicLikes[i].TopicID, Web.TopicLikes[i].UserID) //userid, roomid, status
+		fmt.Println("links:", Web.TopicLikes[i].TopicID, Web.TopicLikes[i].UserID) //userid, roomid, status
 	}
 	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web")))) // handling web folder
 	http.HandleFunc("/", serverHandle)                                                // server handle

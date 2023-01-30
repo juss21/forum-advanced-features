@@ -2,20 +2,17 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
-	"os"
 	"time"
 )
 
 func sendTopicLike(database *sql.DB, topic string, like bool) {
 	userid := getUserID(Web.Currentuser)
 	topicID := getTopicID(topic)
-	statement_tl, rror := database.Prepare("UPDATE forumlikes SET status = ?")
-	statement_tdl, rror := database.Prepare("UPDATE forumdislikes SET status = ?")
-	if rror != nil {
-		fmt.Println(rror)
-		os.Exit(-1)
-	}
+	//fmt.Println(Web.TopicLikes[topicID].TopicID)
+
+	statement_tl, _ := database.Prepare("UPDATE forumlikes SET status = ?")
+	statement_tdl, _ := database.Prepare("UPDATE forumdislikes SET status = ?")
+
 	for i := 0; i < len(Web.TopicLikes); i++ {
 		if Web.TopicLikes[i].TopicID == topicID && Web.TopicLikes[i].UserID == userid {
 			if like {
@@ -46,12 +43,11 @@ func sendTopicLike(database *sql.DB, topic string, like bool) {
 						Web.TopicLikes[i].Status = 0
 						Web.Forum_data[topicID].Post_likes -= 1
 					}
-
 					Web.TopicDisLikes[i].Status = 1
 					Web.Forum_data[topicID].Post_disLikes += 1
 
-					statement_tl.Exec(Web.CommentLikes[i].Status)     // exec
-					statement_tdl.Exec(Web.CommentDisLikes[i].Status) // exec
+					statement_tl.Exec(Web.TopicDisLikes[i].Status) // exec
+					statement_tdl.Exec(Web.TopicLikes[i].Status)   // exec
 					continue
 				}
 				if Web.TopicDisLikes[i].Status == 1 {
@@ -59,24 +55,22 @@ func sendTopicLike(database *sql.DB, topic string, like bool) {
 					Web.TopicDisLikes[i].Status = 0
 					Web.Forum_data[topicID].Post_disLikes -= 1
 
-					statement_tl.Exec(Web.CommentLikes[i].Status)     // exec
-					statement_tdl.Exec(Web.CommentDisLikes[i].Status) // exec
+					statement_tdl.Exec(Web.TopicDisLikes[i].Status) // exec
+					statement_tl.Exec(Web.TopicLikes[i].Status)     // exec
 					continue
 				}
 			}
+		} else {
+			//fmt.Println(Web.TopicLikes[i].TopicID, "==", topicID, "&&", Web.TopicLikes[i].UserID, "==", userid)
 		}
 	}
 }
 
 func sendCommentLike(database *sql.DB, commentid int, like bool) {
 	userid := getUserID(Web.Currentuser)
-	statement_cl, rror := database.Prepare("UPDATE commentlikes SET status = ?")
-	statement_cdl, rror := database.Prepare("UPDATE commentdislikes SET status = ?")
+	statement_cl, _ := database.Prepare("UPDATE commentlikes SET status = ?")
+	statement_cdl, _ := database.Prepare("UPDATE commentdislikes SET status = ?")
 
-	if rror != nil {
-		fmt.Println(rror)
-		os.Exit(-1)
-	}
 	//var comment_id, status int
 
 	topicID := getTopicID(Web.Currentpage)
@@ -89,7 +83,6 @@ func sendCommentLike(database *sql.DB, commentid int, like bool) {
 
 	for i := 0; i < len(Web.CommentLikes); i++ {
 		if Web.CommentLikes[i].CommentID == commentid && Web.CommentLikes[i].UserID == userid {
-
 			if like {
 				// if commentid and userid match
 				if Web.CommentLikes[i].Status == 0 {
