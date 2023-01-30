@@ -27,6 +27,7 @@ type forumfamily struct {
 	Currentuser    string
 }
 type commentpandemic struct {
+	ID               int
 	Date             string
 	Commentor        string
 	Forum_comment    string
@@ -44,6 +45,7 @@ type webstuff struct {
 	Sqlbase     *sql.DB
 	Userlist    []memberlist
 	Forum_data  []forumfamily
+	allcomments int
 	tempint     int
 	ErrorMsg    string
 }

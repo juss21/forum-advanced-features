@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"strings"
 )
 
 func saveAllPosts(database *sql.DB) {
@@ -27,15 +26,15 @@ func saveAllUsers(database *sql.DB) {
 }
 
 func saveAllComments(database *sql.DB) {
-	rows, _ := database.Query("SELECT commentor, forum_comments, post_header, likes, dislikes, date, likedbyusers, dislikedbyusers FROM commentdb")
+	rows, _ := database.Query("SELECT commentid,commentor, forum_comments, post_header, likes, dislikes, date, likedbyusers, dislikedbyusers FROM commentdb")
 	var commentor, comments, header, date, likedBy, disLikedBy string
-	var likes, disLikes int
-
+	var commentid, likes, disLikes int
 	for rows.Next() {
-		rows.Scan(&commentor, &comments, &header, &likes, &disLikes, &date, &likedBy, &disLikedBy)
+		rows.Scan(&commentid, &commentor, &comments, &header, &likes, &disLikes, &date, &likedBy, &disLikedBy)
 		for i := 0; i < len(Web.Forum_data); i++ {
 			if Web.Forum_data[i].Post_title == header {
-				Web.Forum_data[i].Commentor_data = append(Web.Forum_data[i].Commentor_data, commentpandemic{Commentor: commentor, Forum_comment: comments, Post_header: header, Comment_likes: likes, Comment_disLikes: disLikes, Date: date, Likedby: likedBy, Dislikedby: disLikedBy})
+				Web.allcomments += 1
+				Web.Forum_data[i].Commentor_data = append(Web.Forum_data[i].Commentor_data, commentpandemic{ID: commentid, Commentor: commentor, Forum_comment: comments, Post_header: header, Comment_likes: likes, Comment_disLikes: disLikes, Date: date, Likedby: likedBy, Dislikedby: disLikedBy})
 			}
 		}
 	}
@@ -57,49 +56,4 @@ func getTopicID(topic string) int {
 		}
 	}
 	return 0
-}
-
-func getLogin(uid string, password string) bool {
-	for i := 0; i < len(Web.Userlist); i++ {
-		// if username or email correct
-		if Web.Userlist[i].Username == uid || Web.Userlist[i].Email == uid {
-			// if password correct
-			if password == Web.Userlist[i].Password {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func getRegister(uid string, password string, email string, cpassword string, cemail string) bool {
-	str := ""
-	if cpassword != password {
-		Web.ErrorMsg = "The passwords do not match!"
-		return false
-	} else if cemail != email {
-		Web.ErrorMsg = "The emails do not match!"
-		return false
-	}
-
-	for i := 0; i < len(Web.Userlist); i++ {
-		if Web.Userlist[i].Username == uid {
-			str += "u"
-		} else if Web.Userlist[i].Email == email {
-			str += "e"
-		}
-	}
-	if strings.Contains(str, "u") {
-		if strings.Contains(str, "e") {
-			Web.ErrorMsg = "This username and e-mail is already in use!"
-			return false
-		}
-		Web.ErrorMsg = "This username is already taken!"
-		return false
-	} else if strings.Contains(str, "e") && !strings.Contains(str, "u") {
-		Web.ErrorMsg = "This e-mail is already in use!"
-		return false
-	}
-
-	return true
 }

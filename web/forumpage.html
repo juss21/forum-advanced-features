@@ -52,11 +52,13 @@
         <!--/fieldset-->
     </form>
     {{end}}
-
+    <form method="POST">
     {{range .Commentor_data}}<br>
-    {{.Date}} {{.Post_header}} > {{.Commentor}}: {{.Forum_comment}}
-
+    {{.Date}} {{.Post_header}} > {{.Commentor}}: {{.Forum_comment}} 
+        <input name={{.ID}}_like type="submit" value="({{.Comment_likes}}) 👍Like">
+        <input name={{.ID}}_dislike type="submit" value="({{.Comment_disLikes}}) 👎DisLike" />
     {{end}}
+    </form>
 </body>
 
 </html>

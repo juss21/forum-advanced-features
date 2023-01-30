@@ -8,14 +8,9 @@ import (
 )
 
 func main() {
-	/*IDEED ja TODO
-	  ideed: login/register võivad pesitseda samal lehel
-	todo:
-		Loggedin bool muutub hetkel true'ks kui sisse logida see ja võiks ära kaotada html'is login/register nupu aga kuidas seda teha?
-		Loggedin bool vist äkki ei tohiks olla koodis, kuidas seda paremini teha?
-		selleks tuleks currentuser kuidagi html'i salvestada vist
-	TODO ja IDEED*/
-	port := "8080" // webserver port
+	Web.Loggedin = true
+	Web.Currentuser = "Joel"
+	port := "8081" // webserver port
 	database, err := sql.Open("sqlite3", "./database.db")
 	errorCheck(err, true)
 	Web.Sqlbase = database
@@ -28,6 +23,7 @@ func main() {
 	http.HandleFunc("/", serverHandle)                                                // server handle
 	fmt.Printf("Starting server at port " + port + "\n")
 
+	fmt.Println(Web.allcomments)
 	if http.ListenAndServe(":"+port, nil) != nil {
 		log.Fatal(err)
 	}

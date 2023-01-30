@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"text/template"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -114,10 +115,12 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 				forum_commentbox := r.FormValue("forum_commentbox") // commentbox data
 				Web.Currentpage = r.URL.Path[1:]                    //current page
 
-				//sending a comment
-				sendComment(Web.Sqlbase, Web.Currentuser, forum_commentbox, Web.Currentpage)
+				//sending a comment if box not empty
+				if len(forum_commentbox) > 3 {
+					sendComment(Web.Sqlbase, Web.Currentuser, forum_commentbox, Web.Currentpage)
+				}
 
-				//getting whether buttonclick was "like" or "dislike"
+				//forum topic like/dislike
 				like := r.FormValue("like")
 				dislike := r.FormValue("dislike")
 
@@ -125,12 +128,45 @@ func serverHandle(w http.ResponseWriter, r *http.Request) {
 					//in case it was "like" sendLike
 					sendLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage, false)
 					printLog("postitus: ", r.URL.Path, " sai like!")
-				}
-				if dislike != "" {
+
+				} else if dislike != "" {
 					//in case it was "dislike" sendDisLike
 					sendDisLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage, false)
 					printLog("postitus: ", r.URL.Path, " sai dislike!")
 				}
+
+				//forum comment like/dislike
+				var commentLikes []string
+				var commentDisLikes []string
+				i := Web.tempint
+
+				if len(Web.Forum_data[i].Commentor_data) != 0 {
+					// looping each comment to append formvalues to commentlikes/dislikes string slice
+					for c := 0; c < len(Web.Forum_data[i].Commentor_data); c++ {
+						commentid := Web.Forum_data[i].Commentor_data[c].ID
+						commentLikes = append(commentLikes, strconv.Itoa(commentid)+"_like")
+						commentDisLikes = append(commentDisLikes, strconv.Itoa(commentid)+"_dislike")
+					}
+					clike := ""
+					cdlike := ""
+					// looping commentlikes & commentdislikes slice
+					for cl := 0; cl < len(commentLikes); cl++ {
+						clike = r.FormValue(commentLikes[cl])
+						cdlike = r.FormValue(commentDisLikes[cl])
+
+						if clike != "" {
+							//in case it was "like" sendLike
+							sendLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage, true)
+							printLog("kommentaar: ", commentLikes[cl], " sai like!")
+						} else if cdlike != "" {
+							//in case it was "dislike" sendDisLike
+							sendLike(Web.Sqlbase, Web.Currentuser, Web.Currentpage, true)
+							printLog("kommentaar: ", commentLikes[cl], " sai dislike!")
+						}
+					}
+
+				}
+
 				//refreshing forumpage
 				http.Redirect(w, r, Web.Currentpage, http.StatusSeeOther)
 				forumpage.Execute(w, Web.Forum_data[Web.tempint])

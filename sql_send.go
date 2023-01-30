@@ -9,6 +9,7 @@ import (
 func sendLike(database *sql.DB, user string, topic string, comment bool) {
 	userid := getUserID(user)
 	topicid := getTopicID(topic)
+	//if not a comment but (forum topic) instead:
 	if !comment {
 		//kui ei ole märgitud ei meeldivaks ega ebameeldivaks
 		if !strings.Contains(Web.Userlist[userid].Likedcontent, topic) && !strings.Contains(Web.Userlist[userid].Dislikedcontent, topic) {
@@ -43,6 +44,8 @@ func sendLike(database *sql.DB, user string, topic string, comment bool) {
 		Web.Sqlbase.Exec("UPDATE userdata SET likedcontent = $Web.Userlist[userid].Likedcontent WHERE username = $user")
 		Web.Sqlbase.Exec("UPDATE userdata SET dislikedcontent = $Web.Userlist[userid].Dislikedcontent WHERE username = $user")
 		printLog(topic, ">", user, "pani meeldivaks.")
+	} else {
+		//if it is a comment:
 
 	}
 }
@@ -95,6 +98,7 @@ func sendRegister(database *sql.DB, username string, password string, email stri
 	statement, _ := database.Prepare("INSERT INTO userdata (username, password, email, likedcontent, dislikedcontent, datecreated) VALUES (?,?,?,?,?,?)")
 	currentTime := time.Now().Format("02.01 2006")
 	Web.Userlist = append(Web.Userlist, memberlist{ID: len(Web.Userlist) + 1, Username: username, Password: password, DateCreated: currentTime, Email: email, Likedcontent: "", Dislikedcontent: ""})
+
 	statement.Exec(username, password, email, "", "", currentTime) // exec first name, last name
 	printLog("Server:", username, "has successfully registered!", " <", email, ">")
 }
@@ -104,6 +108,13 @@ func sendPost(database *sql.DB, originalposter string, header string, content st
 		Web.ErrorMsg = "Too few characters in content, spam detected!"
 		return false
 	}
+	for c := 0; c < len(header); c++ {
+		if (rune(header[c]) == 35 || rune(header[c]) == 37 || rune(header[c]) == 64) || rune(header[c]) < 32 && rune(header[c]) > 122 {
+			Web.ErrorMsg = "Unfriendly characters found in header!"
+			return false
+		}
+	}
+
 	for i := 0; i < len(Web.Forum_data); i++ {
 		if Web.Forum_data[i].Post_title == header {
 			Web.ErrorMsg = "Post with the title '" + header + "' already exists!"
@@ -124,10 +135,6 @@ func sendPost(database *sql.DB, originalposter string, header string, content st
 
 func sendComment(database *sql.DB, commenter string, forum_Commentbox string, forum_header string) {
 
-	if len(forum_Commentbox) <= 3 {
-		return
-	}
-
 	printLog(forum_header, ">", commenter, "lisas kommentaari:", forum_Commentbox)
 
 	statement, _ := database.Prepare("INSERT INTO commentdb (commentor, forum_comments, post_header, likes, dislikes, date, likedbyusers, dislikedbyusers) VALUES (?,?,?,?,?,?,?,?)")
@@ -135,9 +142,15 @@ func sendComment(database *sql.DB, commenter string, forum_Commentbox string, fo
 	currentTime := time.Now().Format("02.01.2006 15:04")
 
 	i := Web.tempint
+
+	Web.allcomments += 1
+	nextid := Web.allcomments
+
 	if Web.Forum_data[i].Post_title == forum_header {
-		Web.Forum_data[i].Commentor_data = append(Web.Forum_data[i].Commentor_data, commentpandemic{Commentor: commenter, Forum_comment: forum_Commentbox, Post_header: forum_header, Comment_likes: 0, Comment_disLikes: 0, Date: currentTime, Likedby: "", Dislikedby: ""})
+		Web.Forum_data[i].Commentor_data = append(Web.Forum_data[i].Commentor_data, commentpandemic{ID: nextid, Commentor: commenter, Forum_comment: forum_Commentbox, Post_header: forum_header, Comment_likes: 0, Comment_disLikes: 0, Date: currentTime, Likedby: "", Dislikedby: ""})
 	}
 
 	statement.Exec(commenter, forum_Commentbox, forum_header, likes, dislikes, currentTime, "", "") // exec first name, last name
+	printLog("appended data: ", Web.Forum_data[i].Commentor_data)
+
 }
