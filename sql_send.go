@@ -2,13 +2,48 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
+	"os"
 	"time"
 )
+
+func sqlSaveLikes(database *sql.DB) {
+	//looping comments
+	for userid := 1; userid <= len(Web.Userlist); userid++ {
+		for topics := 0; topics < len(Web.Forum_data); topics++ {
+			for k := 0; k < len(Web.Forum_data[topics].Commentor_data); k++ {
+				commentid := Web.Forum_data[topics].Commentor_data[k].ID
+
+				c, _ := database.Prepare("INSERT INTO commentlikes (comment_id, user_id, status) VALUES (?,?,?)")
+
+				c.Exec(commentid, userid, 0)
+				Web.CommentLikes = append(Web.CommentLikes, commentlikes{CommentID: commentid, UserID: userid, Status: 0})
+			}
+		}
+	}
+}
+
+func sqlSaveDisLikes(database *sql.DB) {
+	//looping comments
+	for userid := 1; userid <= len(Web.Userlist); userid++ {
+		for topics := 0; topics < len(Web.Forum_data); topics++ {
+			for k := 0; k < len(Web.Forum_data[topics].Commentor_data); k++ {
+				commentid := Web.Forum_data[topics].Commentor_data[k].ID
+
+				c, _ := database.Prepare("INSERT INTO commentdislikes (comment_id, user_id, status) VALUES (?,?,?)")
+
+				c.Exec(commentid, userid, 0)
+				Web.CommentDisLikes = append(Web.CommentDisLikes, commentdislikes{CommentID: commentid, UserID: userid, Status: 0})
+				fmt.Println("user_id", userid, "not found!")
+
+			}
+		}
+	}
+}
 
 func sendTopicLike(database *sql.DB, topic string, like bool) {
 	userid := getUserID(Web.Currentuser)
 	topicID := getTopicID(topic)
-	//fmt.Println(Web.TopicLikes[topicID].TopicID)
 
 	statement_tl, _ := database.Prepare("UPDATE forumlikes SET status = ?")
 	statement_tdl, _ := database.Prepare("UPDATE forumdislikes SET status = ?")
@@ -16,6 +51,7 @@ func sendTopicLike(database *sql.DB, topic string, like bool) {
 	for i := 0; i < len(Web.TopicLikes); i++ {
 		if Web.TopicLikes[i].TopicID == topicID && Web.TopicLikes[i].UserID == userid {
 			if like {
+
 				if Web.TopicLikes[i].Status == 0 {
 					if Web.TopicDisLikes[i].Status == 1 {
 						Web.TopicDisLikes[i].Status = 0
@@ -67,13 +103,16 @@ func sendTopicLike(database *sql.DB, topic string, like bool) {
 }
 
 func sendCommentLike(database *sql.DB, commentid int, like bool) {
-	userid := getUserID(Web.Currentuser)
-	statement_cl, _ := database.Prepare("UPDATE commentlikes SET status = ?")
-	statement_cdl, _ := database.Prepare("UPDATE commentdislikes SET status = ?")
-
+	statement_cl, v := database.Prepare("UPDATE commentlikes SET status = ? WHERE comment_id == ? AND user_id == ?")
+	statement_cdl, v := database.Prepare("UPDATE commentdislikes SET status = ? WHERE comment_id == ? AND user_id == ?")
+	if v != nil {
+		fmt.Println(v)
+		os.Exit(0)
+	}
 	//var comment_id, status int
-
+	userid := getUserID(Web.Currentuser)
 	topicID := getTopicID(Web.Currentpage)
+
 	temp := 0
 	for test := 0; test < len(Web.Forum_data[topicID].Commentor_data); test++ {
 		if Web.Forum_data[topicID].Commentor_data[test].ID == commentid {
@@ -86,21 +125,21 @@ func sendCommentLike(database *sql.DB, commentid int, like bool) {
 			if like {
 				// if commentid and userid match
 				if Web.CommentLikes[i].Status == 0 {
-					if Web.CommentDisLikes[i].Status == 1 {
-						Web.CommentDisLikes[i].Status = 0
-						Web.Forum_data[topicID].Commentor_data[temp].Comment_disLikes -= 1
-					}
+					//if Web.CommentDisLikes[i].Status == 1 {
+					//	Web.CommentDisLikes[i].Status = 0
+					//	Web.Forum_data[topicID].Commentor_data[temp].Comment_disLikes -= 1
+					//}
 					Web.CommentLikes[i].Status = 1
 					Web.Forum_data[topicID].Commentor_data[temp].Comment_likes += 1
-					statement_cl.Exec(Web.CommentLikes[i].Status)     // exec
-					statement_cdl.Exec(Web.CommentDisLikes[i].Status) // exec
+					statement_cl.Exec(Web.CommentLikes[i].Status, commentid, userid) // exec
+					//statement_cdl.Exec(Web.CommentDisLikes[i].Status) // exec
 					continue
 				}
 				if Web.CommentLikes[i].Status == 1 {
 					Web.CommentLikes[i].Status = 0
 					Web.Forum_data[topicID].Commentor_data[temp].Comment_likes -= 1
-					statement_cl.Exec(Web.CommentLikes[i].Status)     // exec
-					statement_cdl.Exec(Web.CommentDisLikes[i].Status) // exec
+					statement_cl.Exec(Web.CommentLikes[i].Status, commentid, userid) // exec
+					//statement_cdl.Exec(Web.CommentDisLikes[i].Status) // exec
 					continue
 				}
 			} else {
@@ -112,15 +151,15 @@ func sendCommentLike(database *sql.DB, commentid int, like bool) {
 					}
 					Web.CommentDisLikes[i].Status = 1
 					Web.Forum_data[topicID].Commentor_data[temp].Comment_disLikes += 1
-					statement_cdl.Exec(Web.CommentDisLikes[i].Status) // exec
-					statement_cl.Exec(Web.CommentLikes[i].Status)     // exec
+					statement_cdl.Exec(Web.CommentDisLikes[i].Status, commentid, userid) // exec
+					statement_cl.Exec(Web.CommentLikes[i].Status, commentid, userid)     // exec
 					continue
 				}
 				if Web.CommentDisLikes[i].Status == 1 {
 					Web.CommentDisLikes[i].Status = 0
 					Web.Forum_data[topicID].Commentor_data[temp].Comment_disLikes -= 1
-					statement_cdl.Exec(Web.CommentDisLikes[i].Status) // exec
-					statement_cl.Exec(Web.CommentLikes[i].Status)     // exec
+					statement_cdl.Exec(Web.CommentDisLikes[i].Status, commentid, userid) // exec
+					statement_cl.Exec(Web.CommentLikes[i].Status, commentid, userid)     // exec
 					continue
 				}
 			}
@@ -143,8 +182,13 @@ func sendPost(database *sql.DB, originalposter string, header string, content st
 		Web.ErrorMsg = "Too few characters in content, spam detected!"
 		return false
 	}
+	if rune(header[len(header)-1]) == ' ' {
+		Web.ErrorMsg = "Topic can not end with a ' '!"
+		return false
+	}
 	for c := 0; c < len(header); c++ {
 		if (rune(header[c]) == 35 || rune(header[c]) == 37 || rune(header[c]) == 64) || rune(header[c]) < 32 && rune(header[c]) > 122 {
+
 			Web.ErrorMsg = "Unfriendly characters found in header!"
 			return false
 		}

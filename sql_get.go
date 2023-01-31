@@ -32,7 +32,7 @@ func buildTopicDisLikesStruct(allposts int, allusers int) {
 func buildLikesStruct(allcomments int, allusers int) {
 	// looping till lenght of commentlikes is equal to allcomments*allusers
 	for len(Web.CommentLikes) < Web.allcomments*allusers {
-		//forum loop
+		//forum loopg
 		for forum := 0; forum < len(Web.Forum_data); forum++ {
 			//looping all comments
 			for ac := 0; ac < len(Web.Forum_data[forum].Commentor_data); ac++ {

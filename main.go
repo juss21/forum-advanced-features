@@ -23,11 +23,18 @@ func main() {
 	saveAllUsers(database)    // salvestame kõik kasutajad mällu, et hiljem oleks võimalik neid veebilehel lohistada
 	saveAllPosts(database)    // salvestame kõik postitused mällu, et hiljem oleks võimalik neid veebilehel lohistada
 	saveAllComments(database) // salvestame kõik kommentaarid mällu, et hiljem oleks võimalik neid veebilehel lohistada
-	buildLikesStruct(Web.allcomments, len(Web.Userlist))
-	buildDisLikesStruct(Web.allcomments, len(Web.Userlist))
-	buildTopicLikesStruct(Web.allposts, len(Web.Userlist))
-	buildTopicDisLikesStruct(Web.allposts, len(Web.Userlist))
+	//saveAllLikes(Web.Sqlbase)
+	sqlSaveLikes(Web.Sqlbase)
+	sqlSaveDisLikes(Web.Sqlbase)
 
+	for i := 0; i < len(Web.CommentLikes); i++ {
+		fmt.Println(Web.CommentLikes[i])
+	}
+	// buildLikesStruct(Web.allcomments, len(Web.Userlist))
+	// buildDisLikesStruct(Web.allcomments, len(Web.Userlist))
+	// buildTopicLikesStruct(Web.allposts, len(Web.Userlist))
+	// buildTopicDisLikesStruct(Web.allposts, len(Web.Userlist))
+	fmt.Println(Web.allcomments * len(Web.Userlist))
 	for i := 0; i < len(Web.TopicLikes); i++ {
 		fmt.Println("links:", Web.TopicLikes[i].TopicID, Web.TopicLikes[i].UserID) //userid, roomid, status
 	}
