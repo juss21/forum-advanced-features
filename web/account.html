@@ -1,0 +1,11 @@
+
+Posts created:
+{{range .CreatedPosts}}<br>
+Postitus: {{.PostID}} Pealkiri: {{.PostTopic}} 
+{{end}}
+
+<br><br>Liked comments:
+{{range .LikedComments}}<br>
+
+ Postitus: {{.PostID}} Kommentaar: {{.CommentId}}
+{{end}}

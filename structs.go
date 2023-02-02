@@ -34,14 +34,26 @@ type PostLike struct {
 	UserId int
 	PostId int
 }
-
+type Createdstuff struct {
+	UserID    int
+	PostID    int
+	PostTopic string
+}
+type Likedstuff struct {
+	UserID    int
+	PostID    int
+	CommentId int
+}
 type Forumstuff struct {
-	Loggedin    bool
-	LoggedUser  Memberlist
-	CurrentPost Forumdata
-	Forum_data  []Forumdata
-	User_data   []Memberlist
-	ErrorMsg    string
+	Loggedin      bool
+	LoggedUser    Memberlist
+	CreatedPosts  []Createdstuff
+	LikedStuff    []PostLike
+	LikedComments []Likedstuff
+	CurrentPost   Forumdata
+	Forum_data    []Forumdata
+	User_data     []Memberlist
+	ErrorMsg      string
 }
 
 var DataBase *sql.DB

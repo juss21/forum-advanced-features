@@ -9,6 +9,12 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+func ParseFiles(filename string) *template.Template {
+	temp, _ := template.ParseFiles(filename) // home template
+	// errorCheck(err, true)
+
+	return temp
+}
 func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	errorpage := ParseFiles("web/error.html")
 	header := ParseFiles("web/header.html")
@@ -106,6 +112,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	Web.LoggedUser = Memberlist{}
 	Web.Loggedin = false
+	Web.CreatedPosts = []Createdstuff{}
 	http.Redirect(w, r, "/", http.StatusSeeOther) // TODO lisada sõnum, et on edukal välja logitud
 }
 
@@ -210,9 +217,17 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ParseFiles(filename string) *template.Template {
-	temp, _ := template.ParseFiles(filename) // home template
-	// errorCheck(err, true)
+func accountDetails(w http.ResponseWriter, r *http.Request) {
+	accountpage := ParseFiles("web/account.html")
+	header := ParseFiles("web/header.html")
+	Web.CreatedPosts = []Createdstuff{}
+	Web.LikedComments = []Likedstuff{}
+	switch r.Method {
+	case "GET":
+		UserPosted()
+		LikesSent()
 
-	return temp
+		header.Execute(w, Web)
+		accountpage.Execute(w, Web)
+	}
 }

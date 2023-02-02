@@ -26,6 +26,7 @@ func main() {
 	http.HandleFunc("/comment", commentHandler)
 	http.HandleFunc("/likePost", postLikeHandler)
 	http.HandleFunc("/likeComment/", commentLikeHandler)
+	http.HandleFunc("/account", accountDetails)
 
 	fmt.Printf("Starting server at port " + port + "\n")
 	if http.ListenAndServe(":"+port, nil) != nil {

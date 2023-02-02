@@ -4,7 +4,58 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 )
+
+func LikesSent() {
+	userid := Web.LoggedUser.ID
+
+	for f := 0; f < len(Web.LikedStuff); f++ {
+		if Web.LikedStuff[f].UserId == userid {
+			Web.LikedComments = append(Web.LikedComments, Likedstuff{UserID: userid, PostID: Web.LikedStuff[f].PostId, CommentId: Web.LikedStuff[f].Id})
+		}
+	}
+
+	rows, err := DataBase.Query("SELECT id, name, userId, postId date FROM postlikes")
+	if err != nil {
+		fmt.Println("likessent()", err)
+		os.Exit(0)
+	}
+	var id, userId, postId int
+	var name string
+	for rows.Next() {
+		rows.Scan(
+			&id,
+			&name,
+			&userId,
+			&postId,
+		)
+		if userId == userid {
+			Web.LikedComments = append(Web.LikedComments, Likedstuff{UserID: userid, PostID: postId, CommentId: id})
+		} else {
+			fmt.Println("match not foudn!", userId, userid)
+		}
+	}
+
+	// for f := 0; f < len(Web.Forum_data); f++ {
+	// 	for c := 0; c < len(Web.Forum_data[f].Comments); c++ {
+	// 		if Web.Forum_data[f].Comments[c].Likes == userid {
+	// 			Web.LikedComments = append(Web.LikedComments, Likedstuff{UserID: userid, PostID: Web.LikedStuff[f].PostId, CommentId: Web.LikedStuff[f].Id})
+	// 		} else {
+	// 			fmt.Println(Web.LikedStuff[f].UserId, userid)
+	// 		}
+	// 	}
+	// }
+}
+func UserPosted() {
+	userid := Web.LoggedUser.Username
+
+	for i := 0; i < len(Web.Forum_data); i++ {
+		if Web.Forum_data[i].Author == userid {
+			Web.CreatedPosts = append(Web.CreatedPosts, Createdstuff{PostID: i, UserID: Web.LoggedUser.ID, PostTopic: Web.Forum_data[i].Title})
+		}
+	}
+}
 
 func AllPosts() []Forumdata {
 	var data []Forumdata

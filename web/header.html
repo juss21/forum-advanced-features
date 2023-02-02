@@ -17,6 +17,7 @@
         <a href="/members">Members</a>
         {{ if .Loggedin }}
         <a href="/logout">Logout</a>
+        <a href="/account">Account</a>
         Welcome, <b><i>{{ .LoggedUser.Username }}</i></b>
         {{ else }}
         <a href="/login">Login</a>
