@@ -9,6 +9,11 @@ type Memberlist struct {
 	Email       string
 	DateCreated string
 }
+
+type Category struct {
+	Id   int
+	Name string
+}
 type Forumdata struct {
 	Id          int
 	UserId      int
@@ -16,6 +21,7 @@ type Forumdata struct {
 	Title       string
 	Content     string
 	Date_posted string
+	Category    string
 	Comments    []Commentdata
 	Likes       int
 	Dislikes    int
@@ -59,7 +65,10 @@ type Forumstuff struct {
 	Forum_data    []Forumdata
 	User_data     []Memberlist
 	ErrorMsg      string
+	Categories     []Category
 }
 
-var DataBase *sql.DB
-var Web Forumstuff
+var (
+	DataBase *sql.DB
+	Web      Forumstuff
+)

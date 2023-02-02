@@ -22,6 +22,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	homepage := ParseFiles("web/index.html")
 
 	Web.Forum_data = AllPosts()
+	Web.Categories = getCategories()
 
 	switch r.Method {
 	case "GET":
@@ -30,6 +31,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		title := r.FormValue("post_header")
 		content := r.FormValue("post_content")
+		category, _ := strconv.Atoi(r.FormValue("category"))
 
 		if Web.LoggedUser == (Memberlist{}) { // kui objekt on tühi, siis pole keegi sisse loginud
 			Web.ErrorMsg = "You must be logged in before you post!"
@@ -37,7 +39,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 			errorpage.Execute(w, Web.ErrorMsg)
 			return
 		}
-		if !SavePost(title, Web.LoggedUser.ID, content) {
+		if !SavePost(title, Web.LoggedUser.ID, content, category) {
 			header.Execute(w, Web)
 			errorpage.Execute(w, Web.ErrorMsg)
 			return

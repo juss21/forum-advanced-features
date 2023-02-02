@@ -39,6 +39,7 @@ func LikesSent() {
 		Web.LikedComments = append(Web.LikedComments, Likedstuff{PostID: id, User: name, Title: title})
 	}
 }
+
 func UserPosted() {
 	userid := Web.LoggedUser.Username
 
@@ -51,7 +52,12 @@ func UserPosted() {
 
 func AllPosts() []Forumdata {
 	var data []Forumdata
-	rows, err := DataBase.Query("SELECT posts.id, users.username, posts.title, posts.content, date FROM posts LEFT JOIN users on posts.userId = users.id")
+	rows, err := DataBase.Query(`
+	SELECT posts.id, users.username, posts.title, posts.content, posts.date, category.name as category
+	FROM posts
+	LEFT JOIN users on posts.userId = users.id
+	LEFT JOIN category on posts.categoryId = category.id
+	`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,6 +70,7 @@ func AllPosts() []Forumdata {
 			&post.Title,
 			&post.Content,
 			&post.Date_posted,
+			&post.Category,
 		)
 		data = append(data, post)
 	}
@@ -71,11 +78,30 @@ func AllPosts() []Forumdata {
 	return data
 }
 
-func SavePost(title string, author int, content string) bool {
-	statement, _ := DataBase.Prepare("INSERT INTO posts (userId, title, content, date) VALUES (?,?,?,?)")
+func getCategories() []Category {
+	var data []Category
+	rows, err := DataBase.Query("select * from category")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for rows.Next() {
+		var post Category
+		rows.Scan(
+			&post.Id,
+			&post.Name,
+		)
+		data = append(data, post)
+	}
+
+	return data
+}
+
+func SavePost(title string, author int, content string, categoryId int) bool {
+	statement, _ := DataBase.Prepare("INSERT INTO posts (userId, title, content, date, categoryId) VALUES (?,?,?,?,?)")
 	currentTime := time.Now().Format("02.01.2006 15:04")
 
-	statement.Exec(author, title, content, currentTime)
+	statement.Exec(author, title, content, currentTime, categoryId)
 
 	return true
 }
@@ -104,13 +130,11 @@ func GetPostById(postId int) (Forumdata, error) {
 		&post.Likes,
 		&post.Dislikes,
 	)
-	
 
 	return post, err
-
 }
-func SaveComment(content string, userId, postId int) bool {
 
+func SaveComment(content string, userId, postId int) bool {
 	statement, _ := DataBase.Prepare("INSERT INTO comments (userId, content, postId) VALUES (?,?,?)")
 	statement.Exec(userId, content, postId)
 	return true
@@ -137,6 +161,7 @@ func Register(username, password, email string) {
 	currentTime := time.Now().Format("02.01 2006")
 	statement.Exec(username, password, email, currentTime)
 }
+
 func GetUsers() {
 	rows, _ := DataBase.Query("SELECT id, username, email, datecreated from users")
 
@@ -227,7 +252,6 @@ func SaveCommentLike(like string, userId, commentId int) {
 func SaveSession(key string, userId int) {
 	statement, _ := DataBase.Prepare("INSERT INTO session (key, userId) VALUES (?,?)")
 	_, err := statement.Exec(key, userId)
-
 	if err != nil {
 		fmt.Println("one per user")
 	}
