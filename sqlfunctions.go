@@ -72,10 +72,10 @@ func AllPosts() []Forumdata {
 }
 
 func SavePost(title string, author int, content string) bool {
+	statement, _ := DataBase.Prepare("INSERT INTO posts (userId, title, content, date) VALUES (?,?,?,?)")
+	currentTime := time.Now().Format("02.01.2006 15:04")
 
-	statement, _ := DataBase.Prepare("INSERT INTO posts (userId, title, content) VALUES (?,?,?)")
-
-	statement.Exec(author, title, content)
+	statement.Exec(author, title, content, currentTime)
 
 	return true
 }
@@ -83,7 +83,7 @@ func SavePost(title string, author int, content string) bool {
 func GetPostById(postId int) Forumdata {
 	var post Forumdata
 	statement, _ := DataBase.Prepare(`SELECT 
-	posts.id, posts.userId, posts.title, posts.content,
+	posts.id, posts.userId, posts.title, posts.content, posts.date,
 	users.username,
 	COUNT(CASE WHEN postlikes.name = 'like' THEN 1 END) AS likes, 
 	COUNT(CASE WHEN postlikes.name = 'dislike' THEN 1 END) AS dislikes
@@ -99,6 +99,7 @@ func GetPostById(postId int) Forumdata {
 		&post.UserId,
 		&post.Title,
 		&post.Content,
+		&post.Date_posted,
 		&post.Author,
 		&post.Likes,
 		&post.Dislikes,
