@@ -40,7 +40,7 @@ Comments:
 <br>
 {{ if .Loggedin }}
 {{range .Comments}}<br>
-{{.Username}}: {{.Content}}
+{{.Username}}: {{.Date_commented}}<br>{{.Content}}
 
 
 <form method="POST" , action="/likeComment/{{.Id}}">
@@ -50,7 +50,7 @@ Comments:
 {{end}}
 {{ else }}
 {{range .Comments}}<br>
-{{.Username}}: {{.Content}} <br> 👍 {{.Likes}} LAIKKI 👍 {{.Dislikes}} DISLAIKKI
+{{.Username}}{{.Date_commented}}<br>{{.Content}} <br> 👍 {{.Likes}} LAIKKI 👍 {{.Dislikes}} DISLAIKKI
 {{end}}
 {{ end }}
 </body>

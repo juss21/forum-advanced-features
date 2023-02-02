@@ -113,8 +113,10 @@ func GetPostById(postId int) Forumdata {
 }
 func SaveComment(content string, userId, postId int) bool {
 
-	statement, _ := DataBase.Prepare("INSERT INTO comments (userId, content, postId) VALUES (?,?,?)")
-	statement.Exec(userId, content, postId)
+	statement, _ := DataBase.Prepare("INSERT INTO comments (userId, content, postId, datecommented) VALUES (?,?,?,?)")
+	currentTime := time.Now().Format("02.01.2006 15:04")
+
+	statement.Exec(userId, content, postId, currentTime)
 	return true
 }
 
@@ -160,7 +162,7 @@ func GetCommentsByPostId(id int) []Commentdata {
 	statement, _ := DataBase.Prepare(`
 	SELECT 
   comments.id, comments.userId, comments.content, 
-  users.username,
+  users.username, comments.datecommented,
   COUNT(CASE WHEN commentLikes.name = 'like' THEN 1 END) AS likes, 
   COUNT(CASE WHEN commentLikes.name = 'dislike' THEN 1 END) AS dislikes
 FROM 
@@ -181,6 +183,7 @@ GROUP by comments.id;
 			&comment.UserId,
 			&comment.Content,
 			&comment.Username,
+			&comment.Date_commented,
 			&comment.Likes,
 			&comment.Dislikes,
 		)

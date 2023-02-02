@@ -22,13 +22,14 @@ type Forumdata struct {
 	Loggedin    bool
 }
 type Commentdata struct {
-	Id       int
-	Content  string
-	UserId   int
-	PostId   int
-	Likes    int
-	Dislikes int
-	Username string
+	Id             int
+	Content        string
+	UserId         int
+	PostId         int
+	Date_commented string
+	Likes          int
+	Dislikes       int
+	Username       string
 }
 
 type PostLike struct {
