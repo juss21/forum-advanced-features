@@ -1,14 +1,15 @@
 
-{{.LoggedUser.Username}}
-{{.LoggedUser.DateCreated}}  
+Username: {{.LoggedUser.Username}}<br>
+Email: {{.LoggedUser.Email}}<br>
+Member since: {{.LoggedUser.DateCreated}}<br>  
 <BR>
-Posts created:
+Posts created by you:
 {{range .CreatedPosts}}<br>
 
 <a href="post/{{.PostID}}">{{.PostTopic}}</a>
 {{end}}
 
-<br><br>Liked posts:
+<br><br>Posts liked by you:
 {{range .LikedComments}}<br>
 
 <a href="post/{{.PostID}}">{{.Title}}</a>
