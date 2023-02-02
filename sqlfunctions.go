@@ -80,7 +80,7 @@ func SavePost(title string, author int, content string) bool {
 	return true
 }
 
-func GetPostById(postId int) Forumdata {
+func GetPostById(postId int) (Forumdata, error) {
 	var post Forumdata
 	statement, _ := DataBase.Prepare(`SELECT 
 	posts.id, posts.userId, posts.title, posts.content, posts.date,
@@ -104,19 +104,15 @@ func GetPostById(postId int) Forumdata {
 		&post.Likes,
 		&post.Dislikes,
 	)
-	if err != nil {
-		log.Fatal(err)
-	}
+	
 
-	return post
+	return post, err
 
 }
 func SaveComment(content string, userId, postId int) bool {
 
-	statement, _ := DataBase.Prepare("INSERT INTO comments (userId, content, postId, datecommented) VALUES (?,?,?,?)")
-	currentTime := time.Now().Format("02.01.2006 15:04")
-
-	statement.Exec(userId, content, postId, currentTime)
+	statement, _ := DataBase.Prepare("INSERT INTO comments (userId, content, postId) VALUES (?,?,?)")
+	statement.Exec(userId, content, postId)
 	return true
 }
 
@@ -162,7 +158,7 @@ func GetCommentsByPostId(id int) []Commentdata {
 	statement, _ := DataBase.Prepare(`
 	SELECT 
   comments.id, comments.userId, comments.content, 
-  users.username, comments.datecommented,
+  users.username,
   COUNT(CASE WHEN commentLikes.name = 'like' THEN 1 END) AS likes, 
   COUNT(CASE WHEN commentLikes.name = 'dislike' THEN 1 END) AS dislikes
 FROM 
@@ -183,7 +179,6 @@ GROUP by comments.id;
 			&comment.UserId,
 			&comment.Content,
 			&comment.Username,
-			&comment.Date_commented,
 			&comment.Likes,
 			&comment.Dislikes,
 		)

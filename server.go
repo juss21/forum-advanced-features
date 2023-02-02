@@ -15,6 +15,7 @@ func ParseFiles(filename string) *template.Template {
 
 	return temp
 }
+
 func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	errorpage := ParseFiles("web/error.html")
 	header := ParseFiles("web/header.html")
@@ -51,11 +52,18 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	header := ParseFiles("web/header.html")
 	forumpage := ParseFiles("web/forumpage.html")
+	errorpage := ParseFiles("web/error.html")
 
 	// errorpage := ParseFiles("web/error.html")
 	postId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
-	post := GetPostById(postId) // TODO implementeerida error kui pole ühtegi posti
+	post, err := GetPostById(postId) // TODO implementeerida error kui pole ühtegi posti
+	if err != nil {
+		header.Execute(w, Web)
+		errorpage.Execute(w, "Post not Found")
+		return
+	}
+
 	post.Comments = GetCommentsByPostId(postId)
 	Web.CurrentPost = post
 
@@ -92,7 +100,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		Web.Loggedin = true
 		cookie, err := r.Cookie("session-id")
-
 		if err != nil {
 			id, _ := uuid.NewV4()
 			cookie = &http.Cookie{
