@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forum</title>
+    <link rel="stylesheet" href="/web/style.css" type="text/css">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <!-- <link rel="icon" href="web/icon.jpeg"> -->
+</head>
+
+<body>
+    <header>
+        <a class="active" href="/">Home</a>
+        <a href="/members">Members</a>
+        {{ if .Loggedin }}
+        <a href="/logout">Logout</a>
+        Welcome, <b><i>{{ .LoggedUser.Username }}</i></b>
+        {{ else }}
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+        {{ end }}
+    </header>
