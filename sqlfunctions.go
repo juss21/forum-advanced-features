@@ -52,7 +52,7 @@ func UserPosted() {
 
 	for i := 0; i < len(Web.Forum_data); i++ {
 		if Web.Forum_data[i].Author == userid {
-			Web.CreatedPosts = append(Web.CreatedPosts, Createdstuff{PostID: i, UserID: Web.LoggedUser.ID, PostTopic: Web.Forum_data[i].Title})
+			Web.CreatedPosts = append(Web.CreatedPosts, Createdstuff{PostID: Web.Forum_data[i].Id, UserID: Web.LoggedUser.ID, PostTopic: Web.Forum_data[i].Title})
 		}
 	}
 }
