@@ -62,7 +62,6 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		post.Loggedin = Web.Loggedin
-
 		header.Execute(w, Web)
 		forumpage.Execute(w, post)
 	}
@@ -141,9 +140,8 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "GET":
-		members := GetUsers()
 		header.Execute(w, Web)
-		memberspage.Execute(w, members)
+		memberspage.Execute(w, Web.User_data)
 	}
 }
 
@@ -224,9 +222,12 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 	Web.LikedComments = []Likedstuff{}
 	switch r.Method {
 	case "GET":
+		if Web.LoggedUser == (Memberlist{}) {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
 		UserPosted()
 		LikesSent()
-
+		test()
 		header.Execute(w, Web)
 		accountpage.Execute(w, Web)
 	}

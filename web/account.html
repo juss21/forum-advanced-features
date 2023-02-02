@@ -1,11 +1,15 @@
 
+{{.LoggedUser.Username}}
+{{.LoggedUser.DateCreated}}  
+<BR>
 Posts created:
 {{range .CreatedPosts}}<br>
-Postitus: {{.PostID}} Pealkiri: {{.PostTopic}} 
+
+<a href="post/{{.PostID}}">{{.PostTopic}}</a>
 {{end}}
 
-<br><br>Liked comments:
+<br><br>Liked posts:
 {{range .LikedComments}}<br>
 
- Postitus: {{.PostID}} Kommentaar: {{.CommentId}}
+<a href="post/{{.PostID}}">{{.Title}}</a>
 {{end}}

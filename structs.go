@@ -3,13 +3,15 @@ package main
 import "database/sql"
 
 type Memberlist struct {
-	ID       int
-	Username string
-	Password string
-	Email    string
+	ID          int
+	Username    string
+	Password    string
+	Email       string
+	DateCreated string
 }
 type Forumdata struct {
 	Id          int
+	UserId      int
 	Author      string
 	Title       string
 	Content     string
@@ -26,6 +28,7 @@ type Commentdata struct {
 	PostId   int
 	Likes    int
 	Dislikes int
+	Username string
 }
 
 type PostLike struct {
@@ -40,9 +43,10 @@ type Createdstuff struct {
 	PostTopic string
 }
 type Likedstuff struct {
-	UserID    int
+	User      string
 	PostID    int
 	CommentId int
+	Title     string
 }
 type Forumstuff struct {
 	Loggedin      bool

@@ -1,5 +1,5 @@
 <br>
-ID: {{.Id}} {{.Title}}
+Posted by: {{.Author}} <br>Topic: {{.Title}}
 {{ if .Loggedin }}
 <form method="POST" action="/likePost">
     <button name="button" value="like">👍 {{.Likes}}</button>
@@ -39,7 +39,7 @@ Comments:
 <br>
 {{ if .Loggedin }}
 {{range .Comments}}<br>
-{{.UserId}}: {{.Content}}
+{{.Username}}: {{.Content}}
 
 
 <form method="POST" , action="/likeComment/{{.Id}}">
@@ -49,7 +49,7 @@ Comments:
 {{end}}
 {{ else }}
 {{range .Comments}}<br>
-{{.UserId}}: {{.Content}} <br> 👍 {{.Likes}} LAIKKI 👍 {{.Dislikes}} DISLAIKKI
+{{.Username}}: {{.Content}} <br> 👍 {{.Likes}} LAIKKI 👍 {{.Dislikes}} DISLAIKKI
 {{end}}
 {{ end }}
 </body>

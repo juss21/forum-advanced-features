@@ -5,47 +5,39 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 )
+
+func test() {
+	for i := 0; i < len(Web.User_data); i++ {
+		if Web.User_data[i].ID == Web.LoggedUser.ID {
+			Web.LoggedUser.DateCreated = Web.User_data[i].DateCreated
+		}
+	}
+}
 
 func LikesSent() {
 	userid := Web.LoggedUser.ID
 
-	for f := 0; f < len(Web.LikedStuff); f++ {
-		if Web.LikedStuff[f].UserId == userid {
-			Web.LikedComments = append(Web.LikedComments, Likedstuff{UserID: userid, PostID: Web.LikedStuff[f].PostId, CommentId: Web.LikedStuff[f].Id})
-		}
-	}
-
-	rows, err := DataBase.Query("SELECT id, name, userId, postId date FROM postlikes")
+	rows, err := DataBase.Query(`SELECT posts.id, posts.title, users.username
+	FROM postlikes
+	LEFT join users on postlikes.userId = users.id
+   LEFT JOIN posts on postlikes.postId = posts.id
+	where postlikes.name = "like" and users.id = ?`, userid)
 	if err != nil {
 		fmt.Println("likessent()", err)
 		os.Exit(0)
 	}
-	var id, userId, postId int
-	var name string
+	var id int
+	var name, title string
 	for rows.Next() {
 		rows.Scan(
 			&id,
+			&title,
 			&name,
-			&userId,
-			&postId,
 		)
-		if userId == userid {
-			Web.LikedComments = append(Web.LikedComments, Likedstuff{UserID: userid, PostID: postId, CommentId: id})
-		} else {
-			fmt.Println("match not foudn!", userId, userid)
-		}
+		Web.LikedComments = append(Web.LikedComments, Likedstuff{PostID: id, User: name, Title: title})
 	}
-
-	// for f := 0; f < len(Web.Forum_data); f++ {
-	// 	for c := 0; c < len(Web.Forum_data[f].Comments); c++ {
-	// 		if Web.Forum_data[f].Comments[c].Likes == userid {
-	// 			Web.LikedComments = append(Web.LikedComments, Likedstuff{UserID: userid, PostID: Web.LikedStuff[f].PostId, CommentId: Web.LikedStuff[f].Id})
-	// 		} else {
-	// 			fmt.Println(Web.LikedStuff[f].UserId, userid)
-	// 		}
-	// 	}
-	// }
 }
 func UserPosted() {
 	userid := Web.LoggedUser.Username
@@ -80,14 +72,7 @@ func AllPosts() []Forumdata {
 }
 
 func SavePost(title string, author int, content string) bool {
-	if len(title) < 5 {
-		Web.ErrorMsg = "Too few arguments in title, spam?"
-		return false
-	}
-	if len(content) < 10 {
-		Web.ErrorMsg = "Too few arguments in content! Spam!"
-		return false
-	}
+
 	statement, _ := DataBase.Prepare("INSERT INTO posts (userId, title, content) VALUES (?,?,?)")
 
 	statement.Exec(author, title, content)
@@ -98,20 +83,23 @@ func SavePost(title string, author int, content string) bool {
 func GetPostById(postId int) Forumdata {
 	var post Forumdata
 	statement, _ := DataBase.Prepare(`SELECT 
-	posts.id, posts.userId, posts.title, posts.content,  
+	posts.id, posts.userId, posts.title, posts.content,
+	users.username,
 	COUNT(CASE WHEN postlikes.name = 'like' THEN 1 END) AS likes, 
-	COUNT(CASE WHEN postlikes.name = 'dislike' THEN 1 END) AS dislikes  
+	COUNT(CASE WHEN postlikes.name = 'dislike' THEN 1 END) AS dislikes
   FROM 
 	posts 
-	LEFT JOIN postlikes ON posts.id = postlikes.postId	
-	WHERE posts.id = ?
-	GROUP by posts.id
+	LEFT JOIN postlikes ON posts.id = postlikes.postId
+	LEFT JOIN users ON posts.userId = users.id
+  WHERE posts.id = ?
+  GROUP by posts.id;
   `)
 	err := statement.QueryRow(postId).Scan(
 		&post.Id,
-		&post.Author,
+		&post.UserId,
 		&post.Title,
 		&post.Content,
+		&post.Author,
 		&post.Likes,
 		&post.Dislikes,
 	)
@@ -123,10 +111,7 @@ func GetPostById(postId int) Forumdata {
 
 }
 func SaveComment(content string, userId, postId int) bool {
-	if len(content) < 10 {
-		Web.ErrorMsg = "Too few arguments in commentbox! SPAM"
-		return false
-	}
+
 	statement, _ := DataBase.Prepare("INSERT INTO comments (userId, content, postId) VALUES (?,?,?)")
 	statement.Exec(userId, content, postId)
 	return true
@@ -149,38 +134,40 @@ func Login(username, password string) (Memberlist, error) {
 }
 
 func Register(username, password, email string) {
-	statement, _ := DataBase.Prepare("INSERT INTO users (username, password, email) values (?,?,?)")
-	statement.Exec(username, password, email)
+	statement, _ := DataBase.Prepare("INSERT INTO users (username, password, email, datecreated) values (?,?,?,?)")
+	currentTime := time.Now().Format("02.01 2006")
+	statement.Exec(username, password, email, currentTime)
 }
-func GetUsers() []Memberlist {
-	var data []Memberlist
-	rows, _ := DataBase.Query("SELECT id, username, email from users")
+func GetUsers() {
+	rows, _ := DataBase.Query("SELECT id, username, email, datecreated from users")
 
 	for rows.Next() {
-		var member Memberlist
+		var ID int
+		var Username, Email, DateC string
 		rows.Scan(
-			&member.ID,
-			&member.Username,
-			&member.Email,
+			&ID,
+			&Username,
+			&Email,
+			&DateC,
 		)
-		data = append(data, member)
+		Web.User_data = append(Web.User_data, Memberlist{ID: ID, Username: Username, Email: Email, DateCreated: DateC})
 	}
-
-	return data
 }
 
 func GetCommentsByPostId(id int) []Commentdata {
 	var comments []Commentdata
 	statement, _ := DataBase.Prepare(`
 	SELECT 
-	comments.id, comments.userId, comments.content, 
+  comments.id, comments.userId, comments.content, 
+  users.username,
   COUNT(CASE WHEN commentLikes.name = 'like' THEN 1 END) AS likes, 
-  COUNT(CASE WHEN commentLikes.name = 'dislike' THEN 1 END) AS dislikes  
+  COUNT(CASE WHEN commentLikes.name = 'dislike' THEN 1 END) AS dislikes
 FROM 
   comments 
-  LEFT JOIN commentLikes ON comments.id = commentLikes.commentId  
-  WHERE comments.postId= ?
-  GROUP by comments.id
+  LEFT JOIN commentLikes ON comments.id = commentLikes.commentId
+  LEFT JOIN users ON comments.userId = users.id
+WHERE comments.postId= ?
+GROUP by comments.id;
 	`)
 	rows, err := statement.Query(id)
 	if err != nil {
@@ -192,12 +179,13 @@ FROM
 			&comment.Id,
 			&comment.UserId,
 			&comment.Content,
+			&comment.Username,
 			&comment.Likes,
 			&comment.Dislikes,
 		)
+
 		comments = append(comments, comment)
 	}
-
 	return comments
 }
 

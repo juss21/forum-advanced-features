@@ -14,6 +14,8 @@ func main() {
 	port := "8080" // webserver port
 	DataBase, _ = sql.Open("sqlite3", "./database.db")
 
+	GetUsers()
+
 	fs := http.FileServer(http.Dir("./web"))
 	http.Handle("/web/", http.StripPrefix("/web/", fs))
 
