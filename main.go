@@ -5,43 +5,30 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
-var login bool = true
-
 func main() {
-	if login {
-		Web.Loggedin = true
-		Web.Currentuser = "Joel"
-	}
-
+	var err error
 	port := "8080" // webserver port
-	database, err := sql.Open("sqlite3", "./database.db")
-	errorCheck(err, true)
-	Web.Sqlbase = database
+	DataBase, _ = sql.Open("sqlite3", "./database.db")
 
-	saveAllUsers(database)    // salvestame kõik kasutajad mällu, et hiljem oleks võimalik neid veebilehel lohistada
-	saveAllPosts(database)    // salvestame kõik postitused mällu, et hiljem oleks võimalik neid veebilehel lohistada
-	saveAllComments(database) // salvestame kõik kommentaarid mällu, et hiljem oleks võimalik neid veebilehel lohistada
-	//saveAllLikes(Web.Sqlbase)
-	sqlSaveLikes(Web.Sqlbase)
-	sqlSaveDisLikes(Web.Sqlbase)
+	fs := http.FileServer(http.Dir("./web"))
+	http.Handle("/web/", http.StripPrefix("/web/", fs))
 
-	for i := 0; i < len(Web.CommentLikes); i++ {
-		fmt.Println(Web.CommentLikes[i])
-	}
-	// buildLikesStruct(Web.allcomments, len(Web.Userlist))
-	// buildDisLikesStruct(Web.allcomments, len(Web.Userlist))
-	// buildTopicLikesStruct(Web.allposts, len(Web.Userlist))
-	// buildTopicDisLikesStruct(Web.allposts, len(Web.Userlist))
-	fmt.Println(Web.allcomments * len(Web.Userlist))
-	for i := 0; i < len(Web.TopicLikes); i++ {
-		fmt.Println("links:", Web.TopicLikes[i].TopicID, Web.TopicLikes[i].UserID) //userid, roomid, status
-	}
-	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web")))) // handling web folder
-	http.HandleFunc("/", serverHandle)                                                // server handle
+	http.HandleFunc("/", homePageHandle)
+	http.HandleFunc("/post/", forumPageHandler)
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/logout", logOutHandler)
+	http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/members", membersHandler)
+	http.HandleFunc("/comment", commentHandler)
+	http.HandleFunc("/likePost", postLikeHandler)
+	http.HandleFunc("/likeComment/", commentLikeHandler)
+	http.HandleFunc("/account", accountDetails)
+
 	fmt.Printf("Starting server at port " + port + "\n")
-
 	if http.ListenAndServe(":"+port, nil) != nil {
 		log.Fatal(err)
 	}

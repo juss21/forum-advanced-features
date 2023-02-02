@@ -1,64 +1,47 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
+<br>
+ID: {{.Id}} {{.Title}}
+{{ if .Loggedin }}
+<form method="POST" action="/likePost">
+    <button name="button" value="like">👍 {{.Likes}}</button>
+    <button name="button" value="dislike">👍 {{.Dislikes}}</button>
+</form>
+{{ else }}
+👍 {{.Likes}} LAIKKI
+👍 {{.Dislikes}} DISLAIKKI
+{{ end }}
+<br><br>
+Content:<br>
+{{.Content}}
+<br>
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Forum</title>
-    <link rel="stylesheet" href="web/style.css" type="text/css">
-</head>
+{{ if .Loggedin }}
+Add comment:
+<form method="POST" action="/comment">
+    <!--fieldset style="background: #f6f8ff; border: 2px solid #4238ca;"-->
+    <textarea name="forum_commentbox" id="comments"></textarea><br>
+    <input class="button" type="submit" value="Add comment">
+    <!--/fieldset-->
+</form>
+{{ end }}
 
-<body>
-    <header>
-        <a href="/">Home</a>
-        <a href="/members">Members</a>
-        {{ if .Loggedin }}
-        <a href="/logout">Logout</a>
-        {{.Currentuser}}
-        {{ else }}
-        <a href="/login">Login</a>
-        <a href="/register">Register</a>
-        {{end}}
-    </header>
-    <h1>Forum: {{.Post_title}}</h1>
-    <h3>Posted by: {{.Originalposter}}</h3>
-    <h3>Date posted: {{.Date_posted}}</h3>Content:<br>
-    {{.Post_content}}<br>
-    <br><br>
+<br>
+Comments:
+<br>
+{{ if .Loggedin }}
+{{range .Comments}}<br>
+{{.UserId}}: {{.Content}}
 
-    {{ if .Loggedin }}
-    <form method="POST">
-        <input name="like" type="submit" value="{{.Post_likes}} 👍Like">
-        <input name="dislike" type="submit" value="{{.Post_disLikes}} 👎DisLike" />
-    </form>
-    {{ else }}
-    Likes: {{.Post_likes}}
-    Dislikes: {{.Post_disLikes}}
-    {{end}}
 
-    <!-- <form method="POST" action="/register" class="loginform"></form> -->
-    <!--form method="POST">
-        TITLE: <textarea name="post_header" cols="50" rows="1"></textarea><br>
-        TEXT : <textarea name="post_content" cols="50" rows="4"></textarea><br>
-        <input class="button" type="submit" value="New Post">
-    </form-->
-
-    {{ if .Loggedin }}
-    <form method="POST">
-        <!--fieldset style="background: #f6f8ff; border: 2px solid #4238ca;"-->
-        <textarea name="forum_commentbox" id="comments"></textarea><br>
-        <input class="button" type="submit" value="Add comment">
-        <!--/fieldset-->
-    </form>
-    {{end}}
-    <form method="POST">
-    {{range .Commentor_data}}<br>
-    {{.Date}} {{.Post_header}} > {{.Commentor}}: {{.Forum_comment}} 
-        <input name={{.ID}}_like type="submit" value="({{.Comment_likes}}) 👍Like">
-        <input name={{.ID}}_dislike type="submit" value="({{.Comment_disLikes}}) 👎DisLike" />
-    {{end}}
-    </form>
+<form method="POST" , action="/likeComment/{{.Id}}">
+    <button name="button" value="like">👍 {{.Likes}}</button>
+    <button name="button" value="dislike">👍 {{.Dislikes}}</button>
+</form>
+{{end}}
+{{ else }}
+{{range .Comments}}<br>
+{{.UserId}}: {{.Content}} <br> 👍 {{.Likes}} LAIKKI 👍 {{.Dislikes}} DISLAIKKI
+{{end}}
+{{ end }}
 </body>
 
 </html>

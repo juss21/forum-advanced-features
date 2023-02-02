@@ -1,27 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Forum</title>
-    <link rel="stylesheet" href="web/style.css" type="text/css">
-</head>
-
-<body>
-    <header>
-        <a href="/">Home</a>
-        <a href="/members">Members</a>
-        {{ if .Loggedin }}
-        <a href="/logout">Logout</a>
-        {{.Currentuser}}
-        {{ else }}
-        <a href="/login">Login</a>
-        <a href="/register">Register</a>
-        {{end}}
-    </header>
-    <h1>{{.ErrorMsg}}</h1>
+    <h1>{{.}}</h1>
 </body>
 
 </html>

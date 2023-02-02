@@ -1,39 +1,22 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
+<!--https://lets-go.alexedwards.net/sample/02.07-html-templating-and-inheritance.html-->
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Forum</title>
-    <link rel="stylesheet" href="web/style.css" type="text/css">
-    <link rel="icon" href="web/icon.jpeg">
-</head>
 
-<body>
-    <header>
-        <a class="active" href="/">Home</a>
-        <a href="/members">Members</a>
-        {{ if .Loggedin }}
-        <a href="/logout">Logout</a>
-        {{.Currentuser}}
-        {{ else }}
-        <a href="/login">Login</a>
-        <a href="/register">Register</a>
-        {{end}}
-    </header>
     <h1>Welcome to our forum!</h1>
-
+    {{ if .Loggedin }}
     <form method="POST">
         TITLE: <textarea name="post_header" cols="50" rows="1"></textarea><br>
         TEXT : <textarea name="post_content" cols="50" rows="4"></textarea><br>
         <input class="button" type="submit" value="New Post">
     </form>
-    {{range .Forum_data}}
-    <div id="collection">
-        <a href="/{{.Post_title}}">{{.Post_title}}</a>{{.Originalposter}}
-    </div>
+    <br>
     {{end}}
+        {{range .Forum_data}}
+    <div id="collection">
+        <a href="/post/{{.Id}}">{{.Title}}</a> {{.Author}}
+    </div>
+        {{end}}
+    
 </body>
 
 </html>
+
