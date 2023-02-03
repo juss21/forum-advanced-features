@@ -9,6 +9,7 @@ import (
 	"text/template"
 
 	"github.com/gofrs/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func ParseFiles(filename string) *template.Template {
@@ -119,9 +120,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session-id")
 		if err != nil {
 			id, _ := uuid.NewV4()
+			//expiresAt := time.Now().Add(10 * time.Second)
 			cookie = &http.Cookie{
 				Name:  "session-id",
 				Value: id.String(),
+				//Expires: expiresAt,
 			}
 
 			http.SetCookie(w, cookie)
@@ -165,10 +168,13 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		user_name := r.FormValue("user_name")         // text input
 		user_password := r.FormValue("user_password") // font type
 		user_email := r.FormValue("user_email")
+		hash, _ := HashPassword(user_password)
+		match := CheckPasswordHash(user_password, hash)
 
-		Register(user_name, user_password, user_email) // TODO lisada sõnum, et edukalt registreeritud
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-
+		if match == true {
+			Register(user_name, hash, user_email) // TODO lisada sõnum, et edukalt registreeritud
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		}
 	}
 }
 
@@ -281,4 +287,14 @@ func filterHandler(w http.ResponseWriter, r *http.Request) {
 		Web.SelectedFilter = filterstatus
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
