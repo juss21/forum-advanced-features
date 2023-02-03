@@ -133,9 +133,23 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func logOutHandler(w http.ResponseWriter, r *http.Request) {
+	userId := Web.LoggedUser.ID
+	//TODO vaadata see err ja terve see handleri järjekord üle siin, ehk saab paremaks!
+	cookie, _ := r.Cookie("session-id")
+	// if err != nil {
+	//     id, _ := uuid.NewV4()
+	//     cookie = &http.Cookie{
+	//         Name:  "session-id",
+	//         Value: id.String(),
+	//     }
+	// }
+	cookie.MaxAge = -1
+	http.SetCookie(w, cookie)
 	Web.LoggedUser = Memberlist{}
 	Web.Loggedin = false
 	Web.CreatedPosts = []Createdstuff{}
+
+	DeleteSession(cookie.Value, userId)
 	http.Redirect(w, r, "/", http.StatusSeeOther) // TODO lisada sõnum, et on edukal välja logitud
 }
 

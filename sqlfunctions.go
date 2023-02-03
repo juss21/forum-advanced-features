@@ -279,9 +279,19 @@ func SaveCommentLike(like string, userId, commentId int) {
 }
 
 func SaveSession(key string, userId int) {
-	statement, _ := DataBase.Prepare("INSERT INTO session (key, userId) VALUES (?,?)")
+	statement, _ := DataBase.Prepare("INSERT OR REPLACE INTO session (key, userId) VALUES (?,?)")
 	_, err := statement.Exec(key, userId)
+
 	if err != nil {
 		fmt.Println("one per user")
+	}
+}
+
+func DeleteSession(key string, userId int) {
+	statement, _ := DataBase.Prepare("DELETE FROM session WHERE key = ? AND userId = ?")
+	_, err := statement.Exec(key, userId)
+
+	if err != nil {
+		fmt.Println("Error deleting record from session table:", err)
 	}
 }
