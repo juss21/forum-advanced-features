@@ -50,6 +50,15 @@ func UserPosted() {
 	}
 }
 
+func AllPostsRearrange(allposts []Forumdata) []Forumdata {
+	var data []Forumdata
+	for i := 0; i < len(allposts); i++ {
+		data = append(data, allposts[len(allposts)-1-i])
+	}
+
+	return data
+}
+
 func AllPosts(category string) []Forumdata {
 	var data []Forumdata
 	//converting category name -> id
@@ -87,7 +96,7 @@ func AllPosts(category string) []Forumdata {
 		if realCategoryName == Category_name && realCategoryName != "" {
 			data = append(data, Forumdata{Id: Id, Author: Author, Title: Title, Content: Content, Date_posted: Date_posted, Category: category})
 		} else if realCategoryName == "" {
-			data = append(data, Forumdata{Id: Id, Author: Author, Title: Title, Content: Content, Date_posted: Date_posted, Category: category})
+			data = append(data, Forumdata{Id: Id, Author: Author, Title: Title, Content: Content, Date_posted: Date_posted, Category: Category_name})
 		}
 	}
 

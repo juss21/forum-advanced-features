@@ -31,7 +31,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	header := ParseFiles("web/header.html")
 	homepage := ParseFiles("web/index.html")
 
-	Web.Forum_data = AllPosts(Web.SelectedFilter)
+	Web.Forum_data = AllPostsRearrange(AllPosts(Web.SelectedFilter))
 	getCategories()
 
 	switch r.Method {
@@ -60,7 +60,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		Web.Forum_data = AllPosts(Web.SelectedFilter)
+		Web.Forum_data = AllPostsRearrange(AllPosts(Web.SelectedFilter))
 		header.Execute(w, Web)
 		homepage.Execute(w, Web)
 	}
