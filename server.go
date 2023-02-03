@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 	"path"
 	"strconv"
 	"text/template"
@@ -10,10 +12,18 @@ import (
 )
 
 func ParseFiles(filename string) *template.Template {
-	temp, _ := template.ParseFiles(filename) // home template
-	// errorCheck(err, true)
+	temp, err := template.ParseFiles(filename) // home template
+	errorCheck(err, true)
 
 	return temp
+}
+func errorCheck(err error, fatal bool) {
+	if err != nil {
+		fmt.Println("Error():", err)
+		if fatal {
+			os.Exit(0)
+		}
+	}
 }
 
 func homePageHandle(w http.ResponseWriter, r *http.Request) {
@@ -21,18 +31,23 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	header := ParseFiles("web/header.html")
 	homepage := ParseFiles("web/index.html")
 
-	Web.Forum_data = AllPosts()
-	Web.Categories = getCategories()
+	Web.Forum_data = AllPosts(Web.SelectedFilter)
+	getCategories()
 
 	switch r.Method {
 	case "GET":
+		if Web.SelectedFilter == "" {
+			Web.SelectedFilter = "all"
+		}
 		header.Execute(w, Web)
 		homepage.Execute(w, Web)
 	case "POST":
 		title := r.FormValue("post_header")
 		content := r.FormValue("post_content")
 		category, _ := strconv.Atoi(r.FormValue("category"))
+		filterstatus := r.FormValue("categoryfilter")
 
+		Web.SelectedFilter = filterstatus
 		if Web.LoggedUser == (Memberlist{}) { // kui objekt on tühi, siis pole keegi sisse loginud
 			Web.ErrorMsg = "You must be logged in before you post!"
 			header.Execute(w, Web)
@@ -45,7 +60,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		Web.Forum_data = AllPosts()
+		Web.Forum_data = AllPosts(Web.SelectedFilter)
 		header.Execute(w, Web)
 		homepage.Execute(w, Web)
 	}
@@ -56,7 +71,6 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	forumpage := ParseFiles("web/forumpage.html")
 	errorpage := ParseFiles("web/error.html")
 
-	// errorpage := ParseFiles("web/error.html")
 	postId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
 	post, err := GetPostById(postId) // TODO implementeerida error kui pole ühtegi posti
@@ -78,12 +92,12 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO lisada tagasi osa,kus peidab kui on logitud ja näitab kui vaja välja logida
 	loginpage := ParseFiles("web/login.html")
-	//	header := ParseFiles("web/header.html")
+	header := ParseFiles("web/header.html")
 
 	switch r.Method {
 	case "GET":
+		header.Execute(w, Web)
 		loginpage.Execute(w, "")
 	case "POST":
 		user_name := r.FormValue("user_name")
@@ -214,6 +228,7 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 		errorpage.Execute(w, "You must be logged in before you Like!")
 		return
 	}
+
 	postLike := r.FormValue("button")
 
 	switch r.Method {
@@ -239,5 +254,16 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 		test()
 		header.Execute(w, Web)
 		accountpage.Execute(w, Web)
+	}
+}
+
+func filterHandler(w http.ResponseWriter, r *http.Request) {
+
+	filterstatus := r.FormValue("categoryfilter")
+	switch r.Method {
+	case "GET":
+
+		Web.SelectedFilter = filterstatus
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }

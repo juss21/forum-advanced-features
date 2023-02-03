@@ -26,7 +26,18 @@
     }</script>
 <br>
 {{end}}
+<form action="/changefilter",method="POST">
+    CATEGORY FILTER: <select id="categoryfilter" name="categoryfilter" required>
+        <option value="{{.SelectedFilter}}">{{.SelectedFilter}}</option>
+        <option value="Kosmos">Kosmos</option>
+        <option value="Märgatud Jõhvis">Märgatud Jõhvis</option>
+        <option value="All">All Categories</option>
+    </select>
+    
+    <input name="sendfilter" class="button" type="submit" value="sendfilter">
+</form>
 {{range .Forum_data}}
+
 <div id="collection">
     {{.Category}} <a href="/post/{{.Id}}">{{.Title}}</a> {{.Author}}
 </div>

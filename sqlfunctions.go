@@ -50,8 +50,19 @@ func UserPosted() {
 	}
 }
 
-func AllPosts() []Forumdata {
+func AllPosts(category string) []Forumdata {
 	var data []Forumdata
+	//converting category name -> id
+	//realCategoryID := 0
+	realCategoryName := ""
+	for i := 0; i < len(Web.Categories); i++ {
+		if category == Web.Categories[i].Name {
+			//realCategoryID = Web.Categories[i].Id
+			realCategoryName = Web.Categories[i].Name
+		}
+	}
+	//fmt.Println(realCategoryID, realCategoryName)
+
 	rows, err := DataBase.Query(`
 	SELECT posts.id, users.username, posts.title, posts.content, posts.date, category.name as category
 	FROM posts
@@ -63,41 +74,48 @@ func AllPosts() []Forumdata {
 	}
 
 	for rows.Next() {
-		var post Forumdata
+		var Id int
+		var Category_name, Author, Title, Content, Date_posted string
 		rows.Scan(
-			&post.Id,
-			&post.Author,
-			&post.Title,
-			&post.Content,
-			&post.Date_posted,
-			&post.Category,
+			&Id,
+			&Author,
+			&Title,
+			&Content,
+			&Date_posted,
+			&Category_name,
 		)
-		data = append(data, post)
+		if realCategoryName == Category_name && realCategoryName != "" {
+			data = append(data, Forumdata{Id: Id, Author: Author, Title: Title, Content: Content, Date_posted: Date_posted, Category: category})
+		} else if realCategoryName == "" {
+			data = append(data, Forumdata{Id: Id, Author: Author, Title: Title, Content: Content, Date_posted: Date_posted, Category: category})
+		}
 	}
 
 	return data
 }
 
-func getCategories() []Category {
-	var data []Category
+func getCategories() {
 	rows, err := DataBase.Query("select * from category")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for rows.Next() {
-		var post Category
+		var id int
+		var name string
 		rows.Scan(
-			&post.Id,
-			&post.Name,
+			&id,
+			&name,
 		)
-		data = append(data, post)
+		Web.Categories = append(Web.Categories, Category{Id: id, Name: name})
 	}
-
-	return data
 }
 
 func SavePost(title string, author int, content string, categoryId int) bool {
+	if len(content) < 10 {
+		return false
+	}
+
 	statement, _ := DataBase.Prepare("INSERT INTO posts (userId, title, content, date, categoryId) VALUES (?,?,?,?,?)")
 	currentTime := time.Now().Format("02.01.2006 15:04")
 

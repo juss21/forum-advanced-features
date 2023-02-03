@@ -42,7 +42,6 @@ Comments:
 {{range .Comments}}<br>
 {{.Username}}: {{.Date_commented}}<br>{{.Content}}
 
-
 <form method="POST" , action="/likeComment/{{.Id}}">
     <button name="button" value="like">👍 {{.Likes}}</button>
     <button name="button" value="dislike">👍 {{.Dislikes}}</button>

@@ -56,16 +56,17 @@ type Likedstuff struct {
 	Title     string
 }
 type Forumstuff struct {
-	Loggedin      bool
-	LoggedUser    Memberlist
-	CreatedPosts  []Createdstuff
-	LikedStuff    []PostLike
-	LikedComments []Likedstuff
-	CurrentPost   Forumdata
-	Forum_data    []Forumdata
-	User_data     []Memberlist
-	ErrorMsg      string
+	Loggedin       bool
+	LoggedUser     Memberlist
+	CreatedPosts   []Createdstuff
+	LikedStuff     []PostLike
+	LikedComments  []Likedstuff
+	CurrentPost    Forumdata
+	Forum_data     []Forumdata
+	User_data      []Memberlist
+	ErrorMsg       string
 	Categories     []Category
+	SelectedFilter string
 }
 
 var (
