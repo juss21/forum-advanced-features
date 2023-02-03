@@ -1,16 +1,25 @@
-
+<div class="account">
+<div id="data">
 Username: {{.LoggedUser.Username}}<br>
 Email: {{.LoggedUser.Email}}<br>
 Member since: {{.LoggedUser.DateCreated}}<br>  
-<BR>
+</div>
+
+<div id="postscreated">
 Posts created by you:
 {{range .CreatedPosts}}<br>
 
 <a href="post/{{.PostID}}">{{.PostTopic}}</a>
 {{end}}
+</div>
 
-<br><br>Posts liked by you:
+<div id="postsliked">
+Posts liked by you:
 {{range .LikedComments}}<br>
 
 <a href="post/{{.PostID}}">{{.Title}}</a>
 {{end}}
+</div>
+</div>
+</body>
+</html>

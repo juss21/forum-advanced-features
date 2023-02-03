@@ -12,15 +12,22 @@
 </head>
 
 <body>
+    <div class="header">
     <header>
+        <div id="center">
         <a class="active" href="/">Home</a>
         <a href="/members">Members</a>
         {{ if .Loggedin }}
-        <a href="/logout">Logout</a>
-        <a href="/account">Account</a>
+            <div id="right">
         Welcome, <b><i>{{ .LoggedUser.Username }}</i></b>
+        <a href="/account">Account</a>
+        <a href="/logout">Logout</a>
+        </div>
         {{ else }}
         <a href="/login">Login</a>
         <a href="/register">Register</a>
+       
         {{ end }}
+        </div>
     </header>
+    </div>

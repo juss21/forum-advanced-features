@@ -1,5 +1,8 @@
+<div class="index">
 <h1>Welcome to our forum!</h1>
+
 {{ if .Loggedin }}
+<div id="createpost"> 
 <form method="POST" onsubmit="return validate('title', 'body', 5, 10);">
     TITLE: <textarea name="post_header" cols="50" rows="1" id="title"></textarea><br>
     TEXT : <textarea name="post_content" cols="50" rows="4" id="body"></textarea><br>
@@ -10,6 +13,7 @@
     </select>
     <input class="button" type="submit" value="New Post">
 </form>
+</div>
 <script>function validate(x, y, i, j) {
         // check if input is bigger than 3
         var value = document.getElementById(x).value;
@@ -26,6 +30,7 @@
     }</script>
 <br>
 {{end}}
+<div id="postlist">
 <form action="/changefilter",method="POST">
     CATEGORY FILTER: <select id="categoryfilter" name="categoryfilter" required>
         <option value="{{.SelectedFilter}}">{{.SelectedFilter}}</option>
@@ -36,13 +41,20 @@
     
     <input name="sendfilter" class="button" type="submit" value="Filter">
 </form>
+
 {{range .Forum_data}}
 
-<div id="collection">
- {{.Date_posted}}   {{.Category}} <a href="/post/{{.Id}}">{{.Title}}</a> {{.Author}}
+<div id="postlist">
+ <div id="dateposted">{{.Date_posted}}  {{.Category}}</div>
+ <!--div id="category">{{.Category}}</div--> 
+ <div id="posttitle"><a href="/post/{{.Id}}"><h2>{{.Title}}</h2></a></div> 
+ <div id="originalposter">posted by: {{.Author}}</div>
+ <br>
 </div>
+
 {{end}}
+</div>
 
+</div>
 </body>
-
 </html>

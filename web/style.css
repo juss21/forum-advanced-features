@@ -1,4 +1,150 @@
 body{
     background-color: #1f1a1a;
+}
+/*header css*/
+.header{
+    color: wheat;
+}
+.header a{
+    color: aqua;
+    text-decoration: none;
+}
+.header i{
+    color: red;
+}
+.header #center{
+    text-align: center;
+}
+.header #right{
+    text-align: right;
+}
+
+/*homepage css*/
+.index{
     color: aliceblue;
+}
+.index h1{
+    text-align: center;
+}
+
+.index #createpost{
+    text-align: center;
+}
+
+.index #postlist{
+    text-align: center;
+    border: 5px solid;
+    background-color: rgb(37, 0, 0);
+}
+.index #postlist #dateposted{
+    text-align: left;
+}
+.index #postlist #category{
+    text-align: left;
+}
+.index #postlist #posttitle{
+    text-align: center;
+}
+.index #postlist #posttitle a{
+    text-decoration:  none;
+}
+.index #postlist #originalposter{
+    text-align: center;
+}
+
+/*personal accountpage*/
+.account {
+    text-align: center;
+}
+.account #data{
+    background-color: red;
+}
+.account #postscreated{
+    background-color: yellow;
+    text-decoration: none;
+}
+
+.account #postsliked{
+    background-color: blue;
+    text-decoration: none;
+}
+
+/*memberspage css*/
+.members{
+    text-align: center;
+}
+.members #collection{
+    display: inline-block;
+    text-align: left;
+    text-align-last: justify;
+}
+
+/*loginpage css*/
+.login{
+    text-align: center;
+}
+.login label{
+    color: yellow;
+}
+.login .button{
+    border-radius: 15%;
+}
+
+/*registerpage css*/
+.register{
+    text-align: center;
+}
+.register label{
+    color: yellow;
+}
+.register .button{
+    border-radius: 15%;
+}
+/*errorpage css*/
+.error{
+    text-align: center;
+    color:red;
+}
+
+/*forumpage css*/
+.forum{
+    text-align: center;
+}
+.forum #originalposter{
+    text-align: center;
+}
+.forum #posttopic{
+
+}
+.forum #postcreated{
+
+}
+.forum #postlikesdislikes{
+
+}
+.forum #addcomment{
+    background: #f6f8ff; 
+    border: 2px solid #4238ca;
+}
+.forum #content{
+
+}
+/*forumpage comments css*/
+.comments{
+    text-align: center;
+    background: #f6f8ff; 
+    border: 2px solid #4238ca;
+}
+
+.comments #data{
+    display: inline-block;
+    text-align: left;
+    text-align-last: justify;
+}
+.comments #content{
+    background: #f6f8ff; 
+    border: 2px solid #4238ca;
+}
+.comments #content button{
+    border-radius: 50%;
 }
