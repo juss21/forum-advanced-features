@@ -296,9 +296,5 @@ func DeleteSession(key string, userId int) {
 
 func GetSessionKey(key string) bool {
 	_, err := DataBase.Query("select * from session where key = ? ", key)
-	if err != nil {
-		return true
-	}
-
-	return false
+	return err != nil
 }

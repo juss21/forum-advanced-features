@@ -15,24 +15,24 @@ func main() {
 	DataBase, _ = sql.Open("sqlite3", "./database.db")
 
 	GetUsers()
-
+	mux := http.NewServeMux()
 	fs := http.FileServer(http.Dir("./web"))
-	http.Handle("/web/", http.StripPrefix("/web/", fs))
+	mux.Handle("/web/", http.StripPrefix("/web/", fs))
 
-	http.HandleFunc("/", homePageHandle)
-	http.HandleFunc("/post/", forumPageHandler)
-	http.HandleFunc("/login", loginHandler)
-	http.HandleFunc("/logout", logOutHandler)
-	http.HandleFunc("/register", registerHandler)
-	http.HandleFunc("/members", membersHandler)
-	http.HandleFunc("/comment", commentHandler)
-	http.HandleFunc("/likePost", postLikeHandler)
-	http.HandleFunc("/likeComment/", commentLikeHandler)
-	http.HandleFunc("/account", accountDetails)
-	http.HandleFunc("/changefilter", filterHandler)
+	mux.HandleFunc("/", homePageHandle)
+	mux.HandleFunc("/post/", forumPageHandler)
+	mux.HandleFunc("/login", loginHandler)
+	mux.HandleFunc("/logout", logOutHandler)
+	mux.HandleFunc("/register", registerHandler)
+	mux.HandleFunc("/members", membersHandler)
+	mux.HandleFunc("/comment", commentHandler)
+	mux.HandleFunc("/likePost", postLikeHandler)
+	mux.HandleFunc("/likeComment/", commentLikeHandler)
+	mux.HandleFunc("/account", accountDetails)
+	mux.HandleFunc("/changefilter", filterHandler)
 
 	fmt.Printf("Starting server at port " + port + "\n")
-	if http.ListenAndServe(":"+port, nil) != nil {
+	if http.ListenAndServe(":"+port, mux) != nil {
 		log.Fatal(err)
 	}
 }
