@@ -105,6 +105,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		user, err := Login(user_name, user_password)
 		if err != nil {
 			feedback := "Please check your password and account name and try again."
+			header.Execute(w, Web)
 			loginpage.Execute(w, feedback)
 			return
 		}
