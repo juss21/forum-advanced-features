@@ -61,16 +61,16 @@ func AllPostsRearrange(allposts []Forumdata) []Forumdata {
 
 func AllPosts(category string) []Forumdata {
 	var data []Forumdata
-	//converting category name -> id
-	//realCategoryID := 0
+	// converting category name -> id
+	// realCategoryID := 0
 	realCategoryName := ""
 	for i := 0; i < len(Web.Categories); i++ {
 		if category == Web.Categories[i].Name {
-			//realCategoryID = Web.Categories[i].Id
+			// realCategoryID = Web.Categories[i].Id
 			realCategoryName = Web.Categories[i].Name
 		}
 	}
-	//fmt.Println(realCategoryID, realCategoryName)
+	// fmt.Println(realCategoryID, realCategoryName)
 
 	rows, err := DataBase.Query(`
 	SELECT posts.id, users.username, posts.title, posts.content, posts.date, category.name as category
@@ -211,7 +211,7 @@ func GetCommentsByPostId(id int) []Commentdata {
 	statement, _ := DataBase.Prepare(`
 	SELECT 
   comments.id, comments.userId, comments.content, 
-  users.username,
+  users.username, comments.datecommented,
   COUNT(CASE WHEN commentLikes.name = 'like' THEN 1 END) AS likes, 
   COUNT(CASE WHEN commentLikes.name = 'dislike' THEN 1 END) AS dislikes
 FROM 
@@ -232,6 +232,7 @@ GROUP by comments.id;
 			&comment.UserId,
 			&comment.Content,
 			&comment.Username,
+			&comment.Date_commented,
 			&comment.Likes,
 			&comment.Dislikes,
 		)
