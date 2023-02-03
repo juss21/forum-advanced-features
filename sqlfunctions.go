@@ -170,10 +170,11 @@ func SaveComment(content string, userId, postId int) bool {
 
 func Login(username, password string) (Memberlist, error) {
 	var user Memberlist
-	statement, _ := DataBase.Prepare("SELECT id, username, email FROM users WHERE username=? and password=?")
-	err := statement.QueryRow(username, password).Scan(
+	statement, _ := DataBase.Prepare("SELECT id, username, password, email FROM users WHERE username=?")
+	err := statement.QueryRow(username).Scan(
 		&user.ID,
 		&user.Username,
+		&user.Password,
 		&user.Email,
 	)
 

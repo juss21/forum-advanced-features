@@ -103,8 +103,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		user_name := r.FormValue("user_name")
 		user_password := r.FormValue("user_password")
+
 		user, err := Login(user_name, user_password)
-		if err != nil {
+		match := CheckPasswordHash(user_password, user.Password)
+
+		if err != nil || !match {
 			feedback := "Please check your password and account name and try again."
 			header.Execute(w, Web)
 			loginpage.Execute(w, feedback)
@@ -146,12 +149,13 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	//         Value: id.String(),
 	//     }
 	// }
-	cookie.MaxAge = -1
-	http.SetCookie(w, cookie)
+
 	Web.LoggedUser = Memberlist{}
 	Web.Loggedin = false
 	Web.CreatedPosts = []Createdstuff{}
 
+	cookie.MaxAge = -1
+	http.SetCookie(w, cookie)
 	DeleteSession(cookie.Value, userId)
 	http.Redirect(w, r, "/", http.StatusSeeOther) // TODO lisada sõnum, et on edukal välja logitud
 }
@@ -168,13 +172,11 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		user_name := r.FormValue("user_name")         // text input
 		user_password := r.FormValue("user_password") // font type
 		user_email := r.FormValue("user_email")
-		hash, _ := HashPassword(user_password)
-		match := CheckPasswordHash(user_password, hash)
 
-		if match == true {
-			Register(user_name, hash, user_email) // TODO lisada sõnum, et edukalt registreeritud
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-		}
+		hash, _ := HashPassword(user_password)
+
+		Register(user_name, hash, user_email) // TODO lisada sõnum, et edukalt registreeritud
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
 	}
 }
 
