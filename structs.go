@@ -1,6 +1,9 @@
 package main
 
-import "database/sql"
+import (
+	"database/sql"
+	"time"
+)
 
 type Memberlist struct {
 	ID          int
@@ -67,6 +70,7 @@ type Forumstuff struct {
 	ErrorMsg       string
 	Categories     []Category
 	SelectedFilter string
+	expiry         time.Time
 }
 
 var (

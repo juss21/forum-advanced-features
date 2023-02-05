@@ -7,6 +7,7 @@ import (
 	"path"
 	"strconv"
 	"text/template"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -120,42 +121,54 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			Email:    user.Email,
 		}
 		Web.Loggedin = true
+
 		cookie, err := r.Cookie("session-id")
 		if err != nil {
 			id, _ := uuid.NewV4()
-			//expiresAt := time.Now().Add(10 * time.Second)
+			//expiresAt := time.Now().Add(15 * time.Second)
 			cookie = &http.Cookie{
 				Name:  "session-id",
 				Value: id.String(),
 				//Expires: expiresAt,
+				Path: "/",
 			}
-
 			http.SetCookie(w, cookie)
 			SaveSession(cookie.Value, user.ID)
-
 		}
+
+		newSessionToken, _ := uuid.NewV4()
+		if cookie.Value == "" {
+			cookie = &http.Cookie{
+				Name:  "session-id",
+				Value: newSessionToken.String(),
+				Path:  "/",
+			}
+			http.SetCookie(w, cookie)
+			SaveSession(cookie.Value, user.ID)
+		}
+
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
 
 func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	userId := Web.LoggedUser.ID
-	//TODO vaadata see err ja terve see handleri järjekord üle siin, ehk saab paremaks!
 	cookie, _ := r.Cookie("session-id")
-	// if err != nil {
-	//     id, _ := uuid.NewV4()
-	//     cookie = &http.Cookie{
-	//         Name:  "session-id",
-	//         Value: id.String(),
-	//     }
-	// }
+	//TODO vaadata see err ja terve see handleri järjekord üle siin, ehk saab paremaks!
 
 	Web.LoggedUser = Memberlist{}
 	Web.Loggedin = false
 	Web.CreatedPosts = []Createdstuff{}
 
-	cookie.MaxAge = -1
-	http.SetCookie(w, cookie)
+	// cookie.MaxAge = -1
+	// http.SetCookie(w, cookie)
+
+	http.SetCookie(w, &http.Cookie{
+		Name:  "session-id",
+		Value: "",
+		//Expires: time.Now(),
+		Expires: time.Now().Add(30 * time.Minute),
+	})
 	DeleteSession(cookie.Value, userId)
 	http.Redirect(w, r, "/", http.StatusSeeOther) // TODO lisada sõnum, et on edukal välja logitud
 }
@@ -299,4 +312,8 @@ func HashPassword(password string) (string, error) {
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func (s Forumstuff) isExpired() bool {
+	return s.expiry.Before(time.Now())
 }
