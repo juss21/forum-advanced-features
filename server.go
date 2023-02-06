@@ -94,6 +94,7 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
+
 	loginpage := ParseFiles("web/login.html")
 	header := ParseFiles("web/header.html")
 
@@ -122,31 +123,31 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		Web.Loggedin = true
 
-		cookie, err := r.Cookie("session-id")
-		if err != nil {
-			id, _ := uuid.NewV4()
-			//expiresAt := time.Now().Add(15 * time.Second)
-			cookie = &http.Cookie{
-				Name:  "session-id",
-				Value: id.String(),
-				//Expires: expiresAt,
-				Path: "/",
-			}
-			http.SetCookie(w, cookie)
-			SaveSession(cookie.Value, user.ID)
-		}
+		//cookie, err := r.Cookie("session-id")
 
-		newSessionToken, _ := uuid.NewV4()
-		if cookie.Value == "" {
-			cookie = &http.Cookie{
-				Name:  "session-id",
-				Value: newSessionToken.String(),
-				Path:  "/",
-			}
-			http.SetCookie(w, cookie)
-			SaveSession(cookie.Value, user.ID)
+		id, _ := uuid.NewV4()
+		//expiresAt := time.Now().Add(15 * time.Second)
+		cookie := &http.Cookie{
+			Name:    "session-id",
+			Value:   id.String(),
+			Expires: time.Now().Add(30 * time.Minute),
+			//Expires: expiresAt,
+			Path: "/",
 		}
+		http.SetCookie(w, cookie)
+		SaveSession(cookie.Value, user.ID)
 
+		// newSessionToken, _ := uuid.NewV4()
+		// if cookie.Value == "" {
+		// 	cookie = &http.Cookie{
+		// 		Name:    "session-id",
+		// 		Value:   newSessionToken.String(),
+		// 		Path:    "/",
+		// 		Expires: time.Now().Add(30 * time.Minute),
+		// 	}
+		// 	http.SetCookie(w, cookie)
+		// 	SaveSession(cookie.Value, user.ID)
+		// }
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
@@ -164,10 +165,11 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	// http.SetCookie(w, cookie)
 
 	http.SetCookie(w, &http.Cookie{
-		Name:  "session-id",
-		Value: "",
+		Name:   "session-id",
+		Value:  "",
+		MaxAge: -1,
 		//Expires: time.Now(),
-		Expires: time.Now().Add(30 * time.Minute),
+		//Expires: time.Now().Add(30 * time.Minute),
 	})
 	DeleteSession(cookie.Value, userId)
 	http.Redirect(w, r, "/", http.StatusSeeOther) // TODO lisada sõnum, et on edukal välja logitud
@@ -314,6 +316,6 @@ func CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-func (s Forumstuff) isExpired() bool {
-	return s.expiry.Before(time.Now())
-}
+//	func (s Forumstuff) isExpired() bool {
+//		return s.expiry.Before(time.Now())
+//	}
