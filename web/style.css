@@ -1,5 +1,10 @@
 body{
     background-color: #1f1a1a;
+    background-image: url("background.svg");
+    color: lightgray;
+}
+a{
+    color: aliceblue;
 }
 /*header css*/
 .header{
@@ -33,8 +38,10 @@ body{
 
 .index #postlist{
     text-align: center;
-    border: 5px solid;
-    background-color: rgb(37, 0, 0);
+    border: 4px solid;
+    border-radius: 10px;
+    border-color: hsla(0, 0%, 100%, 0.317);
+    background-color: hsla(0, 100%, 7%, 0.45);
 }
 .index #postlist #dateposted{
     text-align: left;
@@ -57,26 +64,37 @@ body{
     text-align: center;
 }
 .account #data{
-    background-color: red;
 }
 .account #postscreated{
-    background-color: yellow;
+    padding-left: 20%;
     text-decoration: none;
 }
 
 .account #postsliked{
-    background-color: blue;
+    padding-left: 20%;
     text-decoration: none;
 }
+
 
 /*memberspage css*/
 .members{
     text-align: center;
+    
 }
 .members #collection{
     display: inline-block;
-    text-align: left;
-    text-align-last: justify;
+    color: lightgray;
+}
+th, td {
+    text-align: center;
+    padding: 30px;
+    border: 1px solid whitesmoke;
+    border-collapse: collapse;
+}
+table {
+    width: 80%;
+    border: 1px solid whitesmoke;
+    border-collapse: collapse;
 }
 
 /*loginpage css*/

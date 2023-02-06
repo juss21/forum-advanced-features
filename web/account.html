@@ -1,24 +1,38 @@
 <div class="account">
-<div id="data">
+<div id="data"><h2>
 Username: {{.LoggedUser.Username}}<br>
 Email: {{.LoggedUser.Email}}<br>
 Member since: {{.LoggedUser.DateCreated}}<br>  
+</h2>
 </div>
 
 <div id="postscreated">
-Posts created by you:
-{{range .CreatedPosts}}<br>
-
-<a href="post/{{.PostID}}">{{.PostTopic}}</a>
-{{end}}
+<table>
+    <tr>
+      <th>Posts created by you:</th>
+    </tr>
+    {{range .CreatedPosts}}
+    <tr>
+      <td><a href="post/{{.PostID}}">{{.PostTopic}}</a></td>
+    </tr>
+    {{end}}
+  </table>
 </div>
 
-<div id="postsliked">
-Posts liked by you:
-{{range .LikedComments}}<br>
+<br>
+<br>
 
-<a href="post/{{.PostID}}">{{.Title}}</a>
-{{end}}
+<div id="postsliked">
+    <table>
+        <tr>
+          <th>Posts liked by you:</th>
+        </tr>
+        {{range .LikedComments}}
+        <tr>
+          <td><a href="post/{{.PostID}}">{{.Title}}</a></td>
+        </tr>
+        {{end}}
+      </table>
 </div>
 </div>
 </body>

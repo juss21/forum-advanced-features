@@ -1,12 +1,22 @@
 <div class="members">
 <h1>List of members:</h1>
-<div id="collection">
-
-    {{range .}}
-        {{.Username}}
-        {{.Email}}
-        {{.DateCreated}}<br>
-    {{end}}
+<div id="collection" class="collection">
+    <table>
+        <tr>
+        <h3>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Register date</th>
+        </h3>
+        </tr>
+        {{range .}}
+        <tr>
+          <td>{{ .Username}}</td>
+          <td>{{.Email}}</td>
+          <td>{{.DateCreated}}</td>
+        </tr>
+        {{end}}
+      </table>
 </div>
 
 </div>
