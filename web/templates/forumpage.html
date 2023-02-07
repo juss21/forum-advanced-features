@@ -1,7 +1,8 @@
 <div class="forum">
     <br>
-<div id="originalposter">Posted by: {{.Author}} <br>Topic: {{.Title}}</div>
-<div id="postcreated">Date create: {{.Date_posted}}</div>
+    <div id="Poster">
+<div id="originalposter">{{.Date_posted}} <br> By: {{.Author}} <br></div>
+<div id="Topictitle">Topic: {{.Title}}</div>
 <br>
 <div id="content">
 {{.Content}}
@@ -19,7 +20,7 @@
 👍 {{.Likes}} : {{.Dislikes}}  👎
 </div>
 {{ end }}
-
+</div>
 <br>
 
 
@@ -54,14 +55,15 @@ Comments:
 {{range .Comments}}
 <br>
 <div class="comments">
-<div id="data">
-by user: {{.Username}} {{.Date_commented}}
-</div>
-<div id="content">
-    comment: {{.Content}}
+    <div id="commentdata">
+        {{.Date_commented}} <br> {{.Username}}: <br>
+        </div>
+<div id="comcontent">
+        {{.Content}}
     <form method="POST" , action="/likeComment/{{.Id}}">
-        <button name="button" value="like">👍 {{.Likes}}</button>
-        <button name="button" value="dislike"> {{.Dislikes}} 👎</button>
+        <br>
+        <button id="like" name="button" value="like">👍 {{.Likes}}</button>
+        <button id="dislike" name="button" value="dislike"> {{.Dislikes}} 👎</button>
     </form>
 </div>
 </div>
@@ -70,10 +72,10 @@ by user: {{.Username}} {{.Date_commented}}
 {{range .Comments}}
 <br>
 <div class="comments">
-<div id="data">
-{{.Username}} {{.Date_commented}}<br>
+<div id="commentdata">
+{{.Date_commented}} <br> {{.Username}}:<br>
 </div>
-<div id="content">
+<div id="comcontent">
     {{.Content}} 
     <br>👍 {{.Likes}} :  {{.Dislikes}} 👎
 </div>
