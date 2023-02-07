@@ -11,6 +11,7 @@ type Memberlist struct {
 	Password    string
 	Email       string
 	DateCreated string
+	Session     string
 }
 
 type Category struct {

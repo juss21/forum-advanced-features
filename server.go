@@ -137,17 +137,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, cookie)
 		SaveSession(cookie.Value, user.ID)
 
-		// newSessionToken, _ := uuid.NewV4()
-		// if cookie.Value == "" {
-		// 	cookie = &http.Cookie{
-		// 		Name:    "session-id",
-		// 		Value:   newSessionToken.String(),
-		// 		Path:    "/",
-		// 		Expires: time.Now().Add(30 * time.Minute),
-		// 	}
-		// 	http.SetCookie(w, cookie)
-		// 	SaveSession(cookie.Value, user.ID)
-		// }
+		hash, userid := GetSessionId(user_name)
+		Web.User_data[userid].Session = hash
+		fmt.Println("session:", hash)
+		fmt.Println("userid:", userid, Web.User_data[userid].ID, Web.User_data[userid].Username)
+
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
@@ -172,6 +166,8 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 		//Expires: time.Now().Add(30 * time.Minute),
 	})
 	DeleteSession(cookie.Value, userId)
+	//Web.User_data[userId-5].Session = ""
+
 	http.Redirect(w, r, "/", http.StatusSeeOther) // TODO lisada sõnum, et on edukal välja logitud
 }
 

@@ -13,13 +13,14 @@
     <button id="like" name="button" value="like">👍 {{.Likes}}</button>
     <button id="dislike" name="button" value="dislike"> {{.Dislikes}} 👎</button>
 </form> 
+</div>
 {{ else }}
 <div id="postlikesdislikes">
 👍 {{.Likes}} : {{.Dislikes}}  👎
 </div>
 {{ end }}
+
 <br>
-</div>
 
 
 

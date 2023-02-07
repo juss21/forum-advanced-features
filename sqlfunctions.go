@@ -8,6 +8,26 @@ import (
 	"time"
 )
 
+func GetSessionId(username string) (session string, userid int) {
+	if username == "" {
+		fmt.Println("GetSessionId:", username, "cannot be empty!")
+		os.Exit(0)
+	}
+
+	for i := 0; i < len(Web.User_data); i++ {
+		if Web.User_data[i].Username == username {
+			userid = i
+		}
+	}
+
+	statement, _ := DataBase.Prepare("SELECT key FROM session WHERE userId=?")
+	err := statement.QueryRow(Web.User_data[userid].ID).Scan(&session)
+
+	errorCheck(err, true)
+
+	return session, userid
+}
+
 func test() {
 	for i := 0; i < len(Web.User_data); i++ {
 		if Web.User_data[i].ID == Web.LoggedUser.ID {
@@ -107,6 +127,10 @@ func getCategories() {
 	rows, err := DataBase.Query("select * from category")
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if len(Web.Categories) != 0 {
+		return
 	}
 
 	for rows.Next() {
@@ -240,7 +264,13 @@ GROUP by comments.id;
 
 		comments = append(comments, comment)
 	}
-	return comments
+	var rearrange []Commentdata
+
+	for i := 0; i < len(comments); i++ {
+		rearrange = append(rearrange, comments[len(comments)-i-1])
+	}
+
+	return rearrange
 }
 
 func SavePostLike(like string, userId, postId int) {

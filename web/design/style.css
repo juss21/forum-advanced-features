@@ -1,12 +1,16 @@
 body{
+
     background-color: rgb(68, 68, 68);
     color: rgb(68, 68, 68);
+
+
 }
 a{
     color: wheat;
 }
 /*header css*/
 .header{
+    font-size: 150%;
     color: wheat;
 }
 .header a{
@@ -165,7 +169,18 @@ table {
 .error{
     text-align: center;
     color:red;
+
+    background-image: url("../images/steam-alien.png"),url("../images/steam-alien-rotate.png");
+    background-repeat: no-repeat,no-repeat;
+    background-size: 60%;
+    background-position: -20% top, 120% top;
+    height: 100vh;
+    display: block; 
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
 }
+
 
 /*forumpage css*/
 .forum{
