@@ -50,6 +50,12 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 		filterstatus := r.FormValue("categoryfilter")
 
 		Web.SelectedFilter = filterstatus
+		if title == "" || content == "" {
+			header.Execute(w, Web)
+			errorpage.Execute(w, "Error! Post title/content cannot be empty!")
+			return
+		}
+
 		if Web.LoggedUser == (Memberlist{}) { // kui objekt on tühi, siis pole keegi sisse loginud
 			Web.ErrorMsg = "You must be logged in before you post!"
 			header.Execute(w, Web)
