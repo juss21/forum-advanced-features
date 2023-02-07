@@ -220,7 +220,7 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		comment := r.FormValue("forum_commentbox") // TODO Kuvada kommentaari, teha like/dislike süsteem
 
-		if Web.LoggedUser == (Memberlist{}) { // kui objekt on tühi, siis pole keegi sisse loginud
+		if Web.Loggedin != GetSessionKeyMatch(r) { // kui objekt on tühi, siis pole keegi sisse loginud
 			Web.ErrorMsg = "You must be logged in before you comment!"
 			header.Execute(w, Web)
 			errorpage.Execute(w, Web.ErrorMsg)

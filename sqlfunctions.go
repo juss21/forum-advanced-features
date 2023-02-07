@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 )
@@ -26,6 +27,15 @@ func GetSessionId(username string) (session string, userid int) {
 	errorCheck(err, true)
 
 	return session, userid
+}
+
+func GetSessionKeyMatch(r *http.Request) bool {
+	cookie, _ := r.Cookie("session-id")
+
+	isTrue, _ := DataBase.Prepare("SELECT key FROM session WHERE key=?")
+	err := isTrue.QueryRow(cookie.Value).Scan(&Web.LoggedUser.Session)
+	errorCheck(err, true)
+	return true
 }
 
 func test() {
@@ -323,9 +333,4 @@ func DeleteSession(key string, userId int) {
 	if err != nil {
 		fmt.Println("Error deleting record from session table:", err)
 	}
-}
-
-func GetSessionKey(key string) bool {
-	_, err := DataBase.Query("select * from session where key = ? ", key)
-	return err != nil
 }
