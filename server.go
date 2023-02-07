@@ -29,9 +29,9 @@ func errorCheck(err error, fatal bool) {
 }
 
 func homePageHandle(w http.ResponseWriter, r *http.Request) {
-	errorpage := ParseFiles("web/error.html")
-	header := ParseFiles("web/header.html")
-	homepage := ParseFiles("web/index.html")
+	errorpage := ParseFiles("web/templates/error.html")
+	header := ParseFiles("web/templates/header.html")
+	homepage := ParseFiles("web/templates/index.html")
 
 	Web.Forum_data = AllPostsRearrange(AllPosts(Web.SelectedFilter))
 	getCategories()
@@ -69,9 +69,9 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func forumPageHandler(w http.ResponseWriter, r *http.Request) {
-	header := ParseFiles("web/header.html")
-	forumpage := ParseFiles("web/forumpage.html")
-	errorpage := ParseFiles("web/error.html")
+	header := ParseFiles("web/templates/header.html")
+	forumpage := ParseFiles("web/templates/forumpage.html")
+	errorpage := ParseFiles("web/templates/error.html")
 
 	postId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
@@ -95,8 +95,8 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 
-	loginpage := ParseFiles("web/login.html")
-	header := ParseFiles("web/header.html")
+	loginpage := ParseFiles("web/templates/login.html")
+	header := ParseFiles("web/templates/header.html")
 
 	switch r.Method {
 	case "GET":
@@ -176,8 +176,8 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	registerpage := ParseFiles("web/register.html")
-	header := ParseFiles("web/header.html")
+	registerpage := ParseFiles("web/templates/register.html")
+	header := ParseFiles("web/templates/header.html")
 
 	switch r.Method {
 	case "GET":
@@ -196,8 +196,8 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func membersHandler(w http.ResponseWriter, r *http.Request) {
-	memberspage := ParseFiles("web/members.html")
-	header := ParseFiles("web/header.html")
+	memberspage := ParseFiles("web/templates/members.html")
+	header := ParseFiles("web/templates/header.html")
 
 	switch r.Method {
 	case "GET":
@@ -209,8 +209,8 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 func commentHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO mingi imelik Faviconi bug, template korda tegemisega saaks valmis vist
 	// forumpage := ParseFiles("web/forumpage.html")
-	errorpage := ParseFiles("web/error.html")
-	header := ParseFiles("web/header.html")
+	errorpage := ParseFiles("web/templates/error.html")
+	header := ParseFiles("web/templates/header.html")
 
 	// postId := path.Base(r.URL.Path)
 
@@ -236,8 +236,8 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func postLikeHandler(w http.ResponseWriter, r *http.Request) {
-	errorpage := ParseFiles("web/error.html")
-	header := ParseFiles("web/header.html")
+	errorpage := ParseFiles("web/templates/error.html")
+	header := ParseFiles("web/templates/header.html")
 
 	if Web.LoggedUser == (Memberlist{}) { // kui objekt on tühi, siis pole keegi sisse loginud
 		header.Execute(w, Web)
@@ -256,8 +256,8 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
-	errorpage := ParseFiles("web/error.html")
-	header := ParseFiles("web/header.html")
+	errorpage := ParseFiles("web/templates/error.html")
+	header := ParseFiles("web/templates/header.html")
 
 	commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
@@ -278,8 +278,8 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func accountDetails(w http.ResponseWriter, r *http.Request) {
-	accountpage := ParseFiles("web/account.html")
-	header := ParseFiles("web/header.html")
+	accountpage := ParseFiles("web/templates/account.html")
+	header := ParseFiles("web/templates/header.html")
 	Web.CreatedPosts = []Createdstuff{}
 	Web.LikedComments = []Likedstuff{}
 	switch r.Method {

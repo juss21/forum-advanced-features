@@ -1,0 +1,63 @@
+<div class="index">
+<h1>Welcome to our forum!</h1>
+
+{{ if .Loggedin }}
+<div id="createpost"> 
+<form method="POST" onsubmit="return validate('title', 'body', 5, 10);">
+    TITLE: <textarea id="header" name="post_header" cols="50" rows="1" id="title"></textarea><br>
+    TEXT : <textarea id= "content" name="post_content" cols="50" rows="4" id="body"></textarea><br>
+    CATEGORY: <select id="categories" name="category" required>
+        {{range .Categories}}
+        <option value="{{.Id}}">{{.Name}}</option>
+        {{end}}
+    </select>
+    <input id="newpost" class="button" type="submit" value="New Post">
+</form>
+</div>
+<script>function validate(x, y, i, j) {
+        // check if input is bigger than 3
+        var value = document.getElementById(x).value;
+        var value2 = document.getElementById(y).value;
+
+        if (value.length < i) {
+            window.alert(x + " length must be at least " + i + " characters!")
+            return false; // keep form from submitting
+        } else if (value2.length < j) {
+            window.alert(y + " length must be at least " + j + " characters!")
+            return false; // keep form from submitting
+        }
+        return true;
+    }</script>
+<br>
+{{end}}
+<div id="postlist">
+<form action="/changefilter",method="POST">
+    CATEGORY FILTER: <select id="categoryfilter" name="categoryfilter" required>
+        <option value="{{.SelectedFilter}}">{{.SelectedFilter}}</option>
+        <option value="Kosmos">Kosmos</option>
+        <option value="Märgatud Jõhvis">Märgatud Jõhvis</option>
+        <option value="All">All Categories</option>
+    </select>
+    
+    <input id="filter" name="sendfilter" class="button" type="submit" value="Filter">
+</form>
+
+{{range .Forum_data}}
+<a href="/post/{{.Id}}">
+<div id="post">
+   
+ <div id="dateposted"> Date Posted: {{.Date_posted}}</div>
+ <div id= "category"> Category: {{.Category}}</div>
+ <div id="posttitle"><h1>{{.Title}}</h1></div> 
+ <div id="originalposter">Posted by: {{.Author}}</div>
+ <br>
+</div>
+</a>
+<br>
+
+{{end}}
+</div>
+
+</div>
+</body>
+</html>

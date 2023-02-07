@@ -1,0 +1,228 @@
+body{
+    background-color: rgb(68, 68, 68);
+    color: rgb(68, 68, 68);
+}
+a{
+    color: wheat;
+}
+/*header css*/
+.header{
+    color: wheat;
+}
+.header a{
+    color: rgb(229, 255, 0);
+    float: right;
+    margin-right:5px;
+    text-decoration: none;
+}
+.header i{
+    color: red;
+}
+.header b{
+    float:left;
+    margin-right:5px;
+}
+
+.header #right{
+    text-align: right;
+}
+
+/*homepage css*/
+.index{
+    color: wheat;
+}
+.index h1{
+    text-align: center;
+}
+
+.index #createpost{
+    text-align: center;
+}
+.index #header {
+    border-radius: 10px;
+    border-color: rgb(0, 0, 0);
+    background-color: wheat;
+}
+.index #content {
+    border-radius: 10px;
+    border-color: rgb(0, 0, 0);
+    background-color: wheat;
+}
+.index #categories {
+    border-radius: 10px;
+    border-color: rgb(0, 0, 0);
+    background-color: wheat;
+}
+
+.index #postlist{
+    margin:0 auto;
+    width:80%; 
+    text-align: center;
+    background-color: rgb(68, 68, 68);
+    color: wheat;
+   
+}
+.index a {
+    text-decoration: none;
+}
+.index #post {
+    text-align: center;
+    border: 4px solid;
+    border-radius: 10px;
+    border-color: rgb(0, 0, 0);
+    background-color: rgb(31, 31, 31);
+}
+
+.index #dateposted {
+    float:left;
+}
+.index #category {
+    float:right;
+} 
+
+.index #newpost {
+    border-radius: 7px;
+    background-color: wheat;
+}
+.index #post #categoryfilter{
+    border-radius: 10px;
+    border-color: rgb(0, 0, 0);
+    background-color: wheat;
+}
+.index #post #posttitle{
+    text-decoration: none;
+}
+.index #postlist #categoryfilter {
+    border-radius: 10px;
+    border-color: rgb(0, 0, 0);
+    background-color: wheat;
+}
+.index #postlist #filter{
+    border-radius: 7px;
+    background-color: wheat;
+}
+
+/*personal accountpage*/
+.account {
+    text-align: center;
+}
+.account #data{
+}
+.account #postscreated{
+    padding-left: 20%;
+    text-decoration: none;
+}
+
+.account #postsliked{
+    padding-left: 20%;
+    text-decoration: none;
+}
+
+
+/*memberspage css*/
+.members{
+    text-align: center;
+    
+}
+.members #collection{
+    display: inline-block;
+    color: lightgray;
+}
+th, td {
+    text-align: center;
+    padding: 30px;
+    border: 1px solid whitesmoke;
+    border-collapse: collapse;
+}
+table {
+    width: 80%;
+    border: 1px solid whitesmoke;
+    border-collapse: collapse;
+}
+
+/*loginpage css*/
+.login{
+    text-align: center;
+}
+.login label{
+    color: yellow;
+}
+.login .button{
+    border-radius: 15%;
+}
+
+/*registerpage css*/
+.register{
+    text-align: center;
+}
+.register label{
+    color: yellow;
+}
+.register .button{
+    border-radius: 15%;
+}
+/*errorpage css*/
+.error{
+    text-align: center;
+    color:red;
+}
+
+/*forumpage css*/
+.forum{
+    color:wheat;
+    font-size: 20px;
+    text-align: center;
+
+}
+.forum #originalposter{
+    font-size: 25px;
+    text-align: center;
+}
+.forum #like{  
+    font-size: 25px;
+    padding: 15px 32px;
+    border-radius: 7px;
+    background-color: rgb(16, 197, 0);
+}
+.forum #dislike {
+    font-size: 25px;
+    padding: 15px 32px;
+    border-radius: 7px;
+    background-color: rgb(255, 0, 0);
+}
+.forum #commentbox{
+    border-radius: 10px;
+    border-color: rgb(0, 0, 0);
+    background-color: wheat;
+}
+.forum #postlikesdislikes{
+color:wheat
+}
+.forum #addcomment{
+    background-color: rgb(68, 68, 68);
+}
+.forum #content{   
+    border: 4px solid;
+    border-radius: 10px;
+    border-color: rgb(0, 0, 0);
+    margin:0 auto;
+    width:60%; 
+} 
+/*forumpage comments css*/
+.comments{
+    text-align: center;
+    background-color: rgb(68, 68, 68);
+}
+
+.comments #data{
+    display: inline-block;
+    text-align: left;
+    text-align-last: justify;
+}
+.comments #content{
+    background-color: rgb(68, 68, 68);
+    border: 2px solid #000000;
+}
+.comments #content button{
+    border-radius: 50%;
+}
