@@ -34,7 +34,8 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	homepage := ParseFiles("web/templates/index.html")
 
 	Web.Forum_data = AllPostsRearrange(AllPosts(Web.SelectedFilter))
-	getCategories()
+	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	setupCategories()
 
 	switch r.Method {
 	case "GET":
@@ -56,10 +57,9 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if Web.LoggedUser == (Memberlist{}) { // kui objekt on tühi, siis pole keegi sisse loginud
-			Web.ErrorMsg = "You must be logged in before you post!"
+		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 			header.Execute(w, Web)
-			errorpage.Execute(w, Web.ErrorMsg)
+			errorpage.Execute(w, "You must be logged in before you post!")
 			return
 		}
 		if !SavePost(title, Web.LoggedUser.ID, content, category) {
@@ -80,6 +80,7 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := ParseFiles("web/templates/error.html")
 
 	postId, _ := strconv.Atoi(path.Base(r.URL.Path))
+	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 
 	post, err := GetPostById(postId) // TODO implementeerida error kui pole ühtegi posti
 	if err != nil {
@@ -103,9 +104,13 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	loginpage := ParseFiles("web/templates/login.html")
 	header := ParseFiles("web/templates/header.html")
+	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 
 	switch r.Method {
 	case "GET":
+		if Web.Loggedin {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
 		header.Execute(w, Web)
 		loginpage.Execute(w, "")
 	case "POST":
@@ -116,37 +121,22 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		match := CheckPasswordHash(user_password, user.Password)
 
 		if err != nil || !match {
-			feedback := "Please check your password and account name and try again."
 			header.Execute(w, Web)
-			loginpage.Execute(w, feedback)
+			loginpage.Execute(w, "Please check your password and account name and try again.")
 			return
 		}
 
-		Web.LoggedUser = Memberlist{
-			ID:       user.ID,
-			Username: user.Username,
-			Email:    user.Email,
-		}
-		Web.Loggedin = true
-
-		//cookie, err := r.Cookie("session-id")
-
 		id, _ := uuid.NewV4()
-		//expiresAt := time.Now().Add(15 * time.Second)
 		cookie := &http.Cookie{
 			Name:    "session-id",
 			Value:   id.String(),
 			Expires: time.Now().Add(30 * time.Minute),
-			//Expires: expiresAt,
-			Path: "/",
+			Path:    "/",
 		}
 		http.SetCookie(w, cookie)
 		SaveSession(cookie.Value, user.ID)
 
-		hash, userid := GetSessionId(user_name)
-		Web.User_data[userid].Session = hash
-		fmt.Println("session:", hash)
-		fmt.Println("userid:", userid, Web.User_data[userid].ID, Web.User_data[userid].Username)
+		Web.Loggedin = hasCookie(r)
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
@@ -155,34 +145,32 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	userId := Web.LoggedUser.ID
 	cookie, _ := r.Cookie("session-id")
-	//TODO vaadata see err ja terve see handleri järjekord üle siin, ehk saab paremaks!
-
-	Web.LoggedUser = Memberlist{}
-	Web.Loggedin = false
-	Web.CreatedPosts = []Createdstuff{}
-
-	// cookie.MaxAge = -1
-	// http.SetCookie(w, cookie)
+	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 
 	http.SetCookie(w, &http.Cookie{
 		Name:   "session-id",
 		Value:  "",
 		MaxAge: -1,
-		//Expires: time.Now(),
-		//Expires: time.Now().Add(30 * time.Minute),
 	})
 	DeleteSession(cookie.Value, userId)
-	//Web.User_data[userId-5].Session = ""
-
+	// Web.User_data[userId-5].Session = ""
+	Web.Loggedin = hasCookie(r)
+	Web.LoggedUser = Memberlist{}
+	Web.CreatedPosts = []Createdstuff{}
+	Web.LikedComments = []Likedstuff{}
 	http.Redirect(w, r, "/", http.StatusSeeOther) // TODO lisada sõnum, et on edukal välja logitud
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	registerpage := ParseFiles("web/templates/register.html")
 	header := ParseFiles("web/templates/header.html")
+	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 
 	switch r.Method {
 	case "GET":
+		if Web.Loggedin {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
 		header.Execute(w, Web)
 		registerpage.Execute(w, "")
 	case "POST":
@@ -200,6 +188,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 func membersHandler(w http.ResponseWriter, r *http.Request) {
 	memberspage := ParseFiles("web/templates/members.html")
 	header := ParseFiles("web/templates/header.html")
+	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 
 	switch r.Method {
 	case "GET":
@@ -213,6 +202,7 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 	// forumpage := ParseFiles("web/forumpage.html")
 	errorpage := ParseFiles("web/templates/error.html")
 	header := ParseFiles("web/templates/header.html")
+	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 
 	// postId := path.Base(r.URL.Path)
 
@@ -220,10 +210,9 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		comment := r.FormValue("forum_commentbox") // TODO Kuvada kommentaari, teha like/dislike süsteem
 
-		if Web.Loggedin != GetSessionKeyMatch(r) { // kui objekt on tühi, siis pole keegi sisse loginud
-			Web.ErrorMsg = "You must be logged in before you comment!"
+		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 			header.Execute(w, Web)
-			errorpage.Execute(w, Web.ErrorMsg)
+			errorpage.Execute(w, "You must be logged in before you comment!")
 			return
 		}
 		if SaveComment(comment, Web.LoggedUser.ID, Web.CurrentPost.Id) {
@@ -240,8 +229,9 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := ParseFiles("web/templates/error.html")
 	header := ParseFiles("web/templates/header.html")
+	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 
-	if Web.LoggedUser == (Memberlist{}) { // kui objekt on tühi, siis pole keegi sisse loginud
+	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 		header.Execute(w, Web)
 		errorpage.Execute(w, "You must be logged in before you Like!")
 		return
@@ -260,10 +250,11 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := ParseFiles("web/templates/error.html")
 	header := ParseFiles("web/templates/header.html")
+	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 
 	commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
-	if Web.LoggedUser == (Memberlist{}) { // kui objekt on tühi, siis pole keegi sisse loginud
+	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 		header.Execute(w, Web)
 		errorpage.Execute(w, "You must be logged in before you Like!")
 		return
@@ -282,11 +273,12 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 func accountDetails(w http.ResponseWriter, r *http.Request) {
 	accountpage := ParseFiles("web/templates/account.html")
 	header := ParseFiles("web/templates/header.html")
+	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 	Web.CreatedPosts = []Createdstuff{}
 	Web.LikedComments = []Likedstuff{}
 	switch r.Method {
 	case "GET":
-		if Web.LoggedUser == (Memberlist{}) {
+		if !Web.Loggedin {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 		UserPosted()
@@ -298,7 +290,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 }
 
 func filterHandler(w http.ResponseWriter, r *http.Request) {
-
+	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 	filterstatus := r.FormValue("categoryfilter")
 	switch r.Method {
 	case "GET":

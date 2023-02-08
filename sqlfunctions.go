@@ -4,39 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"time"
 )
-
-func GetSessionId(username string) (session string, userid int) {
-	if username == "" {
-		fmt.Println("GetSessionId:", username, "cannot be empty!")
-		os.Exit(0)
-	}
-
-	for i := 0; i < len(Web.User_data); i++ {
-		if Web.User_data[i].Username == username {
-			userid = i
-		}
-	}
-
-	statement, _ := DataBase.Prepare("SELECT key FROM session WHERE userId=?")
-	err := statement.QueryRow(Web.User_data[userid].ID).Scan(&session)
-
-	errorCheck(err, true)
-
-	return session, userid
-}
-
-func GetSessionKeyMatch(r *http.Request) bool {
-	cookie, _ := r.Cookie("session-id")
-
-	isTrue, _ := DataBase.Prepare("SELECT key FROM session WHERE key=?")
-	err := isTrue.QueryRow(cookie.Value).Scan(&Web.LoggedUser.Session)
-	errorCheck(err, true)
-	return true
-}
 
 func test() {
 	for i := 0; i < len(Web.User_data); i++ {
@@ -133,7 +103,7 @@ func AllPosts(category string) []Forumdata {
 	return data
 }
 
-func getCategories() {
+func setupCategories() {
 	rows, err := DataBase.Query("select * from category")
 	if err != nil {
 		log.Fatal(err)
