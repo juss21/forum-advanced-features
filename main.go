@@ -2,9 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -13,6 +15,15 @@ func main() {
 	var err error
 	port := "8080" // webserver port
 	DataBase, _ = sql.Open("sqlite3", "./database.db")
+
+	file, err := os.Stat("database.db")
+	if errors.Is(err, os.ErrNotExist) {
+		DataBase, _ = sql.Open("sqlite3", "database.db")
+		InitDatabase()
+		fmt.Println("New database created ", file)
+	}
+
+	// GetUsers()
 
 	GetUsers()
 	mux := http.NewServeMux()
