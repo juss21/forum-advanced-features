@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -171,30 +170,6 @@ func SaveComment(content string, userId, postId int) bool {
 	currentTime := time.Now().Format("02.01 2006 15:04")
 	statement.Exec(userId, content, postId, currentTime)
 	return true
-}
-
-func Login(username, password string) (Memberlist, error) {
-	var user Memberlist
-	statement, _ := DataBase.Prepare("SELECT id, username, password, email FROM users WHERE username=?")
-	err := statement.QueryRow(username).Scan(
-		&user.ID,
-		&user.Username,
-		&user.Password,
-		&user.Email,
-	)
-
-	if err == sql.ErrNoRows {
-		return Memberlist{}, err
-	}
-
-	return user, err
-}
-
-func Register(username, password, email string) {
-	statement, _ := DataBase.Prepare("INSERT INTO users (username, password, email, datecreated) values (?,?,?,?)")
-	currentTime := time.Now().Format("02.01 2006")
-	statement.Exec(username, password, email, currentTime)
-	Web.User_data = append(Web.User_data, Memberlist{ID: Web.User_data[len(Web.User_data)-1].ID + 1, Username: username, Email: email, DateCreated: currentTime})
 }
 
 func GetUsers() {

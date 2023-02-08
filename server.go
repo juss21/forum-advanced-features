@@ -143,6 +143,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func logOutHandler(w http.ResponseWriter, r *http.Request) {
+
+	if !Web.Loggedin {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 	userId := Web.LoggedUser.ID
 	cookie, _ := r.Cookie("session-id")
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
@@ -152,9 +157,9 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 		Value:  "",
 		MaxAge: -1,
 	})
-	DeleteSession(cookie.Value, userId)
 	// Web.User_data[userId-5].Session = ""
 	Web.Loggedin = false
+	DeleteSession(cookie.Value, userId)
 	Web.LoggedUser = Memberlist{}
 	Web.CreatedPosts = []Createdstuff{}
 	Web.LikedComments = []Likedstuff{}
