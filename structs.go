@@ -29,6 +29,7 @@ type Forumdata struct {
 	Likes       int
 	Dislikes    int
 	Loggedin    bool
+	Image       string
 }
 type Commentdata struct {
 	Id             int
@@ -71,6 +72,7 @@ type Forumstuff struct {
 	Categories     []Category
 	SelectedFilter string
 }
+type MyError struct{}
 
 var (
 	DataBase *sql.DB

@@ -61,19 +61,17 @@ func AllPostsRearrange(allposts []Forumdata) []Forumdata {
 
 func AllPosts(category string) []Forumdata {
 	var data []Forumdata
-	// converting category name -> id
-	// realCategoryID := 0
+
 	realCategoryName := ""
 	for i := 0; i < len(Web.Categories); i++ {
 		if category == Web.Categories[i].Name {
-			// realCategoryID = Web.Categories[i].Id
+
 			realCategoryName = Web.Categories[i].Name
 		}
 	}
-	// fmt.Println(realCategoryID, realCategoryName)
 
 	rows, err := DataBase.Query(`
-	SELECT posts.id, users.username, posts.title, posts.content, posts.date, category.name as category
+	SELECT posts.id, users.username, posts.title, posts.content, posts.date, category.name as category, image
 	FROM posts
 	LEFT JOIN users on posts.userId = users.id
 	LEFT JOIN category on posts.categoryId = category.id
@@ -84,7 +82,7 @@ func AllPosts(category string) []Forumdata {
 
 	for rows.Next() {
 		var Id int
-		var Category_name, Author, Title, Content, Date_posted string
+		var Category_name, Author, Title, Content, Date_posted, Image string
 		rows.Scan(
 			&Id,
 			&Author,
@@ -92,6 +90,7 @@ func AllPosts(category string) []Forumdata {
 			&Content,
 			&Date_posted,
 			&Category_name,
+			&Image,
 		)
 		if realCategoryName == Category_name && realCategoryName != "" {
 			data = append(data, Forumdata{Id: Id, Author: Author, Title: Title, Content: Content, Date_posted: Date_posted, Category: category})
@@ -124,15 +123,15 @@ func setupCategories() {
 	}
 }
 
-func SavePost(title string, author int, content string, categoryId int) bool {
-	if len(content) < 10 {
-		return false
+func SavePost(title string, author int, content string, categoryId int, image string) bool {
+	if image == "" {
+		image = "false"
 	}
 
-	statement, _ := DataBase.Prepare("INSERT INTO posts (userId, title, content, date, categoryId) VALUES (?,?,?,?,?)")
+	statement, _ := DataBase.Prepare("INSERT INTO posts (userId, title, content, date, categoryId, image) VALUES (?,?,?,?,?,?)")
 	currentTime := time.Now().Format("02.01.2006 15:04")
 
-	statement.Exec(author, title, content, currentTime, categoryId)
+	statement.Exec(author, title, content, currentTime, categoryId, image)
 
 	return true
 }
@@ -141,7 +140,7 @@ func GetPostById(postId int) (Forumdata, error) {
 	var post Forumdata
 	statement, _ := DataBase.Prepare(`SELECT 
 	posts.id, posts.userId, posts.title, posts.content, posts.date,
-	users.username,
+	users.username, image,
 	COUNT(CASE WHEN postlikes.name = 'like' THEN 1 END) AS likes, 
 	COUNT(CASE WHEN postlikes.name = 'dislike' THEN 1 END) AS dislikes
   FROM 
@@ -158,6 +157,7 @@ func GetPostById(postId int) (Forumdata, error) {
 		&post.Content,
 		&post.Date_posted,
 		&post.Author,
+		&post.Image,
 		&post.Likes,
 		&post.Dislikes,
 	)

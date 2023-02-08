@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"text/template"
 	"time"
 
@@ -62,7 +65,15 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 			errorpage.Execute(w, "You must be logged in before you post!")
 			return
 		}
-		if !SavePost(title, Web.LoggedUser.ID, content, category) {
+
+		imageName, err := uploadFile(w, r)
+		if err != nil {
+			header.Execute(w, Web)
+			errorpage.Execute(w, "File size too big")
+			return
+		}
+
+		if !SavePost(title, Web.LoggedUser.ID, content, category, imageName) {
 			header.Execute(w, Web)
 			errorpage.Execute(w, Web.ErrorMsg)
 			return
@@ -71,6 +82,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 		Web.Forum_data = AllPostsRearrange(AllPosts(Web.SelectedFilter))
 		header.Execute(w, Web)
 		homepage.Execute(w, Web)
+
 	}
 }
 
@@ -328,4 +340,41 @@ func ClearCookies(w http.ResponseWriter, r *http.Request) {
 			MaxAge: -1,
 		})
 	}
+}
+
+func (m *MyError) Error() string {
+	return "boom"
+}
+
+func uploadFile(w http.ResponseWriter, r *http.Request) (string, error) {
+
+	file, handler, err := r.FormFile("myFile")
+	if err != nil {
+		fmt.Println("Error Retrieving the File")
+		fmt.Println(err)
+		return "", err
+	}
+
+	fileSize := 20971520
+	if handler.Size > int64(fileSize) {
+
+		return "", &MyError{}
+	}
+	defer file.Close()
+
+	ext := filepath.Ext(handler.Filename)
+	tempFile, err := ioutil.TempFile("web/temp-images", "upload-*"+ext)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer tempFile.Close()
+
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	tempFile.Write(fileBytes)
+
+	return strings.Split(tempFile.Name(), "/")[2], nil
 }

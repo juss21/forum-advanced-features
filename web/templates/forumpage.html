@@ -7,6 +7,7 @@
         <div id="content">
             {{.Content}}
         </div>
+        <img src="/web/temp-images/{{.Image}}" alt="siinonkõvapilt">
         <br>
         {{ if .Loggedin }}
         <div id="postlikesdislikes">
@@ -30,7 +31,7 @@
     {{ if .Loggedin }}
     Add comment:
     <div id="addcomment">
-        <form method="POST" action="/comment" onsubmit="return validate('comments');">
+        <form method="POST" action="/comment">
             <textarea id="commentbox" name="forum_commentbox" id="comments" maxlength="1000" minlength="5"
                 required></textarea><br>
             <input id="commentbutton" class="button" type="submit" value="Add comment">

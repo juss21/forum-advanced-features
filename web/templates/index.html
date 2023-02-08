@@ -4,7 +4,7 @@
 
     {{ if .Loggedin }}
     <div id="createpost">
-        <form method="POST" onsubmit="return validate('title', 'body', 5, 10);">
+        <form method="POST" enctype="multipart/form-data">
             TITLE: <textarea id="header" name="post_header" cols="50" rows="1" id="title" maxlength="100" minlength="5"
                 required></textarea><br>
             TEXT : <textarea id="content" name="post_content" cols="50" rows="4" id="body" maxlength="1000"
@@ -14,6 +14,7 @@
                 <option value="{{.Id}}">{{.Name}}</option>
                 {{end}}
             </select>
+            <input type="file" name="myFile" accept="image/*" />
             <input id="newpost" class="button" type="submit" value="New Post">
         </form>
     </div>
@@ -28,7 +29,6 @@
                 <option value="Märgatud Jõhvis">Märgatud Jõhvis</option>
                 <option value="All">All Categories</option>
             </select>
-
             <input id="filter" name="sendfilter" class="button" type="submit" value="Filter">
         </form>
         <br>
