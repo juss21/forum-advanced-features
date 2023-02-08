@@ -36,6 +36,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	Web.Forum_data = AllPostsRearrange(AllPosts(Web.SelectedFilter))
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 	setupCategories()
+	clearCookies(w, r)
 
 	switch r.Method {
 	case "GET":
@@ -117,7 +118,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		user_name := r.FormValue("user_name")
 		user_password := r.FormValue("user_password")
 
-		user, err := Login(w, user_name, user_password)
+		user, err := Login(user_name, user_password)
 		match := CheckPasswordHash(user_password, user.Password)
 
 		if err != nil || !match {
@@ -149,6 +150,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userId := Web.LoggedUser.ID
+
 	cookie, _ := r.Cookie("session-id")
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 
@@ -157,6 +159,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 		Value:  "",
 		MaxAge: -1,
 	})
+
 	// Web.User_data[userId-5].Session = ""
 	Web.Loggedin = false
 	DeleteSession(cookie.Value, userId)
