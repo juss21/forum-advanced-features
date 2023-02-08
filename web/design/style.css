@@ -1,74 +1,85 @@
-body{
+body {
 
     background-color: rgb(68, 68, 68);
     color: rgb(68, 68, 68);
 
 
 }
-a{
+
+a {
     color: wheat;
 }
+
 /*header css*/
-.header{
+.header {
     font-size: 150%;
     color: wheat;
 }
-.header a{
+
+.header a {
     color: rgb(229, 255, 0);
     float: right;
-    margin-right:5px;
+    margin-right: 5px;
     text-decoration: none;
 }
-.header i{
+
+.header i {
     color: red;
 }
-.header b{
-    float:left;
-    margin-right:5px;
+
+.header b {
+    float: left;
+    margin-right: 5px;
 }
 
-.header #right{
+.header #right {
     text-align: right;
 }
 
 /*homepage css*/
-.index{
+.index {
     color: wheat;
 }
-.index h1{
+
+.index h1 {
     text-align: center;
 }
 
-.index #createpost{
+.index #createpost {
     text-align: center;
 }
+
 .index #header {
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
     background-color: wheat;
 }
+
 .index #content {
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
     background-color: wheat;
 }
+
 .index #categories {
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
     background-color: wheat;
 }
 
-.index #postlist{
-    margin:0 auto;
-    width:80%; 
+.index #postlist {
+    margin: 0 auto;
+    width: 80%;
     text-align: center;
     background-color: rgb(68, 68, 68);
     color: wheat;
-   
+
 }
+
 .index a {
     text-decoration: none;
 }
+
 .index #post {
     text-align: center;
     border: 4px solid;
@@ -78,30 +89,35 @@ a{
 }
 
 .index #dateposted {
-    float:left;
+    float: left;
 }
+
 .index #category {
-    float:right;
-} 
+    float: right;
+}
 
 .index #newpost {
     border-radius: 7px;
     background-color: wheat;
 }
-.index #post #categoryfilter{
+
+.index #post #categoryfilter {
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
     background-color: wheat;
 }
-.index #post #posttitle{
+
+.index #post #posttitle {
     text-decoration: none;
 }
+
 .index #postlist #categoryfilter {
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
     background-color: wheat;
 }
-.index #postlist #filter{
+
+.index #postlist #filter {
     border-radius: 7px;
     background-color: wheat;
 }
@@ -110,34 +126,39 @@ a{
 .account {
     text-align: center;
 }
-.account #data{
-}
-.account #postscreated{
+
+.account #data {}
+
+.account #postscreated {
     padding-left: 20%;
     text-decoration: none;
 }
 
-.account #postsliked{
+.account #postsliked {
     padding-left: 20%;
     text-decoration: none;
 }
 
 
 /*memberspage css*/
-.members{
+.members {
     text-align: center;
-    
+
 }
-.members #collection{
+
+.members #collection {
     display: inline-block;
     color: lightgray;
 }
-th, td {
+
+th,
+td {
     text-align: center;
     padding: 30px;
     border: 1px solid whitesmoke;
     border-collapse: collapse;
 }
+
 table {
     width: 80%;
     border: 1px solid whitesmoke;
@@ -145,37 +166,43 @@ table {
 }
 
 /*loginpage css*/
-.login{
+.login {
     text-align: center;
 }
-.login label{
+
+.login label {
     color: yellow;
 }
-.login .button{
+
+.login .button {
     border-radius: 15%;
 }
 
 /*registerpage css*/
-.register{
+.register {
+    color: yellow;
     text-align: center;
 }
-.register label{
+
+.register label {
     color: yellow;
 }
-.register .button{
+
+.register .button {
     border-radius: 15%;
 }
-/*errorpage css*/
-.error{
-    text-align: center;
-    color:red;
 
-    background-image: url("../images/steam-alien.png"),url("../images/steam-alien-rotate.png");
-    background-repeat: no-repeat,no-repeat;
+/*errorpage css*/
+.error {
+    text-align: center;
+    color: red;
+
+    background-image: url("../images/steam-alien.png"), url("../images/steam-alien-rotate.png");
+    background-repeat: no-repeat, no-repeat;
     background-size: 60%;
     background-position: -20% top, 120% top;
     height: 100vh;
-    display: block; 
+    display: block;
     margin-left: auto;
     margin-right: auto;
     width: 50%;
@@ -183,38 +210,43 @@ table {
 
 
 /*forumpage css*/
-.forum{
-    color:wheat;
+.forum {
+    color: wheat;
     font-size: 20px;
     text-align: center;
 
 
 }
+
 .forum #Poster {
     border: 4px;
     border-style: solid;
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
-    margin:0 auto;
+    margin: 0 auto;
     width: 60%;
     padding: 1%;
     text-align: left;
 
 }
+
 .forum #originalposter {
     color: red;
     text-align: start;
 }
-.forum #Topictitle{
+
+.forum #Topictitle {
     font-size: 125%;
 }
-.forum #like{  
+
+.forum #like {
     width: 7%;
     font-size: 70%;
     padding: 1%;
     border-radius: 10px;
     background-color: rgb(16, 197, 0);
 }
+
 .forum #dislike {
     width: 7%;
     font-size: 70%;
@@ -222,27 +254,30 @@ table {
     border-radius: 10px;
     background-color: rgb(255, 0, 0);
 }
-.forum #commentbox{
+
+.forum #commentbox {
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
     background-color: wheat;
 }
-.forum #postlikesdislikes{
-color:wheat
+
+.forum #postlikesdislikes {
+    color: wheat
 }
-.forum #addcomment{
+
+.forum #addcomment {
     background-color: rgb(68, 68, 68);
 }
-.forum #content{   
 
-} 
+.forum #content {}
+
 /*forumpage comments css*/
-.comments{
+.comments {
     border: 4px;
     border-style: solid;
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
-    margin:0 auto;
+    margin: 0 auto;
     max-width: 60%;
     padding: 1%;
 
@@ -252,10 +287,12 @@ color:wheat
     color: red;
     text-align: start;
 }
-.comments #comcontent{
+
+.comments #comcontent {
     text-align: left;
 
 }
-.comments #content button{
+
+.comments #content button {
     border-radius: 50%;
 }
