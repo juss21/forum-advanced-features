@@ -36,7 +36,7 @@ func hasCookie(r *http.Request) bool {
 	userLid := getUserLoopValue(userid)
 
 	Web.LoggedUser = Memberlist{
-		ID:       userLid,
+		ID:       userid,
 		Username: Web.User_data[userLid].Username,
 		Email:    Web.User_data[userLid].Email,
 	}

@@ -154,7 +154,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	})
 	DeleteSession(cookie.Value, userId)
 	// Web.User_data[userId-5].Session = ""
-	Web.Loggedin = hasCookie(r)
+	Web.Loggedin = false
 	Web.LoggedUser = Memberlist{}
 	Web.CreatedPosts = []Createdstuff{}
 	Web.LikedComments = []Likedstuff{}
