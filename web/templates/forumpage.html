@@ -7,7 +7,7 @@
         <div id="content">
             {{.Content}}
         </div>
-        {{ if ne .Image  "false"}}
+        {{ if ne .Image "false"}}
         <img src="/web/temp-images/{{.Image}}" alt="siinonkõvapilt">
         {{end}}
         <br>
@@ -38,6 +38,11 @@
                 required></textarea><br>
             <input id="commentbutton" class="button" type="submit" value="Add comment">
         </form>
+        <script>
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.href);
+            }
+        </script>
     </div>
 
     {{ end }}
