@@ -7,7 +7,9 @@
         <div id="content">
             {{.Content}}
         </div>
+        {{ if ne .Image  "false"}}
         <img src="/web/temp-images/{{.Image}}" alt="siinonkõvapilt">
+        {{end}}
         <br>
         {{ if .Loggedin }}
         <div id="postlikesdislikes">

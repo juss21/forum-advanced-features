@@ -350,14 +350,11 @@ func uploadFile(w http.ResponseWriter, r *http.Request) (string, error) {
 
 	file, handler, err := r.FormFile("myFile")
 	if err != nil {
-		fmt.Println("Error Retrieving the File")
-		fmt.Println(err)
-		return "", err
+		return "", nil
 	}
 
 	fileSize := 20971520
 	if handler.Size > int64(fileSize) {
-
 		return "", &MyError{}
 	}
 	defer file.Close()
