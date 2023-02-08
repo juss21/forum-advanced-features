@@ -36,18 +36,11 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	Web.Forum_data = AllPostsRearrange(AllPosts(Web.SelectedFilter))
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 	setupCategories()
-
+	ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
 		if Web.SelectedFilter == "" {
 			Web.SelectedFilter = "all"
-		}
-		if !Web.Loggedin {
-			http.SetCookie(w, &http.Cookie{
-				Name:   "session-id",
-				Value:  "",
-				MaxAge: -1,
-			})
 		}
 		header.Execute(w, Web)
 		homepage.Execute(w, Web)
@@ -98,6 +91,7 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	post.Comments = GetCommentsByPostId(postId)
 	Web.CurrentPost = post
+	ClearCookies(w, r)
 
 	switch r.Method {
 	case "GET":
@@ -112,7 +106,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	loginpage := ParseFiles("web/templates/login.html")
 	header := ParseFiles("web/templates/header.html")
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
-
+	ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
 		if Web.Loggedin {
@@ -150,7 +144,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func logOutHandler(w http.ResponseWriter, r *http.Request) {
-
+	ClearCookies(w, r)
 	if !Web.Loggedin {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -178,7 +172,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	registerpage := ParseFiles("web/templates/register.html")
 	header := ParseFiles("web/templates/header.html")
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
-
+	ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
 		if Web.Loggedin {
@@ -206,7 +200,7 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 	memberspage := ParseFiles("web/templates/members.html")
 	header := ParseFiles("web/templates/header.html")
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
-
+	ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
 		header.Execute(w, Web)
@@ -219,7 +213,7 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := ParseFiles("web/templates/error.html")
 	header := ParseFiles("web/templates/header.html")
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
-
+	ClearCookies(w, r)
 	switch r.Method {
 	case "POST":
 		comment := r.FormValue("forum_commentbox") // TODO Kuvada kommentaari, teha like/dislike süsteem
@@ -244,7 +238,7 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := ParseFiles("web/templates/error.html")
 	header := ParseFiles("web/templates/header.html")
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
-
+	ClearCookies(w, r)
 	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 		header.Execute(w, Web)
 		errorpage.Execute(w, "You must be logged in before you Like!")
@@ -265,7 +259,7 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := ParseFiles("web/templates/error.html")
 	header := ParseFiles("web/templates/header.html")
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
-
+	ClearCookies(w, r)
 	commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
 	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
@@ -290,6 +284,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 	Web.CreatedPosts = []Createdstuff{}
 	Web.LikedComments = []Likedstuff{}
+	ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
 		if !Web.Loggedin {
@@ -306,6 +301,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 func filterHandler(w http.ResponseWriter, r *http.Request) {
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 	filterstatus := r.FormValue("categoryfilter")
+	ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
 
@@ -322,4 +318,14 @@ func HashPassword(password string) (string, error) {
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func ClearCookies(w http.ResponseWriter, r *http.Request) {
+	if !Web.Loggedin {
+		http.SetCookie(w, &http.Cookie{
+			Name:   "session-id",
+			Value:  "",
+			MaxAge: -1,
+		})
+	}
 }
