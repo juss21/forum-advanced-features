@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -303,4 +304,36 @@ func DeleteSession(key string, userId int) {
 	if err != nil {
 		fmt.Println("Error deleting record from session table:", err)
 	}
+}
+
+func CanRegister(uid string, password string, email string, cpassword string, cemail string) bool {
+	str := ""
+	if cpassword != password {
+		Web.ErrorMsg = "The passwords do not match!"
+		return false
+	} else if cemail != email {
+		Web.ErrorMsg = "The emails do not match!"
+		return false
+	}
+
+	for i := 0; i < len(Web.User_data); i++ {
+		if Web.User_data[i].Username == uid {
+			str += "u"
+		} else if Web.User_data[i].Email == email {
+			str += "e"
+		}
+	}
+	if strings.Contains(str, "u") {
+		if strings.Contains(str, "e") {
+			Web.ErrorMsg = "This username and e-mail is already in use!"
+			return false
+		}
+		Web.ErrorMsg = "This username is already taken!"
+		return false
+	} else if strings.Contains(str, "e") && !strings.Contains(str, "u") {
+		Web.ErrorMsg = "This e-mail is already in use!"
+		return false
+	}
+
+	return true
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
 )
 
 func getUserIDFromSession(cookie string) (index int) {
@@ -46,31 +45,31 @@ func hasCookie(r *http.Request) bool {
 	return true
 }
 
-func GetSessionId(username string) (session string, userid int) {
-	if username == "" {
-		fmt.Println("GetSessionId:", username, "cannot be empty!")
-		os.Exit(0)
-	}
+// func GetSessionId(username string) (session string, userid int) {
+// 	if username == "" {
+// 		fmt.Println("GetSessionId:", username, "cannot be empty!")
+// 		os.Exit(0)
+// 	}
 
-	for i := 0; i < len(Web.User_data); i++ {
-		if Web.User_data[i].Username == username {
-			userid = i
-		}
-	}
+// 	for i := 0; i < len(Web.User_data); i++ {
+// 		if Web.User_data[i].Username == username {
+// 			userid = i
+// 		}
+// 	}
 
-	statement, _ := DataBase.Prepare("SELECT key FROM session WHERE userId=?")
-	err := statement.QueryRow(Web.User_data[userid].ID).Scan(&session)
+// 	statement, _ := DataBase.Prepare("SELECT key FROM session WHERE userId=?")
+// 	err := statement.QueryRow(Web.User_data[userid].ID).Scan(&session)
 
-	errorCheck(err, true)
+// 	errorCheck(err, true)
 
-	return session, userid
-}
+// 	return session, userid
+// }
 
-func GetSessionKeyMatch(r *http.Request) bool {
-	cookie, _ := r.Cookie("session-id")
+// func GetSessionKeyMatch(r *http.Request) bool {
+// 	cookie, _ := r.Cookie("session-id")
 
-	isTrue, _ := DataBase.Prepare("SELECT key FROM session WHERE key=?")
-	err := isTrue.QueryRow(cookie.Value).Scan(&Web.LoggedUser.Session)
-	errorCheck(err, true)
-	return true
-}
+// 	isTrue, _ := DataBase.Prepare("SELECT key FROM session WHERE key=?")
+// 	err := isTrue.QueryRow(cookie.Value).Scan(&Web.LoggedUser.Session)
+// 	errorCheck(err, true)
+// 	return true
+// }

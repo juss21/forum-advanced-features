@@ -172,16 +172,20 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 		header.Execute(w, Web)
-		registerpage.Execute(w, "")
+		registerpage.Execute(w, Web.ErrorMsg)
 	case "POST":
 		user_name := r.FormValue("user_name")         // text input
 		user_password := r.FormValue("user_password") // font type
 		user_email := r.FormValue("user_email")
 
 		hash, _ := HashPassword(user_password)
-
-		Register(user_name, hash, user_email) // TODO lisada sõnum, et edukalt registreeritud
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		if CanRegister(user_name, hash, user_email, hash, user_email) {
+			Register(user_name, hash, user_email) // TODO lisada sõnum, et edukalt registreeritud
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		} else {
+			header.Execute(w, Web)
+			registerpage.Execute(w, Web.ErrorMsg)
+		}
 	}
 }
 

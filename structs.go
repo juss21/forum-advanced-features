@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"time"
 )
 
 type Memberlist struct {
@@ -71,7 +70,7 @@ type Forumstuff struct {
 	ErrorMsg       string
 	Categories     []Category
 	SelectedFilter string
-	expiry         time.Time
+	//expiry         time.Time
 }
 
 var (
