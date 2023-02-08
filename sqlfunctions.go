@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func test() {
+func DateCreated() {
 	for i := 0; i < len(Web.User_data); i++ {
 		if Web.User_data[i].ID == Web.LoggedUser.ID {
 			Web.LoggedUser.DateCreated = Web.User_data[i].DateCreated

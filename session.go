@@ -6,18 +6,6 @@ import (
 	"time"
 )
 
-func clearCookies(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie("session-id")
-	selector, _ := DataBase.Prepare("SELECT key FROM session WHERE key=?")
-	selector.Exec(cookie)
-	key := ""
-	err := selector.QueryRow(cookie).Scan(&key)
-	if err != nil {
-		statement, _ := DataBase.Prepare("DELETE FROM session WHERE key = ?")
-		statement.Exec(key)
-	}
-}
-
 func checkIfPreviouslyLoggedin(username string) bool {
 	// see on funktsioon mis võiks deleteda eelmise sessiooni, kui eelmine eksisteerib
 	userid := getUserLoopValueSTR(username)
@@ -32,6 +20,7 @@ func checkIfPreviouslyLoggedin(username string) bool {
 		return false
 	}
 	// delete eelmine sessioon
+
 	statement, _ := DataBase.Prepare("DELETE FROM session WHERE key = ?")
 	statement.Exec(key)
 	return true
@@ -108,32 +97,3 @@ func hasCookie(r *http.Request) bool {
 
 	return true
 }
-
-// func GetSessionId(username string) (session string, userid int) {
-// 	if username == "" {
-// 		fmt.Println("GetSessionId:", username, "cannot be empty!")
-// 		os.Exit(0)
-// 	}
-
-// 	for i := 0; i < len(Web.User_data); i++ {
-// 		if Web.User_data[i].Username == username {
-// 			userid = i
-// 		}
-// 	}
-
-// 	statement, _ := DataBase.Prepare("SELECT key FROM session WHERE userId=?")
-// 	err := statement.QueryRow(Web.User_data[userid].ID).Scan(&session)
-
-// 	errorCheck(err, true)
-
-// 	return session, userid
-// }
-
-// func GetSessionKeyMatch(r *http.Request) bool {
-// 	cookie, _ := r.Cookie("session-id")
-
-// 	isTrue, _ := DataBase.Prepare("SELECT key FROM session WHERE key=?")
-// 	err := isTrue.QueryRow(cookie.Value).Scan(&Web.LoggedUser.Session)
-// 	errorCheck(err, true)
-// 	return true
-// }

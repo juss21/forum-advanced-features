@@ -36,12 +36,18 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	Web.Forum_data = AllPostsRearrange(AllPosts(Web.SelectedFilter))
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
 	setupCategories()
-	clearCookies(w, r)
 
 	switch r.Method {
 	case "GET":
 		if Web.SelectedFilter == "" {
 			Web.SelectedFilter = "all"
+		}
+		if !Web.Loggedin {
+			http.SetCookie(w, &http.Cookie{
+				Name:   "session-id",
+				Value:  "",
+				MaxAge: -1,
+			})
 		}
 		header.Execute(w, Web)
 		homepage.Execute(w, Web)
@@ -160,7 +166,6 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 		MaxAge: -1,
 	})
 
-	// Web.User_data[userId-5].Session = ""
 	Web.Loggedin = false
 	DeleteSession(cookie.Value, userId)
 	Web.LoggedUser = Memberlist{}
@@ -211,12 +216,9 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 
 func commentHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO mingi imelik Faviconi bug, template korda tegemisega saaks valmis vist
-	// forumpage := ParseFiles("web/forumpage.html")
 	errorpage := ParseFiles("web/templates/error.html")
 	header := ParseFiles("web/templates/header.html")
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
-
-	// postId := path.Base(r.URL.Path)
 
 	switch r.Method {
 	case "POST":
@@ -295,7 +297,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 		}
 		UserPosted()
 		LikesSent()
-		test()
+		DateCreated()
 		header.Execute(w, Web)
 		accountpage.Execute(w, Web)
 	}
@@ -321,7 +323,3 @@ func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
-
-//	func (s Forumstuff) isExpired() bool {
-//		return s.expiry.Before(time.Now())
-//	}

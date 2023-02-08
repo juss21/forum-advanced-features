@@ -70,7 +70,6 @@ type Forumstuff struct {
 	ErrorMsg       string
 	Categories     []Category
 	SelectedFilter string
-	//expiry         time.Time
 }
 
 var (
