@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func checkIfPreviouslyLoggedin(username string) bool {
+func checkIfPreviouslyLoggedin(w http.ResponseWriter, username string) bool {
 	// see on funktsioon mis võiks deleteda eelmise sessiooni, kui eelmine eksisteerib
 	userid := getUserLoopValueSTR(username)
 	if userid == -1 {
@@ -20,13 +20,18 @@ func checkIfPreviouslyLoggedin(username string) bool {
 		return false
 	}
 	// delete eelmine sessioon
+	http.SetCookie(w, &http.Cookie{
+		Name:   "session-id",
+		Value:  "",
+		MaxAge: -1,
+	})
 	statement, _ := DataBase.Prepare("DELETE FROM session WHERE key = ?")
 	statement.Exec(key)
 	return true
 }
 
-func Login(username, password string) (Memberlist, error) {
-	checkIfPreviouslyLoggedin(username)
+func Login(w http.ResponseWriter, username string, password string) (Memberlist, error) {
+	checkIfPreviouslyLoggedin(w, username)
 	var user Memberlist
 	statement, _ := DataBase.Prepare("SELECT id, username, password, email FROM users WHERE username=?")
 	err := statement.QueryRow(username).Scan(

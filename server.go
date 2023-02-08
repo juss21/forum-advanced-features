@@ -117,7 +117,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		user_name := r.FormValue("user_name")
 		user_password := r.FormValue("user_password")
 
-		user, err := Login(user_name, user_password)
+		user, err := Login(w, user_name, user_password)
 		match := CheckPasswordHash(user_password, user.Password)
 
 		if err != nil || !match {
