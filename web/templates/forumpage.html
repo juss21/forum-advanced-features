@@ -1,88 +1,79 @@
 <div class="forum">
     <br>
     <div id="Poster">
-<div id="originalposter">{{.Date_posted}} <br> By: {{.Author}} <br></div>
-<div id="Topictitle">Topic: {{.Title}}</div>
-<br>
-<div id="content">
-{{.Content}}
-</div>
-<br>
-{{ if .Loggedin }}
-<div id="postlikesdislikes">
-<form method="POST" action="/likePost">
-    <button id="like" name="button" value="like">👍 {{.Likes}}</button>
-    <button id="dislike" name="button" value="dislike"> {{.Dislikes}} 👎</button>
-</form> 
-</div>
-{{ else }}
-<div id="postlikesdislikes">
-👍 {{.Likes}} : {{.Dislikes}}  👎
-</div>
-{{ end }}
-</div>
-<br>
-
-
-
-<!--comments start here:-->
-<br>
-{{ if .Loggedin }}
-Add comment:
-<div id="addcomment">
-<form method="POST" action="/comment" onsubmit="return validate('comments');">
-    <textarea id="commentbox" name="forum_commentbox" id="comments"></textarea><br>
-    <input id="commentbutton" class="button" type="submit" value="Add comment">
-</form>
-</div>
-
-<script>function validate(x) {
-    // check if input is bigger than 3
-    var value = document.getElementById(x).value;
-    if (value.length < 3) {
-        window.alert("Spam detected!")
-      return false; // keep form from submitting
-    }
-    return true;
-   }
-</script>
-{{ end }}
-
-<br>
-<br>
-Comments:
-{{ if .Loggedin }}
-{{range .Comments}}
-<br>
-<div class="comments">
-    <div id="commentdata">
-        {{.Date_commented}} <br> {{.Username}}: <br>
-        </div>
-<div id="comcontent">
-        {{.Content}}
-    <form method="POST" , action="/likeComment/{{.Id}}">
+        <div id="originalposter">{{.Date_posted}} <br> By: {{.Author}} <br></div>
+        <div id="Topictitle">Topic: {{.Title}}</div>
         <br>
-        <button id="like" name="button" value="like">👍 {{.Likes}}</button>
-        <button id="dislike" name="button" value="dislike"> {{.Dislikes}} 👎</button>
-    </form>
-</div>
-</div>
-{{end}}
-{{ else }}
-{{range .Comments}}
-<br>
-<div class="comments">
-<div id="commentdata">
-{{.Date_commented}} <br> {{.Username}}:<br>
-</div>
-<div id="comcontent">
-    {{.Content}} 
-    <br>👍 {{.Likes}} :  {{.Dislikes}} 👎
-</div>
-</div>
-{{end}}
-{{ end }}
+        <div id="content">
+            {{.Content}}
+        </div>
+        <br>
+        {{ if .Loggedin }}
+        <div id="postlikesdislikes">
+            <form method="POST" action="/likePost">
+                <button id="like" name="button" value="like">👍 {{.Likes}}</button>
+                <button id="dislike" name="button" value="dislike"> {{.Dislikes}} 👎</button>
+            </form>
+        </div>
+        {{ else }}
+        <div id="postlikesdislikes">
+            👍 {{.Likes}} : {{.Dislikes}} 👎
+        </div>
+        {{ end }}
+    </div>
+    <br>
 
-</body>
 
-</html>
+
+    <!--comments start here:-->
+    <br>
+    {{ if .Loggedin }}
+    Add comment:
+    <div id="addcomment">
+        <form method="POST" action="/comment" onsubmit="return validate('comments');">
+            <textarea id="commentbox" name="forum_commentbox" id="comments" maxlength="1000"
+                minlength="5"></textarea><br>
+            <input id="commentbutton" class="button" type="submit" value="Add comment">
+        </form>
+    </div>
+
+    {{ end }}
+
+    <br>
+    <br>
+    Comments:
+    {{ if .Loggedin }}
+    {{range .Comments}}
+    <br>
+    <div class="comments">
+        <div id="commentdata">
+            {{.Date_commented}} <br> {{.Username}}: <br>
+        </div>
+        <div id="comcontent">
+            {{.Content}}
+            <form method="POST" , action="/likeComment/{{.Id}}">
+                <br>
+                <button id="like" name="button" value="like">👍 {{.Likes}}</button>
+                <button id="dislike" name="button" value="dislike"> {{.Dislikes}} 👎</button>
+            </form>
+        </div>
+    </div>
+    {{end}}
+    {{ else }}
+    {{range .Comments}}
+    <br>
+    <div class="comments">
+        <div id="commentdata">
+            {{.Date_commented}} <br> {{.Username}}:<br>
+        </div>
+        <div id="comcontent">
+            {{.Content}}
+            <br>👍 {{.Likes}} : {{.Dislikes}} 👎
+        </div>
+    </div>
+    {{end}}
+    {{ end }}
+
+    </body>
+
+    </html>
