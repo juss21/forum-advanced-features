@@ -1,22 +1,22 @@
 <div class="index">
-    <img src="web/images/welcome.gif" style="display: block; margin-left: auto;margin-right: auto;width: 50%;">
-    <!--h1>Welcome to our forum!</h1-->
+    <!-- <img src="web/images/welcome.gif" style="display: block; margin-left: auto;margin-right: auto;width: 50%;"--> 
+    <h1>Welcome to our forum!</h1>
 
     {{ if .Loggedin }}
     <div id="createpost">
         <form method="POST" enctype="multipart/form-data">
-            TITLE: <textarea id="header" name="post_header" cols="50" rows="1" id="title" maxlength="100" minlength="5"
+            TITLE : <textarea id="header" name="post_header" cols="50" rows="1" id="title" maxlength="100" minlength="5"
                 required></textarea><br>
             TEXT : <textarea id="content" name="post_content" cols="50" rows="4" id="body" maxlength="1000"
                 minlength="5" required></textarea><br>
-            CATEGORY: <select id="categories" name="category" required>
+            CATEGORY : <select id="categories" name="category" required>
                 {{range .Categories}}
                 <option value="{{.Id}}">{{.Name}}</option>
                 {{end}}
             </select>
 
-            <input type="file" name="myFile" accept="image/*" />
-            <input id="newpost" class="button" type="submit" value="New Post">
+            <input type="file" name="myFile" accept="image/*" /> <br> <br>
+            <input id="newpost" class="button" type="submit" value="Submit Post">
         </form>
         <script>
             if (window.history.replaceState) {
@@ -29,7 +29,7 @@
     {{end}}
     <div id="postlist">
         <form action="/changefilter" ,method="POST">
-            CATEGORY FILTER: <select id="categoryfilter" name="categoryfilter" required>
+            CATEGORY FILTER : <select id="categoryfilter" name="categoryfilter" required>
                 <option value="{{.SelectedFilter}}">{{.SelectedFilter}}</option>
                 <option value="Kosmos">Kosmos</option>
                 <option value="Märgatud Jõhvis">Märgatud Jõhvis</option>

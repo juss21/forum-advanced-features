@@ -17,16 +17,16 @@
         <div id="center">
             {{ if .Loggedin }}
             <div id="right">
-                <b>Welcome, <i> {{ .LoggedUser.Username }}</i>!</b>
-                <a href="/account" style="color: darkgoldenrod;">Account</a>
-                <a href="/logout">Logout</a>
+                <b>Welcome, <i> {{ .LoggedUser.Username }}</i>!</b> <br>
+                <a href="/account">Account | </a>
+                <a href="/logout">Logout | </a>
             </div>
-        <a href="/members">Members</a>
+        <a href="/members">Members | </a>
         <a href="/">Home</a>
         {{ else }}
-        <a href="/login">Login</a>
-        <a href="/register">Register</a>
-        <a href="/members">Members</a>
+        <a href="/login">Login | </a>
+        <a href="/register">Register | </a>
+        <a href="/members">Members | </a>
         <a href="/">Home</a>
 
         {{ end }}

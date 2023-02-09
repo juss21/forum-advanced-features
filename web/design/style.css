@@ -1,6 +1,7 @@
 body {
-    background-color: rgb(68, 68, 68);
-    color: rgb(68, 68, 68);
+
+    background-image: url("../images/WallpaperDog-20481285.jpg");
+    background-size: fill;
 }
 
 a {
@@ -9,13 +10,15 @@ a {
 
 /*header css*/
 .header {
+    /*padding: 0.3%;
+    background-color: rgba(43, 43, 43, 0.5); */
     font-size: 150%;
     color: wheat;
 }
 
 .header a {
     color: rgb(229, 255, 0);
-    float: right;
+    float: left;
     margin-right: 5px;
     text-decoration: none;
 }
@@ -30,13 +33,16 @@ a {
 }
 
 .header #right {
-    text-align: right;
+    text-align: left;
 }
 
 /*homepage css*/
 .index {
     resize: none;
     color: wheat;
+    margin: 0 auto;
+    width: 80%;
+    background-color: rgba(49, 49, 49, 0.5);
 }
 
 .index h1 {
@@ -68,10 +74,10 @@ a {
 }
 
 .index #postlist {
-    margin: 0 auto;
-    width: 80%;
+   /* margin: 0 auto;
+    width: 80%;*/
     text-align: center;
-    background-color: rgb(68, 68, 68);
+    /*background-color: rgba(49, 49, 49, 0.5);*/
     color: wheat;
 
 }
@@ -81,7 +87,7 @@ a {
     border: 4px  solid;
     border-radius: 10px;
     border-color: rgb(95, 0, 0);
-    background-color: rgb(31, 31, 31);
+    background-color: rgba(49, 49, 49, 0.5);
 
 }
 .index a {
@@ -95,7 +101,7 @@ a {
     border: 4px solid;
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
-    background-color: rgb(31, 31, 31);
+    background-color: rgba(31, 31, 31, 0.5);
 }
 
 .index #dateposted {
@@ -107,6 +113,7 @@ a {
 }
 
 .index #newpost {
+    width: 10%;
     border: 2px solid;
     border-radius: 7px;
     border-color: wheat;
@@ -237,6 +244,9 @@ table {
 /*forumpage css*/
 .forum {
     word-wrap: break-word;
+    background-color: rgba(49, 49, 49, 0.5);
+    margin: 0 auto;
+    width: 60%;
     resize: none;
     color: wheat;
     font-size: 20px;
@@ -248,9 +258,8 @@ table {
     border-style: solid;
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
-    background-color: rgb(31, 31, 31);
-    margin: 0 auto;
-    width: 60%;
+    background-color: rgba(31, 31, 31, 0.5);
+
     padding: 1%;
     text-align: left;
 
@@ -275,7 +284,7 @@ table {
     font-size: 70%;
     padding: 1%;
     border-radius: 10px;
-    background-color: rgb(16, 197, 0);
+    background-color: rgba(16, 197, 0, 0.5);
 }
 
 .forum #dislike {
@@ -283,22 +292,22 @@ table {
     font-size: 70%;
     padding: 1%;
     border-radius: 10px;
-    background-color: rgb(255, 0, 0);
+    background-color: rgba(255, 0, 0, 0.5);
 }
 .forum #like:hover {
     width: 7%;
     font-size: 70%;
-    padding: 1.1%;
+    padding: 0.9%;
     border-radius: 10px;
-    background-color: rgb(16, 197, 0);
+    background-color: rgba(16, 197, 0, 0.5);
 }
 
 .forum #dislike:hover {
     width: 7%;
     font-size: 70%;
-    padding: 1.1%;
+    padding: 0.9%;
     border-radius: 10px;
-    background-color: rgb(255, 0, 0);
+    background-color: rgba(255, 0, 0, 0.5);
 }
 
 .forum #commentbox {
@@ -322,7 +331,6 @@ table {
 }
 
 .forum #addcomment {
-    background-color: rgb(68, 68, 68);
 }
 
 .forum #content {}
@@ -334,9 +342,7 @@ table {
     border-style: solid;
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
-    background-color: rgb(31, 31, 31);
-    margin: 0 auto;
-    max-width: 60%;
+    background-color: rgba(31, 31, 31, 0.5);
     padding: 1%;
 }
 
