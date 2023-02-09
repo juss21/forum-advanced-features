@@ -14,7 +14,7 @@ type Memberlist struct {
 }
 
 type Category struct {
-	Id   int
+	Id   string
 	Name string
 }
 type Forumdata struct {

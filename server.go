@@ -38,17 +38,16 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	header := ParseFiles("web/templates/header.html")
 	homepage := ParseFiles("web/templates/index.html")
 
-	Web.Forum_data = AllPostsRearrange(AllPosts(Web.SelectedFilter))
+	Web.Forum_data = AllPosts(Web.SelectedFilter)
+	Web.Categories = getCategories()
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	setupCategories()
+
 	ClearCookies(w, r)
 	switch r.Method {
-	case "GET":
-		if Web.SelectedFilter == "" {
-			Web.SelectedFilter = "all"
-		}
-		header.Execute(w, Web)
-		homepage.Execute(w, Web)
+	case "GET":	
+		data := Web
+		header.Execute(w, data)
+		homepage.Execute(w, data)
 	case "POST":
 		title := r.FormValue("post_header")
 		content := r.FormValue("post_content")
@@ -81,10 +80,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		Web.Forum_data = AllPostsRearrange(AllPosts(Web.SelectedFilter))
-		header.Execute(w, Web)
-		homepage.Execute(w, Web)
-
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
 
@@ -317,7 +313,6 @@ func filterHandler(w http.ResponseWriter, r *http.Request) {
 	ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
-
 		Web.SelectedFilter = filterstatus
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
@@ -332,7 +327,6 @@ func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
-
 
 func uploadFile(w http.ResponseWriter, r *http.Request) (string, error) {
 	file, handler, err := r.FormFile("myFile")

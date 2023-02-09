@@ -1,5 +1,5 @@
 <div class="index">
-    <!-- <img src="web/images/welcome.gif" style="display: block; margin-left: auto;margin-right: auto;width: 50%;"--> 
+    <!-- <img src="web/images/welcome.gif" style="display: block; margin-left: auto;margin-right: auto;width: 50%;"-->
     <h1>Welcome to our forum!</h1>
 
     {{ if .Loggedin }}
@@ -29,11 +29,11 @@
     {{end}}
     <div id="postlist">
         <form action="/changefilter" ,method="POST">
-            CATEGORY FILTER : <select id="categoryfilter" name="categoryfilter" required>
-                <option value="{{.SelectedFilter}}">{{.SelectedFilter}}</option>
-                <option value="Kosmos">Kosmos</option>
-                <option value="Märgatud Jõhvis">Märgatud Jõhvis</option>
-                <option value="All">All Categories</option>
+            CATEGORY FILTER : <select id="categoryfilter" name="categoryfilter">
+                <option value="">All</option>
+                {{range .Categories}}
+                <option value="{{.Id}}" {{if eq .Id $.SelectedFilter }} selected="selected" {{end}}>{{.Name}}</option>
+                {{end}}
             </select>
             <input id="filter" name="sendfilter" class="button" type="submit" value="Filter">
         </form>

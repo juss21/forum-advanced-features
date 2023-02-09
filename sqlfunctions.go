@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -50,76 +51,71 @@ func UserPosted() {
 	}
 }
 
-func AllPostsRearrange(allposts []Forumdata) []Forumdata {
-	var data []Forumdata
-	for i := 0; i < len(allposts); i++ {
-		data = append(data, allposts[len(allposts)-1-i])
-	}
-
-	return data
-}
-
+// Getting posts by category aswell, leaving empty WILL GET THEM ALL
 func AllPosts(category string) []Forumdata {
 	var data []Forumdata
+	var statement *sql.Stmt
+	var rows *sql.Rows
 
-	realCategoryName := ""
-	for i := 0; i < len(Web.Categories); i++ {
-		if category == Web.Categories[i].Name {
-			realCategoryName = Web.Categories[i].Name
-		}
-	}
+	switch category {
+	case "":
+		statement, _ = DataBase.Prepare(`
+		SELECT posts.id, users.username, posts.title, posts.content, posts.date, category.name as category, image
+		FROM posts
+		LEFT JOIN users on posts.userId = users.id
+		LEFT JOIN category on posts.categoryId = category.id		
+		ORDER BY date DESC
+		`)
+		rows, _ = statement.Query()
 
-	rows, err := DataBase.Query(`
-	SELECT posts.id, users.username, posts.title, posts.content, posts.date, category.name as category, image
-	FROM posts
-	LEFT JOIN users on posts.userId = users.id
-	LEFT JOIN category on posts.categoryId = category.id
-	`)
-	if err != nil {
-		log.Fatal(err)
-	}
+	default:
+		statement, _ = DataBase.Prepare(`
+		SELECT posts.id, users.username, posts.title, posts.content, posts.date, category.name as category, image
+		FROM posts
+		LEFT JOIN users on posts.userId = users.id
+		LEFT JOIN category on posts.categoryId = category.id
+		WHERE posts.categoryId = ? 
+		ORDER BY date DESC
+		`)
+		rows, _ = statement.Query(category)
+
+	}	
 
 	for rows.Next() {
-		var Id int
-		var Category_name, Author, Title, Content, Date_posted, Image string
+		var post Forumdata
 		rows.Scan(
-			&Id,
-			&Author,
-			&Title,
-			&Content,
-			&Date_posted,
-			&Category_name,
-			&Image,
+			&post.Id,
+			&post.Author,
+			&post.Title,
+			&post.Content,
+			&post.Date_posted,
+			&post.Category,
+			&post.Image,
 		)
-		if realCategoryName == Category_name && realCategoryName != "" {
-			data = append(data, Forumdata{Id: Id, Author: Author, Title: Title, Content: Content, Date_posted: Date_posted, Category: category})
-		} else if realCategoryName == "" {
-			data = append(data, Forumdata{Id: Id, Author: Author, Title: Title, Content: Content, Date_posted: Date_posted, Category: Category_name})
-		}
+		data = append(data, post)
 	}
 
 	return data
 }
 
-func setupCategories() {
+func getCategories() []Category {
+	var categories []Category
 	rows, err := DataBase.Query("select * from category")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if len(Web.Categories) != 0 {
-		return
+	for rows.Next() {
+		var category Category
+		rows.Scan(
+			&category.Id,
+			&category.Name,
+		)
+		categories = append(categories, category)
+
 	}
 
-	for rows.Next() {
-		var id int
-		var name string
-		rows.Scan(
-			&id,
-			&name,
-		)
-		Web.Categories = append(Web.Categories, Category{Id: id, Name: name})
-	}
+	return categories
 }
 
 func SavePost(title string, author int, content string, categoryId int, image string) bool {
