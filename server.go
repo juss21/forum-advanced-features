@@ -38,13 +38,21 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	header := ParseFiles("web/templates/header.html")
 	homepage := ParseFiles("web/templates/index.html")
 
+	if r.URL.Path != "/" {
+		w.WriteHeader(404)
+		header.Execute(w, Web)
+		errorpage.Execute(w, "404! Page not found")
+
+		return
+	}
+
 	Web.Forum_data = AllPosts(Web.SelectedFilter)
 	Web.Categories = getCategories()
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 
 	ClearCookies(w, r)
 	switch r.Method {
-	case "GET":	
+	case "GET":
 		data := Web
 		header.Execute(w, data)
 		homepage.Execute(w, data)
