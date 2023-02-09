@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -10,7 +11,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"text/template"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -316,7 +316,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		if !Web.Loggedin {
-					http.Redirect(w, r, "/", http.StatusSeeOther)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 		UserPosted()
 		LikesSent()
