@@ -7,17 +7,17 @@ Member since: {{.LoggedUser.DateCreated}}<br>
 </div>
 
 <div id="postscreated">
-<table>
-    <tr>
-      <th>Posts created by you:</th>
-    </tr>
-    {{range .CreatedPosts}}
-    <tr>
-      <td><a href="post/{{.PostID}}">{{.PostTopic}}</a></td>
-    </tr>
-    {{end}}
-  </table>
-</div>
+  <table>
+      <tr>
+        <th>Posts created by you:</th>
+      </tr>
+      {{range .CreatedPosts}}
+      <tr>
+        <td><a href="post/{{.PostID}}">{{.PostTopic}}</a></td>
+      </tr>
+      {{end}}
+    </table>
+  </div>
 
 <br>
 <br>
@@ -25,7 +25,7 @@ Member since: {{.LoggedUser.DateCreated}}<br>
 <div id="postsliked">
     <table>
         <tr>
-          <th>Posts liked by you:</th>
+          <th><h2>Posts liked by you:</h2></th>
         </tr>
         {{range .LikedComments}}
         <tr>

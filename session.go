@@ -46,7 +46,7 @@ func Login(username string, password string) (Memberlist, error) {
 
 func Register(username, password, email string) {
 	statement, _ := DataBase.Prepare("INSERT INTO users (username, password, email, datecreated) values (?,?,?,?)")
-	currentTime := time.Now().Format("02.01 2006")
+	currentTime := time.Now().Format("02.01.2006")
 	statement.Exec(username, password, email, currentTime)
 	Web.User_data = append(Web.User_data, Memberlist{ID: Web.User_data[len(Web.User_data)-1].ID + 1, Username: username, Email: email, DateCreated: currentTime})
 }

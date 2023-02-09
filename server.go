@@ -181,6 +181,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
+	loginpage := ParseFiles("web/templates/login.html")
 	registerpage := ParseFiles("web/templates/register.html")
 	header := ParseFiles("web/templates/header.html")
 	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
@@ -199,11 +200,13 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 		hash, _ := HashPassword(user_password)
 		if CanRegister(user_name, hash, user_email, hash, user_email) {
-			Register(user_name, hash, user_email) // TODO lisada sõnum, et edukalt registreeritud
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			Register(user_name, hash, user_email)
+			header.Execute(w, Web)
+			loginpage.Execute(w, "You have successfully registered! Please log in.")
 		} else {
 			header.Execute(w, Web)
 			registerpage.Execute(w, Web.ErrorMsg)
+
 		}
 	}
 }
