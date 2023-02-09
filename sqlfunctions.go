@@ -162,7 +162,7 @@ func GetPostById(postId int) (Forumdata, error) {
 
 func SaveComment(content string, userId, postId int) bool {
 	statement, _ := DataBase.Prepare("INSERT INTO comments (userId, content, postId, datecommented) VALUES (?,?,?,?)")
-	currentTime := time.Now().Format("02.01 2006 15:04")
+	currentTime := time.Now().Format("02.01.2006 15:04")
 	statement.Exec(userId, content, postId, currentTime)
 	return true
 }
