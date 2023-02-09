@@ -38,13 +38,21 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	header := ParseFiles("web/templates/header.html")
 	homepage := ParseFiles("web/templates/index.html")
 
+	if r.URL.Path != "/" {
+		w.WriteHeader(404)
+		header.Execute(w, Web)
+		errorpage.Execute(w, "404! Page not found")
+
+		return
+	}
+
 	Web.Forum_data = AllPosts(Web.SelectedFilter)
 	Web.Categories = getCategories()
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 
 	ClearCookies(w, r)
 	switch r.Method {
-	case "GET":	
+	case "GET":
 		data := Web
 		header.Execute(w, data)
 		homepage.Execute(w, data)
@@ -56,12 +64,14 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 
 		Web.SelectedFilter = filterstatus
 		if title == "" || content == "" {
+			w.WriteHeader(400)
 			header.Execute(w, Web)
 			errorpage.Execute(w, "Error! Post title/content cannot be empty!")
 			return
 		}
 
 		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
+			w.WriteHeader(400)
 			header.Execute(w, Web)
 			errorpage.Execute(w, "You must be logged in before you post!")
 			return
@@ -69,6 +79,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 
 		imageName, err := uploadFile(w, r)
 		if err != nil {
+			w.WriteHeader(400)
 			header.Execute(w, Web)
 			errorpage.Execute(w, "File size too big")
 			return
@@ -94,6 +105,7 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	post, err := GetPostById(postId) // TODO implementeerida error kui pole ühtegi posti
 	if err != nil {
+		w.WriteHeader(400)
 		header.Execute(w, Web)
 		errorpage.Execute(w, "Post not Found")
 		return
@@ -131,6 +143,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		match := CheckPasswordHash(user_password, user.Password)
 
 		if err != nil || !match {
+			w.WriteHeader(400)
 			header.Execute(w, Web)
 			loginpage.Execute(w, "Please check your password and account name and try again.")
 			return
@@ -231,6 +244,7 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 		comment := r.FormValue("forum_commentbox") // TODO Kuvada kommentaari, teha like/dislike süsteem
 
 		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
+			w.WriteHeader(400)
 			header.Execute(w, Web)
 			errorpage.Execute(w, "You must be logged in before you comment!")
 			return
@@ -252,6 +266,7 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
+		w.WriteHeader(400)
 		header.Execute(w, Web)
 		errorpage.Execute(w, "You must be logged in before you Like!")
 		return
@@ -275,6 +290,7 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 	commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
 	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
+		w.WriteHeader(400)
 		header.Execute(w, Web)
 		errorpage.Execute(w, "You must be logged in before you Like!")
 		return
@@ -300,7 +316,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		if !Web.Loggedin {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+					http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 		UserPosted()
 		LikesSent()
