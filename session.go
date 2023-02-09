@@ -58,6 +58,7 @@ func getUserIDFromSession(cookie string) (index int) {
 
 	return index
 }
+
 func getUserLoopValue(userId int) int {
 	for i := 0; i < len(Web.User_data); i++ {
 		if Web.User_data[i].ID == userId {
@@ -66,6 +67,7 @@ func getUserLoopValue(userId int) int {
 	}
 	return -1
 }
+
 func getUserLoopValueSTR(username string) int {
 	for i := 0; i < len(Web.User_data); i++ {
 		if Web.User_data[i].Username == username {
@@ -74,6 +76,7 @@ func getUserLoopValueSTR(username string) int {
 	}
 	return -1
 }
+
 func hasCookie(r *http.Request) bool {
 	cookie, err := r.Cookie("session-id")
 	if err != nil {
@@ -93,7 +96,17 @@ func hasCookie(r *http.Request) bool {
 		Username: Web.User_data[userLid].Username,
 		Email:    Web.User_data[userLid].Email,
 	}
-	//fmt.Println("session:", cookie.Value, "userid:", userid, userLid, Web.User_data[userLid].Username)
+	// fmt.Println("session:", cookie.Value, "userid:", userid, userLid, Web.User_data[userLid].Username)
 
 	return true
+}
+
+func ClearCookies(w http.ResponseWriter, r *http.Request) {
+	if !Web.Loggedin {
+		http.SetCookie(w, &http.Cookie{
+			Name:   "session-id",
+			Value:  "",
+			MaxAge: -1,
+		})
+	}
 }

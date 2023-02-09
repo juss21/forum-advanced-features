@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -22,6 +23,7 @@ func ParseFiles(filename string) *template.Template {
 
 	return temp
 }
+
 func errorCheck(err error, fatal bool) {
 	if err != nil {
 		fmt.Println("Error():", err)
@@ -37,7 +39,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	homepage := ParseFiles("web/templates/index.html")
 
 	Web.Forum_data = AllPostsRearrange(AllPosts(Web.SelectedFilter))
-	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	setupCategories()
 	ClearCookies(w, r)
 	switch r.Method {
@@ -92,7 +94,7 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := ParseFiles("web/templates/error.html")
 
 	postId, _ := strconv.Atoi(path.Base(r.URL.Path))
-	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 
 	post, err := GetPostById(postId) // TODO implementeerida error kui pole ühtegi posti
 	if err != nil {
@@ -114,10 +116,9 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-
 	loginpage := ParseFiles("web/templates/login.html")
 	header := ParseFiles("web/templates/header.html")
-	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
@@ -164,7 +165,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	userId := Web.LoggedUser.ID
 
 	cookie, _ := r.Cookie("session-id")
-	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 
 	http.SetCookie(w, &http.Cookie{
 		Name:   "session-id",
@@ -183,7 +184,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	registerpage := ParseFiles("web/templates/register.html")
 	header := ParseFiles("web/templates/header.html")
-	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
@@ -211,7 +212,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 func membersHandler(w http.ResponseWriter, r *http.Request) {
 	memberspage := ParseFiles("web/templates/members.html")
 	header := ParseFiles("web/templates/header.html")
-	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
@@ -224,7 +225,7 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO mingi imelik Faviconi bug, template korda tegemisega saaks valmis vist
 	errorpage := ParseFiles("web/templates/error.html")
 	header := ParseFiles("web/templates/header.html")
-	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	switch r.Method {
 	case "POST":
@@ -249,7 +250,7 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := ParseFiles("web/templates/error.html")
 	header := ParseFiles("web/templates/header.html")
-	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 		header.Execute(w, Web)
@@ -270,7 +271,7 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := ParseFiles("web/templates/error.html")
 	header := ParseFiles("web/templates/header.html")
-	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
@@ -293,7 +294,7 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 func accountDetails(w http.ResponseWriter, r *http.Request) {
 	accountpage := ParseFiles("web/templates/account.html")
 	header := ParseFiles("web/templates/header.html")
-	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	Web.CreatedPosts = []Createdstuff{}
 	Web.LikedComments = []Likedstuff{}
 	ClearCookies(w, r)
@@ -311,7 +312,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 }
 
 func filterHandler(w http.ResponseWriter, r *http.Request) {
-	Web.Loggedin = hasCookie(r) //setting loggedin bool status depending on hasCookie result
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	filterstatus := r.FormValue("categoryfilter")
 	ClearCookies(w, r)
 	switch r.Method {
@@ -332,22 +333,8 @@ func CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-func ClearCookies(w http.ResponseWriter, r *http.Request) {
-	if !Web.Loggedin {
-		http.SetCookie(w, &http.Cookie{
-			Name:   "session-id",
-			Value:  "",
-			MaxAge: -1,
-		})
-	}
-}
-
-func (m *MyError) Error() string {
-	return "boom"
-}
 
 func uploadFile(w http.ResponseWriter, r *http.Request) (string, error) {
-
 	file, handler, err := r.FormFile("myFile")
 	if err != nil {
 		return "", nil
@@ -355,7 +342,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) (string, error) {
 
 	fileSize := 20971520
 	if handler.Size > int64(fileSize) {
-		return "", &MyError{}
+		return "", errors.New("cant be over 20mb")
 	}
 	defer file.Close()
 
