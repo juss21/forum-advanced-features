@@ -14,16 +14,17 @@ import (
 func main() {
 	var err error
 	port := "8080" // webserver port
-	DataBase, _ = sql.Open("sqlite3", "./database.db")
 
 	file, err := os.Stat("database.db")
+
+	// if .db file deleted, it will create new one and populate with data
 	if errors.Is(err, os.ErrNotExist) {
 		DataBase, _ = sql.Open("sqlite3", "database.db")
 		InitDatabase()
 		fmt.Println("New database created ", file)
+	} else {
+		DataBase, _ = sql.Open("sqlite3", "./database.db")
 	}
-
-	// GetUsers()
 
 	GetUsers()
 	mux := http.NewServeMux()
