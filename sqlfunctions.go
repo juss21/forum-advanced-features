@@ -41,7 +41,7 @@ func LikesSent() {
 	}
 }
 
-func UserPosted() {
+func UserPosted() { //TODO get user data
 	userid := Web.LoggedUser.Username
 
 	for i := 0; i < len(Web.Forum_data); i++ {
@@ -270,14 +270,6 @@ func SaveSession(key string, userId int) {
 	_, err := statement.Exec(key, userId)
 	if err != nil {
 		fmt.Println("one per user")
-	}
-}
-
-func DeleteSession(key string, userId int) {
-	statement, _ := DataBase.Prepare("DELETE FROM session WHERE key = ? AND userId = ?")
-	_, err := statement.Exec(key, userId)
-	if err != nil {
-		fmt.Println("Error deleting record from session table:", err)
 	}
 }
 

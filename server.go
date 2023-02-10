@@ -156,11 +156,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	userId := Web.LoggedUser.ID
-
-	cookie, _ := r.Cookie("session-id")
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-
 	http.SetCookie(w, &http.Cookie{
 		Name:   "session-id",
 		Value:  "",
@@ -168,7 +164,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	Web.Loggedin = false
-	DeleteSession(cookie.Value, userId)
+
 	Web.LoggedUser = Memberlist{}
 	Web.CreatedPosts = []Createdstuff{} // TODO vaadata mida see värk siin teeb
 	Web.LikedComments = []Likedstuff{}
