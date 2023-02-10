@@ -31,7 +31,9 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Path != "/" {
 		w.WriteHeader(404)
-		errorpage.Execute(w, "404! Page not found")
+		Web.ErrorMsg = "404! Page not found"
+		errorpage.Execute(w, Web)
+		Web.ErrorMsg = ""
 		return
 	}
 
