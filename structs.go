@@ -75,6 +75,7 @@ type Forumstuff struct {
 type MyError struct{}
 
 var (
-	DataBase *sql.DB
-	Web      Forumstuff
+	DataBase           *sql.DB
+	Web                Forumstuff
+	userRequestAmounts = make(map[string]int)
 )

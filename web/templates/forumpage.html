@@ -21,7 +21,8 @@
         </div>
         {{ else }}
         <div id="postlikesdislikes">
-            👍 {{.Likes}} : {{.Dislikes}} 👎
+            <div id="logoutlike"> 👍 {{.Likes}} </div>
+            <div id="logoutdislike"> {{.Dislikes}} 👎</div> 
         </div>
         {{ end }}
     </div>
@@ -77,7 +78,9 @@
         </div>
         <div id="comcontent">
             {{.Content}}
-            <br>👍 {{.Likes}} : {{.Dislikes}} 👎
+            <br>
+            <div id="logoutlike"> 👍 {{.Likes}} </div>
+            <div id="logoutdislike"> {{.Dislikes}} 👎</div> 
         </div>
     </div>
     {{end}}

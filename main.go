@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -31,20 +32,60 @@ func main() {
 	fs := http.FileServer(http.Dir("./web"))
 	mux.Handle("/web/", http.StripPrefix("/web/", fs))
 
-	mux.HandleFunc("/", homePageHandle)
-	mux.HandleFunc("/post/", forumPageHandler)
-	mux.HandleFunc("/login", loginHandler)
-	mux.HandleFunc("/logout", logOutHandler)
-	mux.HandleFunc("/register", registerHandler)
-	mux.HandleFunc("/members", membersHandler)
-	mux.HandleFunc("/comment", commentHandler)
-	mux.HandleFunc("/likePost", postLikeHandler)
-	mux.HandleFunc("/likeComment/", commentLikeHandler)
-	mux.HandleFunc("/account", accountDetails)
-	mux.HandleFunc("/changefilter", filterHandler)
+	mux.HandleFunc("/", rateLimiter(homePageHandle))
+	mux.HandleFunc("/post/", rateLimiter(forumPageHandler))
+	mux.HandleFunc("/login", rateLimiter(loginHandler))
+	mux.HandleFunc("/logout", rateLimiter(logOutHandler))
+	mux.HandleFunc("/register", rateLimiter(registerHandler))
+	mux.HandleFunc("/members", rateLimiter(membersHandler))
+	mux.HandleFunc("/comment", rateLimiter(commentHandler))
+	mux.HandleFunc("/likePost", rateLimiter(postLikeHandler))
+	mux.HandleFunc("/likeComment/", rateLimiter(commentLikeHandler))
+	mux.HandleFunc("/account", rateLimiter(accountDetails))
+	mux.HandleFunc("/changefilter", rateLimiter(filterHandler))
 
 	fmt.Printf("Starting server at port " + port + "\n")
 	if http.ListenAndServe(":"+port, mux) != nil {
 		log.Fatal(err)
+	}
+}
+
+/* func rateLimiterMiddleware(next func(writer http.ResponseWriter, request *http.Request)) http.HandlerFunc {
+	errorpage := ParseFiles("web/templates/error.html")
+	header := ParseFiles("web/templates/header.html")
+	user := request.RemoteAddr
+	count := userRequestAmounts[user]
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if !limiter.Allow() {
+			writer.Write([]byte("rate limit exceeded "))
+			return
+		} else {
+			endpointExample(writer, request)
+		}
+	})
+} */
+
+func rateLimiter(page http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := r.RemoteAddr
+		go func() {
+			time.Sleep(time.Minute)
+			delete(userRequestAmounts, user)
+		}()
+		errorpage := createTemplate("error.html")
+		count := userRequestAmounts[user]
+		if count > 50 {
+			w.WriteHeader(429)
+			errorpage.Execute(w, "Too many requests! Please wait a minute.")
+			return
+		}
+		userRequestAmounts[user] += 1
+		page.ServeHTTP(w, r)
+	})
+}
+func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
+	w.WriteHeader(status)
+	if status == http.StatusNotFound {
+		fmt.Fprint(w, "custom 404")
 	}
 }
