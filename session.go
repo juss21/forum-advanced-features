@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -45,10 +46,23 @@ func Login(username string, password string) (Memberlist, error) {
 	return user, err
 }
 
-func Register(username, password, email string) {
-	statement, _ := DataBase.Prepare("INSERT INTO users (username, password, email, datecreated) values (?,?,?,?)")
+func Register(username, password, email string) error {
+	insertStatement, _ := DataBase.Prepare("INSERT INTO users (username, password, email, datecreated) values (?,?,?,?)")
+
 	currentTime := time.Now().Format("02.01.2006")
-	statement.Exec(username, password, email, currentTime)
+	_, err := insertStatement.Exec(username, password, email, currentTime)
+	if err != nil {
+		switch err.Error() {
+		case "UNIQUE constraint failed: users.username":
+			return errors.New("Username " + username + " is taken")
+		case "UNIQUE constraint failed: users.email":
+			return errors.New("Email " + email + " is taken")
+		default:
+			return err
+		}
+	}
+
+	return nil
 }
 
 func getUserFromSession(r *http.Request) (Memberlist, bool) {

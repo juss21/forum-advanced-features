@@ -37,7 +37,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 
 	Web.Forum_data = AllPosts(Web.SelectedFilter)
 	Web.Categories = getCategories()
-	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)	
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 
 	// ClearCookies(w, r)
 	switch r.Method {
@@ -186,20 +186,40 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		registerpage.Execute(w, Web)
 	case "POST":
-		user_name := r.FormValue("user_name")         // text input
-		user_password := r.FormValue("user_password") // font type
-		user_email := r.FormValue("user_email")
+		user_name := r.FormValue("user_name")
+		user_password := r.FormValue("user_password")
+		user_password_confirmation := r.FormValue("user_password_confirmation")
 
-		hash, _ := HashPassword(user_password)
-		if CanRegister(user_name, hash, user_email, hash, user_email) { // TODO ülekontrollida, äkki päringuga tehtav. Oleks vaja tagastada, kas kasutajanimi või email võetud
-			Register(user_name, hash, user_email)
-			Web.ErrorMsg = "You have successfully registered! Please log in."
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-		} else {
-			Web.ErrorMsg = "Try Again 🥹"
+		user_email := r.FormValue("user_email")
+		user_email_confirmation := r.FormValue("user_email_confirmation") //TODO Teha miskit kui molemad oleksid katki 
+
+		if user_password != user_password_confirmation {
+			Web.ErrorMsg = "Passwords must be same"
 			registerpage.Execute(w, Web)
 			Web.ErrorMsg = ""
+			return
 		}
+
+		if user_email != user_email_confirmation {
+			Web.ErrorMsg = "Emails must be same"
+			registerpage.Execute(w, Web)
+			Web.ErrorMsg = ""
+			return
+		}
+
+		hash, _ := HashPassword(user_password)
+
+		err := Register(user_name, hash, user_email)
+		if err != nil {
+			Web.ErrorMsg = err.Error()
+			registerpage.Execute(w, Web)
+			Web.ErrorMsg = ""
+			return
+		}
+
+		Web.ErrorMsg = "You have successfully registered! Please log in."
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+
 	}
 }
 
