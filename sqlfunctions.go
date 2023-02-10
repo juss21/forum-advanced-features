@@ -79,7 +79,7 @@ func AllPosts(category string) []Forumdata {
 		`)
 		rows, _ = statement.Query(category)
 
-	}	
+	}
 
 	for rows.Next() {
 		var post Forumdata
@@ -167,20 +167,22 @@ func SaveComment(content string, userId, postId int) bool {
 	return true
 }
 
-func GetUsers() {
+func GetUsers() []Memberlist {
+	var users []Memberlist
 	rows, _ := DataBase.Query("SELECT id, username, email, datecreated from users")
 
 	for rows.Next() {
-		var ID int
-		var Username, Email, DateC string
+		var user Memberlist
 		rows.Scan(
-			&ID,
-			&Username,
-			&Email,
-			&DateC,
+			&user.ID,
+			&user.Username,
+			&user.Email,
+			&user.DateCreated,
 		)
-		Web.User_data = append(Web.User_data, Memberlist{ID: ID, Username: Username, Email: Email, DateCreated: DateC})
+		users = append(users, user)
 	}
+
+	return users
 }
 
 func GetCommentsByPostId(id int) []Commentdata {

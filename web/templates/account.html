@@ -1,13 +1,15 @@
+{{define "content"}}
 <div class="account">
-<div id="data"><h2>
-Username: {{.LoggedUser.Username}}<br>
-Email: {{.LoggedUser.Email}}<br>
-Member since: {{.LoggedUser.DateCreated}}<br>  
-</h2>
-</div>
+  <div id="data">
+    <h2>
+      Username: {{.LoggedUser.Username}}<br>
+      Email: {{.LoggedUser.Email}}<br>
+      Member since: {{.LoggedUser.DateCreated}}<br>
+    </h2>
+  </div>
 
-<div id="postscreated">
-  <table>
+  <div id="postscreated">
+    <table>
       <tr>
         <th>Posts created by you:</th>
       </tr>
@@ -19,21 +21,22 @@ Member since: {{.LoggedUser.DateCreated}}<br>
     </table>
   </div>
 
-<br>
-<br>
+  <br>
+  <br>
 
-<div id="postsliked">
+  <div id="postsliked">
     <table>
-        <tr>
-          <th><h2>Posts liked by you:</h2></th>
-        </tr>
-        {{range .LikedComments}}
-        <tr>
-          <td><a href="post/{{.PostID}}">{{.Title}}</a></td>
-        </tr>
-        {{end}}
-      </table>
+      <tr>
+        <th>
+          <h2>Posts liked by you:</h2>
+        </th>
+      </tr>
+      {{range .LikedComments}}
+      <tr>
+        <td><a href="post/{{.PostID}}">{{.Title}}</a></td>
+      </tr>
+      {{end}}
+    </table>
+  </div>
 </div>
-</div>
-</body>
-</html>
+{{end}}

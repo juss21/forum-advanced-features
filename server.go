@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
-	"os"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -17,32 +17,21 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func ParseFiles(filename string) *template.Template {
-	temp, err := template.ParseFiles(filename) // home template
-	errorCheck(err, true)
-
-	return temp
-}
-
-func errorCheck(err error, fatal bool) {
+func createTemplate(fileName string) *template.Template {
+	page, err := template.New("index.html").ParseFiles("web/templates/index.html", fmt.Sprint("web/templates/", fileName))
 	if err != nil {
-		fmt.Println("Error():", err)
-		if fatal {
-			os.Exit(0)
-		}
+		log.Fatal(err)
 	}
+	return page
 }
 
 func homePageHandle(w http.ResponseWriter, r *http.Request) {
-	errorpage := ParseFiles("web/templates/error.html")
-	header := ParseFiles("web/templates/header.html")
-	homepage := ParseFiles("web/templates/index.html")
+	errorpage := createTemplate("error.html")
+	homepage := createTemplate("homepage.html")
 
 	if r.URL.Path != "/" {
 		w.WriteHeader(404)
-		header.Execute(w, Web)
 		errorpage.Execute(w, "404! Page not found")
-
 		return
 	}
 
@@ -54,8 +43,10 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		data := Web
-		header.Execute(w, data)
-		homepage.Execute(w, data)
+		err := homepage.Execute(w, data)
+		if err != nil {
+			fmt.Println(err)
+		}
 	case "POST":
 		title := r.FormValue("post_header")
 		content := r.FormValue("post_content")
@@ -65,14 +56,12 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 		Web.SelectedFilter = filterstatus
 		if title == "" || content == "" {
 			w.WriteHeader(400)
-			header.Execute(w, Web)
 			errorpage.Execute(w, "Error! Post title/content cannot be empty!")
 			return
 		}
 
 		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 			w.WriteHeader(400)
-			header.Execute(w, Web)
 			errorpage.Execute(w, "You must be logged in before you post!")
 			return
 		}
@@ -80,13 +69,11 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 		imageName, err := uploadFile(w, r)
 		if err != nil {
 			w.WriteHeader(400)
-			header.Execute(w, Web)
 			errorpage.Execute(w, "File size too big")
 			return
 		}
 
 		if !SavePost(title, Web.LoggedUser.ID, content, category, imageName) {
-			header.Execute(w, Web)
 			errorpage.Execute(w, Web.ErrorMsg)
 			return
 		}
@@ -96,17 +83,15 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func forumPageHandler(w http.ResponseWriter, r *http.Request) {
-	header := ParseFiles("web/templates/header.html")
-	forumpage := ParseFiles("web/templates/forumpage.html")
-	errorpage := ParseFiles("web/templates/error.html")
+	forumpage := createTemplate("forumpage.html")
+	errorpage := createTemplate("error.html")
 
 	postId, _ := strconv.Atoi(path.Base(r.URL.Path))
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 
-	post, err := GetPostById(postId) // TODO implementeerida error kui pole ühtegi posti
+	post, err := GetPostById(postId)
 	if err != nil {
 		w.WriteHeader(400)
-		header.Execute(w, Web)
 		errorpage.Execute(w, "Post not Found")
 		return
 	}
@@ -118,14 +103,13 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		post.Loggedin = Web.Loggedin
-		header.Execute(w, Web)
-		forumpage.Execute(w, post)
+		forumpage.Execute(w, Web)
 	}
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	loginpage := ParseFiles("web/templates/login.html")
-	header := ParseFiles("web/templates/header.html")
+	loginpage := createTemplate("login.html")
+
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	switch r.Method {
@@ -133,8 +117,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		if Web.Loggedin {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
-		header.Execute(w, Web)
-		loginpage.Execute(w, "")
+
+		loginpage.Execute(w, Web)
 	case "POST":
 		user_name := r.FormValue("user_name")
 		user_password := r.FormValue("user_password")
@@ -144,8 +128,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil || !match {
 			w.WriteHeader(400)
-			header.Execute(w, Web)
-			loginpage.Execute(w, "Please check your password and account name and try again.")
+			Web.ErrorMsg = "Please check you password and username, might be incorrect"
+			loginpage.Execute(w, Web)
+			Web.ErrorMsg = ""
 			return
 		}
 
@@ -160,6 +145,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		SaveSession(cookie.Value, user.ID)
 
 		Web.Loggedin = hasCookie(r)
+		Web.LoggedUser = user
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
@@ -185,15 +171,13 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	Web.Loggedin = false
 	DeleteSession(cookie.Value, userId)
 	Web.LoggedUser = Memberlist{}
-	Web.CreatedPosts = []Createdstuff{}
+	Web.CreatedPosts = []Createdstuff{} // TODO vaadata mida see värk siin teeb
 	Web.LikedComments = []Likedstuff{}
-	http.Redirect(w, r, "/", http.StatusSeeOther) // TODO lisada sõnum, et on edukal välja logitud
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	loginpage := ParseFiles("web/templates/login.html")
-	registerpage := ParseFiles("web/templates/register.html")
-	header := ParseFiles("web/templates/header.html")
+	registerpage := createTemplate("register.html")
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	switch r.Method {
@@ -201,51 +185,48 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		if Web.Loggedin {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
-		header.Execute(w, Web)
-		registerpage.Execute(w, Web.ErrorMsg)
+		registerpage.Execute(w, Web)
 	case "POST":
 		user_name := r.FormValue("user_name")         // text input
 		user_password := r.FormValue("user_password") // font type
 		user_email := r.FormValue("user_email")
 
 		hash, _ := HashPassword(user_password)
-		if CanRegister(user_name, hash, user_email, hash, user_email) {
+		if CanRegister(user_name, hash, user_email, hash, user_email) { // TODO ülekontrollida, äkki päringuga tehtav. Oleks vaja tagastada, kas kasutajanimi või email võetud
 			Register(user_name, hash, user_email)
-			header.Execute(w, Web)
-			loginpage.Execute(w, "You have successfully registered! Please log in.")
+			Web.ErrorMsg = "You have successfully registered! Please log in."
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 		} else {
-			header.Execute(w, Web)
-			registerpage.Execute(w, Web.ErrorMsg)
-
+			Web.ErrorMsg = "Try Again 🥹"
+			registerpage.Execute(w, Web)
+			Web.ErrorMsg = ""
 		}
 	}
 }
 
 func membersHandler(w http.ResponseWriter, r *http.Request) {
-	memberspage := ParseFiles("web/templates/members.html")
-	header := ParseFiles("web/templates/header.html")
+	memberspage := createTemplate("members.html")
+
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
-		header.Execute(w, Web)
-		memberspage.Execute(w, Web.User_data)
+		Web.User_data = GetUsers()
+		memberspage.Execute(w, Web)
 	}
 }
 
 func commentHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO mingi imelik Faviconi bug, template korda tegemisega saaks valmis vist
-	errorpage := ParseFiles("web/templates/error.html")
-	header := ParseFiles("web/templates/header.html")
+	errorpage := createTemplate("error.html")
+
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	switch r.Method {
 	case "POST":
-		comment := r.FormValue("forum_commentbox") // TODO Kuvada kommentaari, teha like/dislike süsteem
+		comment := r.FormValue("forum_commentbox")
 
 		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 			w.WriteHeader(400)
-			header.Execute(w, Web)
 			errorpage.Execute(w, "You must be logged in before you comment!")
 			return
 		}
@@ -253,7 +234,6 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 			postId := strconv.Itoa(Web.CurrentPost.Id)
 			http.Redirect(w, r, "/post/"+postId, http.StatusSeeOther)
 		} else {
-			header.Execute(w, Web)
 			errorpage.Execute(w, Web.ErrorMsg)
 			return
 		}
@@ -261,13 +241,12 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func postLikeHandler(w http.ResponseWriter, r *http.Request) {
-	errorpage := ParseFiles("web/templates/error.html")
-	header := ParseFiles("web/templates/header.html")
+	errorpage := createTemplate("error.html")
+
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 		w.WriteHeader(400)
-		header.Execute(w, Web)
 		errorpage.Execute(w, "You must be logged in before you Like!")
 		return
 	}
@@ -283,15 +262,14 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
-	errorpage := ParseFiles("web/templates/error.html")
-	header := ParseFiles("web/templates/header.html")
+	errorpage := createTemplate("error.html")
+
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	ClearCookies(w, r)
 	commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
 	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 		w.WriteHeader(400)
-		header.Execute(w, Web)
 		errorpage.Execute(w, "You must be logged in before you Like!")
 		return
 	}
@@ -307,8 +285,8 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func accountDetails(w http.ResponseWriter, r *http.Request) {
-	accountpage := ParseFiles("web/templates/account.html")
-	header := ParseFiles("web/templates/header.html")
+	accountpage := createTemplate("account.html")
+
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	Web.CreatedPosts = []Createdstuff{}
 	Web.LikedComments = []Likedstuff{}
@@ -316,12 +294,11 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		if !Web.Loggedin {
-					http.Redirect(w, r, "/", http.StatusSeeOther)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 		UserPosted()
 		LikesSent()
 		DateCreated()
-		header.Execute(w, Web)
 		accountpage.Execute(w, Web)
 	}
 }
