@@ -87,7 +87,7 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := createTemplate("error.html")
 
 	postId, _ := strconv.Atoi(path.Base(r.URL.Path))
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
 
 	post, err := GetPostById(postId)
 	if err != nil {
@@ -98,11 +98,9 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	post.Comments = GetCommentsByPostId(postId)
 	Web.CurrentPost = post
-	ClearCookies(w, r)
 
 	switch r.Method {
 	case "GET":
-		post.Loggedin = Web.Loggedin
 		forumpage.Execute(w, Web)
 	}
 }
@@ -191,7 +189,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		user_password_confirmation := r.FormValue("user_password_confirmation")
 
 		user_email := r.FormValue("user_email")
-		user_email_confirmation := r.FormValue("user_email_confirmation") //TODO Teha miskit kui molemad oleksid katki 
+		user_email_confirmation := r.FormValue("user_email_confirmation") // TODO Teha miskit kui molemad oleksid katki
 
 		if user_password != user_password_confirmation {
 			Web.ErrorMsg = "Passwords must be same"

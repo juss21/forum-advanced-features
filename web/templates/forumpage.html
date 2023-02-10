@@ -2,29 +2,24 @@
 <div class="forum">
     <br>
     <div id="Poster">
-        <div id="originalposter">{{.Date_posted}} <br> By: {{.Author}} <br></div>
-        <div id="Topictitle">Topic: {{.Title}}</div>
+        <div id="originalposter">{{.CurrentPost.Date_posted}} <br> By: {{.CurrentPost.Author}} <br></div>
+        <div id="Topictitle">Topic: {{.CurrentPost.Title}}</div>
         <br>
         <div id="content">
-            {{.Content}}
+            {{.CurrentPost.Content}}
         </div>
-        {{ if ne .Image "false"}}
-        <img id="pilt" src="/web/temp-images/{{.Image}}" alt="siinonkõvapilt">
+        {{ if ne .CurrentPost.Image "false"}}
+        <img id="pilt" src="/web/temp-images/{{.CurrentPost.Image}}" alt="siinonkõvapilt">
         {{end}}
         <br>
-        {{ if .Loggedin }}
+        
         <div id="postlikesdislikes">
             <form method="POST" action="/likePost">
-                <button id="like" name="button" value="like">👍 {{.Likes}}</button>
-                <button id="dislike" name="button" value="dislike"> {{.Dislikes}} 👎</button>
+                <button {{ if not .Loggedin }} disabled {{end}} id="like" name="button" value="like">👍 {{.CurrentPost.Likes}}</button>
+                <button {{ if not .Loggedin }} disabled {{end}} id="dislike" name="button" value="dislike"> {{.CurrentPost.Dislikes}} 👎</button>
             </form>
         </div>
-        {{ else }}
-        <div id="postlikesdislikes">
-            <div id="logoutlike"> 👍 {{.Likes}} </div>
-            <div id="logoutdislike"> {{.Dislikes}} 👎</div> 
-        </div>
-        {{ end }}
+
     </div>
     <br>
 
@@ -46,14 +41,13 @@
             }
         </script>
     </div>
-
     {{ end }}
 
     <br>
     <br>
     Comments:
-    {{ if .Loggedin }}
-    {{range .Comments}}
+ 
+    {{range .CurrentPost.Comments}}
     <br>
     <div class="comments">
         <div id="commentdata">
@@ -63,27 +57,11 @@
             {{.Content}}
             <form method="POST" , action="/likeComment/{{.Id}}">
                 <br>
-                <button id="like" name="button" value="like">👍 {{.Likes}}</button>
-                <button id="dislike" name="button" value="dislike"> {{.Dislikes}} 👎</button>
+                <button {{ if not $.Loggedin }} disabled {{end}} id="like" name="button" value="like">👍 {{.Likes}}</button>
+                <button {{ if not $.Loggedin }} disabled {{end}} id="dislike" name="button" value="dislike"> {{.Dislikes}} 👎</button>
             </form>
         </div>
     </div>
-    {{end}}
-    {{ else }}
-    {{range .Comments}}
-    <br>
-    <div class="comments">
-        <div id="commentdata">
-            {{.Date_commented}} <br> {{.Username}}:<br>
-        </div>
-        <div id="comcontent">
-            {{.Content}}
-            <br>
-            <div id="logoutlike"> 👍 {{.Likes}} </div>
-            <div id="logoutdislike"> {{.Dislikes}} 👎</div> 
-        </div>
-    </div>
-    {{end}}
-    {{ end }}
+    {{end}} 
 
     {{end}}
