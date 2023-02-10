@@ -37,9 +37,9 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 
 	Web.Forum_data = AllPosts(Web.SelectedFilter)
 	Web.Categories = getCategories()
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)	
 
-	ClearCookies(w, r)
+	// ClearCookies(w, r)
 	switch r.Method {
 	case "GET":
 		data := Web
@@ -111,13 +111,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	loginpage := createTemplate("login.html")
 
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	ClearCookies(w, r)
+
 	switch r.Method {
 	case "GET":
 		if Web.Loggedin {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
-
 		loginpage.Execute(w, Web)
 	case "POST":
 		user_name := r.FormValue("user_name")
@@ -144,7 +143,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, cookie)
 		SaveSession(cookie.Value, user.ID)
 
-		Web.Loggedin = hasCookie(r)
+		Web.Loggedin = true
 		Web.LoggedUser = user
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)

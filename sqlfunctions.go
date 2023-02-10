@@ -264,7 +264,9 @@ func SaveCommentLike(like string, userId, commentId int) {
 }
 
 func SaveSession(key string, userId int) {
-	statement, _ := DataBase.Prepare("INSERT OR REPLACE INTO session (key, userId) VALUES (?,?)")
+	DataBase.Exec("DELETE FROM session WHERE userId = ?", userId)
+
+	statement, _ := DataBase.Prepare("INSERT INTO session (key, userId) VALUES (?,?)")
 	_, err := statement.Exec(key, userId)
 	if err != nil {
 		fmt.Println("one per user")
