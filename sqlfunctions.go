@@ -41,7 +41,7 @@ func LikesSent() {
 	}
 }
 
-func UserPosted() { //TODO get user data
+func UserPosted() { // TODO get user data
 	userid := Web.LoggedUser.Username
 
 	for i := 0; i < len(Web.Forum_data); i++ {
@@ -309,6 +309,43 @@ func InitDatabase() {
 	DataBase.Exec(
 		`
 		BEGIN TRANSACTION;
+CREATE TABLE IF NOT EXISTS "users" (
+	"id"	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+	"username"	TEXT UNIQUE,
+	"password"	TEXT,
+	"email"	TEXT UNIQUE,
+	"datecreated"	TEXT
+);
+CREATE TABLE IF NOT EXISTS "postlikes" (
+	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+	"name"	TEXT,
+	"userId"	INTEGER,
+	"postId"	INTEGER,
+	UNIQUE("postId","userId")
+);
+CREATE TABLE IF NOT EXISTS "commentLikes" (
+	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+	"name"	TEXT,
+	"userId"	INTEGER,
+	"commentId"	INTEGER,
+	UNIQUE("commentId","userId")
+);
+CREATE TABLE IF NOT EXISTS "session" (
+	"id"	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+	"key"	TEXT UNIQUE,
+	"userId"	INTEGER UNIQUE
+);
+CREATE TABLE IF NOT EXISTS "comments" (
+	"id"	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+	"userId"	INTEGER,
+	"content"	TEXT,
+	"postId"	INTEGER,
+	"datecommented"	TEXT
+);
+CREATE TABLE IF NOT EXISTS "category" (
+	"id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+	"name"	TEXT
+);
 CREATE TABLE IF NOT EXISTS "posts" (
 	"id"	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
 	"userId"	INTEGER,
@@ -318,55 +355,29 @@ CREATE TABLE IF NOT EXISTS "posts" (
 	"date"	TEXT,
 	"image"	TEXT
 );
-CREATE TABLE IF NOT EXISTS "category" (
-	"id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-	"name"	TEXT
-);
-CREATE TABLE IF NOT EXISTS "comments" (
-	"id"	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-	"userId"	INTEGER,
-	"content"	TEXT,
-	"postId"	INTEGER,
-	"datecommented"	TEXT
-);
-CREATE TABLE IF NOT EXISTS "users" (
-	"id"	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-	"username"	TEXT,
-	"password"	TEXT,
-	"email"	TEXT,
-	"datecreated"	TEXT
-);
-CREATE TABLE IF NOT EXISTS "session" (
-	"id"	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-	"key"	TEXT UNIQUE,
-	"userId"	INTEGER UNIQUE
-);
-CREATE TABLE IF NOT EXISTS "commentLikes" (
-	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-	"name"	TEXT,
-	"userId"	INTEGER,
-	"commentId"	INTEGER,
-	UNIQUE("commentId","userId")
-);
-CREATE TABLE IF NOT EXISTS "postlikes" (
-	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-	"name"	TEXT,
-	"userId"	INTEGER,
-	"postId"	INTEGER,
-	UNIQUE("postId","userId")
-);
-INSERT INTO "posts" VALUES (123,15,'jpgjpg','jpgjpgjpgjpgjpgjpg',1,'08.02.2023 19:59','upload-3437260623.jpg');
-INSERT INTO "posts" VALUES (124,15,'pngpng','pngpngpng',1,'08.02.2023 19:59','upload-2606161593.png');
-INSERT INTO "posts" VALUES (125,15,'gifgif','gifgifgif',1,'08.02.2023 19:59','upload-2191428446.gif');
+INSERT INTO "users" VALUES (2,'isabella','$2a$14$5VY414NmXYll0cNJVk71l.vEpj2/DF/JZ/vCfr8PRuQZkeU9N5BBO','isabella@gmail.com','12.02.2023');
+INSERT INTO "users" VALUES (4,'sinisterObtuse','$2a$14$3ceCJAGSpb813jupNxTZSOghkTVDZ7/j32zFT9WmrnePGDKWxGvEC','sinister@gmail.com','12.02.2023');
+INSERT INTO "users" VALUES (5,'andrei','$2a$14$xSYbFdGIgX5Pe5svwjA7KOFKllaFuVgrEvsAbNV3hJnHaYDMDuq3u','andrei@koodJõhvi.com','12.02.2023');
+INSERT INTO "postlikes" VALUES (2,'like',4,3);
+INSERT INTO "postlikes" VALUES (3,'dislike',4,4);
+INSERT INTO "postlikes" VALUES (4,'like',2,5);
+INSERT INTO "postlikes" VALUES (5,'like',5,4);
+INSERT INTO "commentLikes" VALUES (1,'like',2,1);
+INSERT INTO "commentLikes" VALUES (3,'like',5,3);
+INSERT INTO "comments" VALUES (1,4,'Woah so interesting',3,'12.02.2023 13:32');
+INSERT INTO "comments" VALUES (2,4,'Well it''s pure spamming. Reported!',4,'12.02.2023 13:32');
+INSERT INTO "comments" VALUES (3,2,'I know her, she lives on Ädala street. I can send her number',5,'12.02.2023 13:34');
 INSERT INTO "category" VALUES (1,'Kosmos');
 INSERT INTO "category" VALUES (2,'Märgatud Jõhvis');
-INSERT INTO "comments" VALUES (174,15,'Niino',125,'09.02 2023 06:27');
-INSERT INTO "users" VALUES (9,'sass','$2a$14$68nNeNBTdHQafzdQ0TXyKe4VSU7osrvRPlzF7RHGUz2nIrUX4mN8y','asd@gmail.com','03.02 2023');
-INSERT INTO "users" VALUES (15,'joel','$2a$14$sqf5Stu0zBTfE9J4wBL47OeijFNu5rnfu/qcN3zOGEZGAwJ251udi','joelimeil@gmail.com','07.02 2023');
-INSERT INTO "session" VALUES (221,'8f659668-9a51-45bd-b7f1-d15fdf240701',15);
-INSERT INTO "commentLikes" VALUES (243,'like',15,174);
-INSERT INTO "postlikes" VALUES (289,'like',15,128);
-INSERT INTO "postlikes" VALUES (291,'like',15,125);
+INSERT INTO "posts" VALUES (1,2,'Jesse Marcel and Roswell conspiracy theories','In February 1978, UFO researcher Stanton Friedman interviewed Jesse Marcel, the only person known to have accompanied the Roswell debris from where it was recovered to Fort Worth where reporters saw material that was claimed to be part of the recovered object. Marcel''s statements contradicted those he made to the press in 1947.[79]
+
+In November 1979, Marcel''s first filmed interview was featured in a documentary titled "UFO''s Are Real", co-written by Friedman.[80] The film had a limited release but was later syndicated for broadcasting. On February 28, 1980, sensationalist tabloid the National Enquirer brought large-scale attention to the Marcel story.[81] On September 20, 1980, the TV series In Search of... aired an interview where Marcel described his participation in the 1947 press conference',1,'12.02.2023 13:22','false');
+INSERT INTO "posts" VALUES (2,2,'Linda Moulton Howe and cattle mutilations','Linda Moulton Howe is an advocate of conspiracy theories that cattle mutilations are of extraterrestrial origin and speculations that the U.S. government is involved with aliens.',1,'12.02.2023 13:23','false');
+INSERT INTO "posts" VALUES (3,2,'In popular fiction','Works of popular fiction have included premises and scenes in which a government intentionally prevents disclosure to its populace of the discovery of non-human, extraterrestrial intelligence. Motion picture examples include 2001: A Space Odyssey (as well as the earlier novel by Arthur C. Clarke),[136][137] Easy Rider,[138] the Steven Spielberg films Close Encounters of the Third Kind and E.T. the Extra-Terrestrial, Hangar 18, Total Recall, Men in Black, and Independence Day. Television series and films including The X-Files, Dark Skies, and Stargate have also featured efforts by governments to conceal information about extraterrestrial beings. The plot of the Sidney Sheldon novel The Doomsday Conspiracy involves a UFO conspiracy.[139]
+
+In March 2001, former astronaut and United States Senator John Glenn appeared on an episode of the TV series Frasier playing a fictional version of himself who confesses to a UFO coverup.[140] ',1,'12.02.2023 13:24','false');
+INSERT INTO "posts" VALUES (4,2,'👽👽👽👽👽👽👽👽👽','Aliens are frikkin 😎 ',1,'12.02.2023 13:25','false');
+INSERT INTO "posts" VALUES (5,4,'Found ID-card in Jõhvi Konserdimaja','Found ID-card. Contact me by email, if it might be  yours. ',2,'12.02.2023 13:32','upload-2033429674.jpg');
 COMMIT;
 `)
 }
