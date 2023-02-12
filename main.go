@@ -27,6 +27,7 @@ func main() {
 		DataBase, _ = sql.Open("sqlite3", "./database.db")
 	}
 
+	Web.ErrorPage = createTemplate("error.html")
 	mux := http.NewServeMux()
 	fs := http.FileServer(http.Dir("./web"))
 	mux.Handle("/web/", http.StripPrefix("/web/", fs))

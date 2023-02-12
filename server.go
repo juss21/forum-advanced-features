@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func createTemplate(fileName string) *template.Template {
@@ -25,15 +24,18 @@ func createTemplate(fileName string) *template.Template {
 	return page
 }
 
+func executeErrorPage(w http.ResponseWriter, msg string) {
+	Web.ErrorMsg = "404! Page not found"
+	Web.ErrorPage.Execute(w, Web)
+	Web.ErrorMsg = ""
+}
+
 func homePageHandle(w http.ResponseWriter, r *http.Request) {
-	errorpage := createTemplate("error.html")
 	homepage := createTemplate("homepage.html")
 
 	if r.URL.Path != "/" {
 		w.WriteHeader(404)
-		Web.ErrorMsg = "404! Page not found"
-		errorpage.Execute(w, Web)
-		Web.ErrorMsg = ""
+		executeErrorPage(w, "404! Page not found")
 		return
 	}
 
@@ -58,25 +60,25 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 		Web.SelectedFilter = filterstatus
 		if title == "" || content == "" {
 			w.WriteHeader(400)
-			errorpage.Execute(w, "Error! Post title/content cannot be empty!")
+			executeErrorPage(w, "Error! Post title/content cannot be empty!")
 			return
 		}
 
 		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 			w.WriteHeader(400)
-			errorpage.Execute(w, "You must be logged in before you post!")
+			executeErrorPage(w, "You must be logged in before you post!")
 			return
 		}
 
 		imageName, err := uploadFile(w, r)
 		if err != nil {
 			w.WriteHeader(400)
-			errorpage.Execute(w, "File size too big")
+			executeErrorPage(w, "File size too big")
 			return
 		}
 
 		if !SavePost(title, Web.LoggedUser.ID, content, category, imageName) {
-			errorpage.Execute(w, Web.ErrorMsg)
+			executeErrorPage(w, "You must be logged in before you post!")
 			return
 		}
 
@@ -86,7 +88,6 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 
 func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	forumpage := createTemplate("forumpage.html")
-	errorpage := createTemplate("error.html")
 
 	postId, _ := strconv.Atoi(path.Base(r.URL.Path))
 	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
@@ -94,7 +95,7 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	post, err := GetPostById(postId)
 	if err != nil {
 		w.WriteHeader(400)
-		errorpage.Execute(w, "Post not Found")
+		executeErrorPage(w, "Post not Found")
 		return
 	}
 
@@ -174,7 +175,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	registerpage := createTemplate("register.html")
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	
+
 	switch r.Method {
 	case "GET":
 		if Web.Loggedin {
@@ -223,7 +224,7 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 	memberspage := createTemplate("members.html")
 
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	
+
 	switch r.Method {
 	case "GET":
 		Web.User_data = GetUsers()
@@ -232,37 +233,33 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func commentHandler(w http.ResponseWriter, r *http.Request) {
-	errorpage := createTemplate("error.html")
-
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	
+
 	switch r.Method {
 	case "POST":
 		comment := r.FormValue("forum_commentbox")
 
 		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 			w.WriteHeader(400)
-			errorpage.Execute(w, "You must be logged in before you comment!")
+			executeErrorPage(w, "You must be logged in before you comment!")
 			return
 		}
 		if SaveComment(comment, Web.LoggedUser.ID, Web.CurrentPost.Id) {
 			postId := strconv.Itoa(Web.CurrentPost.Id)
 			http.Redirect(w, r, "/post/"+postId, http.StatusSeeOther)
 		} else {
-			errorpage.Execute(w, Web.ErrorMsg)
+			executeErrorPage(w, "You must be logged in before you comment!")
 			return
 		}
 	}
 }
 
 func postLikeHandler(w http.ResponseWriter, r *http.Request) {
-	errorpage := createTemplate("error.html")
-
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	
+
 	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 		w.WriteHeader(400)
-		errorpage.Execute(w, "You must be logged in before you Like!")
+		executeErrorPage(w, "You must be logged in before you Like!")
 		return
 	}
 	postLike := r.FormValue("button")
@@ -277,15 +274,13 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
-	errorpage := createTemplate("error.html")
-
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	
+
 	commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
 	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 		w.WriteHeader(400)
-		errorpage.Execute(w, "You must be logged in before you Like!")
+		executeErrorPage(w, "You must be logged in before you Like!")
 		return
 	}
 
@@ -305,7 +300,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	Web.CreatedPosts = []Createdstuff{}
 	Web.LikedComments = []Likedstuff{}
-	
+
 	switch r.Method {
 	case "GET":
 		if !Web.Loggedin {
@@ -321,22 +316,12 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 func filterHandler(w http.ResponseWriter, r *http.Request) {
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	filterstatus := r.FormValue("categoryfilter")
-	
+
 	switch r.Method {
 	case "GET":
 		Web.SelectedFilter = filterstatus
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
-}
-
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
-}
-
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
 }
 
 func uploadFile(w http.ResponseWriter, r *http.Request) (string, error) {

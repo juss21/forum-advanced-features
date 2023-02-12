@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"html/template"
 )
 
 type Memberlist struct {
@@ -69,6 +70,7 @@ type Forumstuff struct {
 	Forum_data     []Forumdata
 	User_data      []Memberlist
 	ErrorMsg       string
+	ErrorPage      *template.Template
 	Categories     []Category
 	SelectedFilter string
 }
