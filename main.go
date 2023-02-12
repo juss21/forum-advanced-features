@@ -27,7 +27,6 @@ func main() {
 		DataBase, _ = sql.Open("sqlite3", "./database.db")
 	}
 
-	Web.ErrorPage = createTemplate("error.html")
 	mux := http.NewServeMux()
 	fs := http.FileServer(http.Dir("./web"))
 	mux.Handle("/web/", http.StripPrefix("/web/", fs))
@@ -72,11 +71,11 @@ func rateLimiter(page http.HandlerFunc) http.HandlerFunc {
 			time.Sleep(time.Minute)
 			delete(userRequestAmounts, user)
 		}()
-		errorpage := createTemplate("error.html")
+
 		count := userRequestAmounts[user]
 		if count > 50 {
 			w.WriteHeader(429)
-			errorpage.Execute(w, "Too many requests! Please wait a minute.")
+			createAndExecuteError(w, "Too many requests! Please wait a minute.")
 			return
 		}
 		userRequestAmounts[user] += 1
