@@ -21,9 +21,7 @@ func createAndExecute(w http.ResponseWriter, fileName string) {
 		createAndExecuteError(w, "500 Internal Server Error")
 		return
 	}
-
 	err = page.Execute(w, Web)
-
 	if err != nil {
 		createAndExecuteError(w, "500 Internal Server Error")
 		return
@@ -32,7 +30,6 @@ func createAndExecute(w http.ResponseWriter, fileName string) {
 
 func createAndExecuteError(w http.ResponseWriter, msg string) {
 	page, _ := template.New("index.html").ParseFiles("web/templates/index.html", fmt.Sprint("web/templates/", "error.html"))
-
 	Web.ErrorMsg = msg
 	page.Execute(w, Web)
 	Web.ErrorMsg = ""
@@ -225,10 +222,12 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func commentHandler(w http.ResponseWriter, r *http.Request) { // TODO kui minnakse lehe ja ei kuva midagi, peita
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-
 	switch r.Method {
+	case "GET":
+		createAndExecuteError(w, "We know where you live")
 	case "POST":
+		Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+
 		comment := r.FormValue("forum_commentbox")
 
 		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
@@ -247,18 +246,18 @@ func commentHandler(w http.ResponseWriter, r *http.Request) { // TODO kui minnak
 }
 
 func postLikeHandler(w http.ResponseWriter, r *http.Request) {
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-
-	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
-		w.WriteHeader(400)
-		createAndExecuteError(w, "You must be logged in before you Like!")
-		return
-	}
-	postLike := r.FormValue("button")
-
 	switch r.Method {
+	case "GET":
+		createAndExecuteError(w, "We know where you live")
 	case "POST":
+		Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 
+		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
+			w.WriteHeader(400)
+			createAndExecuteError(w, "You must be logged in before you Like!")
+			return
+		}
+		postLike := r.FormValue("button")
 		postId := strconv.Itoa(Web.CurrentPost.Id)
 		SavePostLike(postLike, Web.LoggedUser.ID, Web.CurrentPost.Id)
 		http.Redirect(w, r, "/post/"+postId, http.StatusSeeOther)
@@ -266,20 +265,21 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-
-	commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
-
-	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
-		w.WriteHeader(400)
-		createAndExecuteError(w, "You must be logged in before you Like!")
-		return
-	}
-
-	postLike := r.FormValue("button")
-
 	switch r.Method {
+	case "GET":
+		createAndExecuteError(w, "We know where you live")
 	case "POST":
+		Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+		postLike := r.FormValue("button")
+
+		commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
+
+		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
+			w.WriteHeader(400)
+			createAndExecuteError(w, "You must be logged in before you Like!")
+			return
+		}
+
 		postId := strconv.Itoa(Web.CurrentPost.Id)
 		SaveCommentLike(postLike, Web.LoggedUser.ID, commentId)
 		http.Redirect(w, r, "/post/"+postId, http.StatusSeeOther)
