@@ -174,7 +174,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	registerpage := createTemplate("register.html")
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	ClearCookies(w, r)
+	
 	switch r.Method {
 	case "GET":
 		if Web.Loggedin {
@@ -223,7 +223,7 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 	memberspage := createTemplate("members.html")
 
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	ClearCookies(w, r)
+	
 	switch r.Method {
 	case "GET":
 		Web.User_data = GetUsers()
@@ -235,7 +235,7 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := createTemplate("error.html")
 
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	ClearCookies(w, r)
+	
 	switch r.Method {
 	case "POST":
 		comment := r.FormValue("forum_commentbox")
@@ -259,7 +259,7 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := createTemplate("error.html")
 
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	ClearCookies(w, r)
+	
 	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 		w.WriteHeader(400)
 		errorpage.Execute(w, "You must be logged in before you Like!")
@@ -280,7 +280,7 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 	errorpage := createTemplate("error.html")
 
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-	ClearCookies(w, r)
+	
 	commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
 	if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
@@ -305,7 +305,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	Web.CreatedPosts = []Createdstuff{}
 	Web.LikedComments = []Likedstuff{}
-	ClearCookies(w, r)
+	
 	switch r.Method {
 	case "GET":
 		if !Web.Loggedin {
@@ -321,7 +321,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 func filterHandler(w http.ResponseWriter, r *http.Request) {
 	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
 	filterstatus := r.FormValue("categoryfilter")
-	ClearCookies(w, r)
+	
 	switch r.Method {
 	case "GET":
 		Web.SelectedFilter = filterstatus

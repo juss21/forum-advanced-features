@@ -8,26 +8,6 @@ import (
 	"time"
 )
 
-// func checkIfPreviouslyLoggedin(username string) bool {
-// 	// see on funktsioon mis võiks deleteda eelmise sessiooni, kui eelmine eksisteerib
-// 	user := getUserFromSession(user.ID)
-// 	if userid == -1 {
-// 		return false
-// 	}
-// 	key := ""
-// 	selector, _ := DataBase.Prepare("SELECT key FROM session WHERE userId=?")
-// 	err := selector.QueryRow(Web.User_data[userid].ID).Scan(&key)
-// 	if err != nil {
-// 		//	fmt.Println("eelmist sessiooni pole!")
-// 		return false
-// 	}
-// 	// delete eelmine sessioon
-
-// 	statement, _ := DataBase.Prepare("DELETE FROM session WHERE key = ?")
-// 	statement.Exec(key)
-// 	return true
-// }
-
 func Login(username string, password string) (Memberlist, error) {
 	loginStatement, _ := DataBase.Prepare("SELECT id, username, password, email FROM users WHERE username=?")
 

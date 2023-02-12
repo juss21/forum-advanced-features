@@ -27,7 +27,6 @@ func main() {
 		DataBase, _ = sql.Open("sqlite3", "./database.db")
 	}
 
-	GetUsers()
 	mux := http.NewServeMux()
 	fs := http.FileServer(http.Dir("./web"))
 	mux.Handle("/web/", http.StripPrefix("/web/", fs))
@@ -82,10 +81,4 @@ func rateLimiter(page http.HandlerFunc) http.HandlerFunc {
 		userRequestAmounts[user] += 1
 		page.ServeHTTP(w, r)
 	})
-}
-func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
-	w.WriteHeader(status)
-	if status == http.StatusNotFound {
-		fmt.Fprint(w, "custom 404")
-	}
 }
