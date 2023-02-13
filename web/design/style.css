@@ -351,7 +351,7 @@ a {
 }
 
 .forum #like {
-    width: 20%;
+    width: 45%;
     font-size: 15px;
     padding: 1%;
     border-radius: 10px;
@@ -359,7 +359,7 @@ a {
 }
 
 .forum #dislike {
-    width: 20%;
+    width: 45%;
     font-size: 15px;
     padding: 1%;
     border-radius: 10px;

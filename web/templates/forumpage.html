@@ -4,8 +4,8 @@
     <div class="pheader">
         <div id="Poster" style="width:20%; float:left; max-width: 20%;">
             <!--div id="left"-->
-                <img id="pilt" src="/web/profilepictures/blank.png" alt="profilepicture" style="max-height:150px; max-width: 150px; border-radius: 5%;">
-                <div id="originalposter">{{.CurrentPost.Date_posted}} <br> {{.CurrentPost.Author}}</div>
+                <img id="pilt" src="/web/profilepictures/blank.png" alt="profilepicture" style="width:80%; height: 80%; border-radius: 5%;">
+                <div id="originalposter">{{.CurrentPost.Author}} <br> {{.CurrentPost.Date_posted}} </div>
                 <div id="postlikesdislikes">
                     <form method="POST" action="/likePost">
                         <button {{ if not .Loggedin }} disabled {{end}} id="like" name="button" value="like">👍
@@ -56,8 +56,8 @@
     <br>
     <div class="comments">
         <div id="commentdata" style="width:20%; float:left;">
-            <img id="pilt" src="/web/profilepictures/blank.png" alt="profilepicture" style="max-height:150px; max-width: 150px; border-radius: 5%;">
-            {{.Date_commented}} <br> {{.Username}}: <br>
+            <img id="pilt" src="/web/profilepictures/blank.png" alt="profilepicture" style="width:80%; height: 80%; border-radius: 5%;">
+            {{.Username}}:<br>{{.Date_commented}} <br>
             <form method="POST" , action="/likeComment/{{.Id}}">
              
                 <button {{ if not $.Loggedin }} disabled {{end}} id="like" name="button" value="like">👍
