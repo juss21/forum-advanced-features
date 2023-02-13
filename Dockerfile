@@ -8,6 +8,7 @@ LABEL version="1.0" maintainer="Andrei <koodJõhvi@koodJõhvi.ee>"
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y sqlite3
 
 COPY go.mod ./
 COPY go.sum ./
