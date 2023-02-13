@@ -298,16 +298,25 @@ a {
     text-align: center;
 }
 
-.forum #Poster {
+.forum .pheader{
     border: 4px;
     border-style: solid;
     border-radius: 10px;
     border-color: rgb(0, 0, 0);
     background-color: rgba(31, 31, 31, 0.5);
-
     padding: 1%;
-    text-align: left;
+}
 
+.forum #Poster {
+    text-align: left;
+}
+.forum #Poster #left{
+    width: 15%; 
+    float:left;
+}
+.forum #Poster #right{
+    width: 80%; 
+    float:right;
 }
 .forum #Poster #pilt {
     max-width: 100%;
@@ -317,7 +326,6 @@ a {
 
 .forum #originalposter {
     color: red;
-    text-align: start;
 }
 
 .forum #Topictitle {
@@ -343,31 +351,27 @@ a {
 }
 
 .forum #like {
-    width: 7%;
-    font-size: 70%;
+    width: 20%;
+    font-size: 15px;
     padding: 1%;
     border-radius: 10px;
     background-color: rgba(16, 197, 0, 0.5);
 }
 
 .forum #dislike {
-    width: 7%;
-    font-size: 70%;
+    width: 20%;
+    font-size: 15px;
     padding: 1%;
     border-radius: 10px;
     background-color: rgba(255, 0, 0, 0.5);
 }
 .forum #like:hover {
-    width: 7%;
-    font-size: 70%;
     padding: 0.9%;
     border-radius: 10px;
     background-color: rgba(16, 197, 0, 0.5);
 }
 
 .forum #dislike:hover {
-    width: 7%;
-    font-size: 70%;
     padding: 0.9%;
     border-radius: 10px;
     background-color: rgba(255, 0, 0, 0.5);
@@ -392,11 +396,6 @@ a {
 .forum #postlikesdislikes {
     color: wheat
 }
-
-.forum #addcomment {
-}
-
-.forum #content {}
 
 /*forumpage comments css*/
 .comments {
