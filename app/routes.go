@@ -185,13 +185,11 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 		if user_password != user_password_confirmation {
 			Web.ErrorMsg = "Passwords must be same"
-			createAndExecute(w, "register.html")
-			Web.ErrorMsg = ""
-			return
+		} else if user_email != user_email_confirmation {
+			Web.ErrorMsg = "Emails must be same"
 		}
 
-		if user_email != user_email_confirmation {
-			Web.ErrorMsg = "Emails must be same"
+		if Web.ErrorMsg != "" {
 			createAndExecute(w, "register.html")
 			Web.ErrorMsg = ""
 			return
@@ -221,7 +219,7 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func commentHandler(w http.ResponseWriter, r *http.Request) { // TODO kui minnakse lehe ja ei kuva midagi, peita
+func commentHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		createAndExecuteError(w, "We know where you live")
