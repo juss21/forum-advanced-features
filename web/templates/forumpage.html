@@ -25,6 +25,11 @@
             <img id="pilt" src="/web/temp-images/{{.CurrentPost.Image}}" alt="siinonkõvapilt">
             {{end}}
             <br>
+
+            <form action="/editPost" method="POST">
+                <button class="delete" name="delete" value={{.CurrentPost.Id}}>❌</button>
+                <button class="edit" name="edit" value={{.CurrentPost.Id}}>✏️</button>
+            </form>
         </div>
 
         <br style="clear:both;"/> <!--That will force the content div to surround the two internal, floating divs.-->
@@ -71,7 +76,7 @@
             {{.Content}}
         </div>
 
-        <br style="clear:both;"/> <!--That will force the content div to surround the two internal, floating divs.-->
+        <br style="clear:both;" /> <!--That will force the content div to surround the two internal, floating divs.-->
 
     </div>
 

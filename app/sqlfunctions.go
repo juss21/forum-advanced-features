@@ -160,6 +160,14 @@ func GetPostById(postId int) (Forumdata, error) {
 	return post, err
 }
 
+func DeletePostById(id string) {
+	DataBase.Exec("DELETE FROM posts WHERE id= ?", id)
+}
+
+func DeleteCommentById(id string) {
+	DataBase.Exec("DELETE FROM comments WHERE id= ?", id)
+}
+
 func SaveComment(content string, userId, postId int) bool {
 	statement, _ := DataBase.Prepare("INSERT INTO comments (userId, content, postId, datecommented) VALUES (?,?,?,?)")
 	currentTime := time.Now().Format("02.01.2006 15:04")
@@ -273,6 +281,8 @@ func SaveSession(key string, userId int) {
 	}
 }
 
+
+
 func CanRegister(uid string, password string, email string, cpassword string, cemail string) bool {
 	str := ""
 	if cpassword != password {
@@ -304,6 +314,7 @@ func CanRegister(uid string, password string, email string, cpassword string, ce
 
 	return true
 }
+
 
 func InitDatabase() {
 	DataBase.Exec(
