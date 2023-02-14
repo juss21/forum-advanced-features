@@ -313,7 +313,7 @@ func filterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func postEditHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
+	if r.Method == "GET" || !Web.Loggedin {
 		createAndExecuteError(w, "We know where you live")
 		return
 	}

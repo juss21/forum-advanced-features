@@ -26,9 +26,11 @@
             <img id="pilt" src="/web/temp-images/{{.CurrentPost.Image}}" alt="siinonkõvapilt">
             {{end}}
             <br>
-            {{if .Loggedin}}
-            {{template "edit" .}}
+
+            {{if eq .LoggedUser.ID .CurrentPost.UserId }}
+                 {{template "postEditing" .}}
             {{end}}
+
         </div>
 
         <br style="clear:both;" /> <!--That will force the content div to surround the two internal, floating divs.-->
@@ -82,9 +84,9 @@
     {{end}}
     {{end}}
 
-    {{define "edit"}}
+    {{define "postEditing"}}
     <form action="/editPost" method="POST">
-        <button title="delete" class="delete" name="delete" value={{.CurrentPost.Id}}>❌DELETE</button>
-        <button title="edit" class="edit" name="edit" data-type="edit" value={{.CurrentPost.Id}}>✏️EDIT</button>
+        <button title="delete" class="delete" name="delete" value={{.CurrentPost.Id}}>❌ DELETE</button>
+        <button title="edit" class="edit" name="edit" data-type="edit" value={{.CurrentPost.Id}}>✏️ EDIT</button>
     </form>
     {{end}}
