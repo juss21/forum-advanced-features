@@ -15,23 +15,25 @@
     <div class="header">
         <header>
             <div id="center">
-                {{ if .Loggedin }}
-                <div id="right">
+                {{ if .Loggedin }}                    
+                <div style="float:left;">
                     <a href="/">Home | </a>
                     <a href="/members">Members | </a>
-                </div>
-                <a href="/account">Account | </a>
-                <a href="/logout">Logout</a>
-                <br>
-                <b>Welcome, <i> {{ .LoggedUser.Username }}</i>!</b>
-                {{ else }}
-                <a href="/">Home | </a>
-                <a href="/members">Members | </a>
-                <a href="/register">Register | </a>
-                <a href="/login">Login</a>
+                    <a href="/account">Account | </a>
+                    <a href="/logout">Logout</a>
 
-                {{ end }}
+                </div>
+                <b style="float:right;">Welcome, <i>{{ .LoggedUser.Username }}</i>!</b>
                 <br>
+                {{ else }}
+                <div style="float:left;">
+                    <a href="/">Home | </a>
+                    <a href="/members">Members | </a>
+                    <a href="/register">Register | </a>
+                    <a href="/login">Login</a>
+                </div>
+                {{ end }}
+                <br style="clear:both;"/> <!--That will force the content div to surround the two internal, floating divs.-->
             </div>
         </header>
     </div>
