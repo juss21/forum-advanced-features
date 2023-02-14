@@ -312,6 +312,20 @@ func filterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func postEditHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		createAndExecuteError(w, "We know where you live")
+		return
+	}
+
+	if r.FormValue("delete") != "" {
+		id := r.FormValue("delete")
+		DeletePostById(id)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	}
+}
+
 func uploadFile(w http.ResponseWriter, r *http.Request) (string, error) {
 	file, handler, err := r.FormFile("myFile")
 	if err != nil {

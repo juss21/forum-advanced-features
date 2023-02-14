@@ -165,7 +165,10 @@ func DeletePostById(id string) {
 }
 
 func DeleteCommentById(id string) {
-	DataBase.Exec("DELETE FROM comments WHERE id= ?", id)
+	_, err := DataBase.Exec("DELETE FROM comments WHERE id= ?", id)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func SaveComment(content string, userId, postId int) bool {
@@ -281,8 +284,6 @@ func SaveSession(key string, userId int) {
 	}
 }
 
-
-
 func CanRegister(uid string, password string, email string, cpassword string, cemail string) bool {
 	str := ""
 	if cpassword != password {
@@ -314,7 +315,6 @@ func CanRegister(uid string, password string, email string, cpassword string, ce
 
 	return true
 }
-
 
 func InitDatabase() {
 	DataBase.Exec(

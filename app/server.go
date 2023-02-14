@@ -29,7 +29,7 @@ func Server() {
 	mux.HandleFunc("/account", rateLimiter(accountDetails))
 	mux.HandleFunc("/changefilter", rateLimiter(filterHandler))
 
-	mux.HandleFunc("/editPost", rateLimiter(filterHandler))
+	mux.HandleFunc("/editPost", rateLimiter(postEditHandler))
 	mux.HandleFunc("/editComment", rateLimiter(filterHandler))	
 
 	fmt.Printf("Starting server at port " + port + "\n")

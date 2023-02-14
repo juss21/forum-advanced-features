@@ -4,16 +4,17 @@
     <div class="pheader">
         <div id="Poster" style="width:20%; float:left; max-width: 20%;">
             <!--div id="left"-->
-                <img id="pilt" src="/web/profilepictures/blank.png" alt="profilepicture" style="width:80%; height: 80%; border-radius: 5%;">
-                <div id="originalposter">{{.CurrentPost.Author}} <br> {{.CurrentPost.Date_posted}} </div>
-                <div id="postlikesdislikes">
-                    <form method="POST" action="/likePost">
-                        <button {{ if not .Loggedin }} disabled {{end}} id="like" name="button" value="like">👍
-                            {{.CurrentPost.Likes}}</button>
-                        <button {{ if not .Loggedin }} disabled {{end}} id="dislike" name="button" value="dislike">
-                            {{.CurrentPost.Dislikes}} 👎</button>
-                    </form>
-                </div>
+            <img id="pilt" src="/web/profilepictures/blank.png" alt="profilepicture"
+                style="width:80%; height: 80%; border-radius: 5%;">
+            <div id="originalposter">{{.CurrentPost.Author}} <br> {{.CurrentPost.Date_posted}} </div>
+            <div id="postlikesdislikes">
+                <form method="POST" action="/likePost">
+                    <button {{ if not .Loggedin }} disabled {{end}} id="like" name="button" value="like">👍
+                        {{.CurrentPost.Likes}}</button>
+                    <button {{ if not .Loggedin }} disabled {{end}} id="dislike" name="button" value="dislike">
+                        {{.CurrentPost.Dislikes}} 👎</button>
+                </form>
+            </div>
         </div>
         <div id="Poster" style="width:80%; float:right; max-width: 100%; min-width: 80%;">
             <div id="Topictitle">Topic: {{.CurrentPost.Title}}</div><br>
@@ -25,14 +26,12 @@
             <img id="pilt" src="/web/temp-images/{{.CurrentPost.Image}}" alt="siinonkõvapilt">
             {{end}}
             <br>
-
-            <form action="/editPost" method="POST">
-                <button class="delete" name="delete" value={{.CurrentPost.Id}}>❌</button>
-                <button class="edit" name="edit" value={{.CurrentPost.Id}}>✏️</button>
-            </form>
+            {{if .Loggedin}}
+            {{template "edit" .}}
+            {{end}}
         </div>
 
-        <br style="clear:both;"/> <!--That will force the content div to surround the two internal, floating divs.-->
+        <br style="clear:both;" /> <!--That will force the content div to surround the two internal, floating divs.-->
     </div>
 
 
@@ -41,7 +40,7 @@
     {{ if .Loggedin }}
 
     <div id="addcomment">
-       <br> Add comment:
+        <br> Add comment:
         <form method="POST" action="/comment">
             <textarea id="commentbox" name="forum_commentbox" id="comments" maxlength="1000" minlength="5"
                 required></textarea><br>
@@ -61,10 +60,10 @@
     <br>
     <div class="comments">
         <div id="commentdata" style="width:20%; float:left;">
-            <img id="pilt" src="/web/profilepictures/blank.png" alt="profilepicture" style="width:80%; height: 80%; border-radius: 5%;">
+            <img id="pilt" src="/web/profilepictures/blank.png" alt="profilepicture"
+                style="width:80%; height: 80%; border-radius: 5%;">
             {{.Username}}:<br>{{.Date_commented}} <br>
             <form method="POST" , action="/likeComment/{{.Id}}">
-             
                 <button {{ if not $.Loggedin }} disabled {{end}} id="like" name="button" value="like">👍
                     {{.Likes}}</button>
                 <button {{ if not $.Loggedin }} disabled {{end}} id="dislike" name="button" value="dislike">
@@ -81,5 +80,11 @@
     </div>
 
     {{end}}
+    {{end}}
 
+    {{define "edit"}}
+    <form action="/editPost" method="POST">
+        <button title="delete" class="delete" name="delete" value={{.CurrentPost.Id}}>❌DELETE</button>
+        <button title="edit" class="edit" name="edit" data-type="edit" value={{.CurrentPost.Id}}>✏️EDIT</button>
+    </form>
     {{end}}
