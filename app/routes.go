@@ -18,12 +18,15 @@ import (
 func createAndExecute(w http.ResponseWriter, fileName string) {
 	page, err := template.New("index.html").ParseFiles("web/templates/index.html", fmt.Sprint("web/templates/", fileName))
 	if err != nil {
+		fmt.Println(err.Error())
+
 		createAndExecuteError(w, "500 Internal Server Error")
 		return
 	}
 	err = page.Execute(w, Web)
 	if err != nil {
 		createAndExecuteError(w, "500 Internal Server Error")
+		fmt.Println(err.Error())
 		return
 	}
 }
@@ -101,6 +104,17 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		createAndExecute(w, "forumpage.html")
+	case "POST":
+		if r.FormValue("delete") != "" {
+			id := r.FormValue("delete")
+			DeletePostById(id)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
+
+		if r.FormValue("edit") != "" {
+			Web.CurrentPost.Edit = true
+			createAndExecute(w, "forumpage.html")
+		}
 	}
 }
 
@@ -316,13 +330,6 @@ func postEditHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" || !Web.Loggedin {
 		createAndExecuteError(w, "We know where you live")
 		return
-	}
-
-	if r.FormValue("delete") != "" {
-		id := r.FormValue("delete")
-		DeletePostById(id)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 	}
 }
 

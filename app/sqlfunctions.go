@@ -135,15 +135,16 @@ func GetPostById(postId int) (Forumdata, error) {
 	var post Forumdata
 	statement, _ := DataBase.Prepare(`SELECT 
 	posts.id, posts.userId, posts.title, posts.content, posts.date,
-	users.username, image,
+	users.username, image, category.name, 
 	COUNT(CASE WHEN postlikes.name = 'like' THEN 1 END) AS likes, 
 	COUNT(CASE WHEN postlikes.name = 'dislike' THEN 1 END) AS dislikes
   FROM 
 	posts 
 	LEFT JOIN postlikes ON posts.id = postlikes.postId
 	LEFT JOIN users ON posts.userId = users.id
+	LEFT JOIN category on posts.categoryId = category.id
   WHERE posts.id = ?
-  GROUP by posts.id;
+  GROUP by posts.id
   `)
 	err := statement.QueryRow(postId).Scan(
 		&post.Id,
@@ -153,6 +154,7 @@ func GetPostById(postId int) (Forumdata, error) {
 		&post.Date_posted,
 		&post.Author,
 		&post.Image,
+		&post.Category,
 		&post.Likes,
 		&post.Dislikes,
 	)

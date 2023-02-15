@@ -16,9 +16,28 @@
                 </form>
             </div>
         </div>
-        <div id="Poster" style="width:80%; float:right; max-width: 100%; min-width: 80%;">
-            <div id="Topictitle">Topic: {{.CurrentPost.Title}}</div><br>
 
+
+
+        <div id="Poster" style="width:80%; float:right; max-width: 100%; min-width: 80%;">
+            {{if .CurrentPost.Edit}}
+            <img style="width:100%; max-width:300px; height:auto; float:right;"
+            id="pilt" src="/web/temp-images/{{.CurrentPost.Image}}" alt="siinonkõvapilt">            
+            <form method="POST" enctype="multipart/form-data">
+                <textarea id="header" name="post_header" cols="50" rows="1" id="title" maxlength="100" minlength="5"
+                    required>{{.CurrentPost.Title}}</textarea><br>
+                <textarea id="content" name="post_content" cols="50" rows="4" id="body" maxlength="1000" minlength="5"
+                    required>{{.CurrentPost.Content}}</textarea><br>
+                <input type="file" name="myFile" accept="image/*" /> <br> <br>
+                <input id="newpost" class="button" type="submit" value="Save">
+                <input id="newpost" class="button" type="submit" value="Cancel">
+            </form>
+        
+            {{ if ne .CurrentPost.Image "false"}}
+           
+            {{end}}
+            {{else}}
+            <div id="Topictitle">Topic: {{.CurrentPost.Title}}</div><br>
             <div id="content">
                 {{.CurrentPost.Content}}
             </div>
@@ -28,7 +47,8 @@
             <br>
 
             {{if eq .LoggedUser.ID .CurrentPost.UserId }}
-                 {{template "postEditing" .}}
+            {{template "postEditing" .}}
+            {{end}}
             {{end}}
 
         </div>
@@ -85,7 +105,7 @@
     {{end}}
 
     {{define "postEditing"}}
-    <form action="/editPost" method="POST">
+    <form  method="POST">
         <button title="delete" class="delete" name="delete" value={{.CurrentPost.Id}}>❌ DELETE</button>
         <button title="edit" class="edit" name="edit" data-type="edit" value={{.CurrentPost.Id}}>✏️ EDIT</button>
     </form>

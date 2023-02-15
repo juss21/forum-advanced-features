@@ -31,6 +31,7 @@ type Forumdata struct {
 	Dislikes    int
 	Loggedin    bool
 	Image       string
+	Edit        bool
 }
 type Commentdata struct {
 	Id             int
