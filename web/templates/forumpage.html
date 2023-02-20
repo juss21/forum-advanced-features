@@ -29,12 +29,11 @@
                 <textarea id="content" name="post_content" cols="50" rows="4" id="body" maxlength="1000" minlength="5"
                     required>{{.CurrentPost.Content}}</textarea><br>
                 <input type="file" name="myFile" accept="image/*" /> <br> <br>
-                <input id="newpost" class="button" type="submit" value="Save">
-                <input id="newpost" class="button" type="submit" value="Cancel">
+                <input id="newpost" class="button" type="submit" value="Save" name="save">
+                <input id="newpost" class="button" type="submit" value="Cancel" name="cancel">
             </form>
         
-            {{ if ne .CurrentPost.Image "false"}}
-           
+            {{ if ne .CurrentPost.Image "false"}}           
             {{end}}
             {{else}}
             <div id="Topictitle">Topic: {{.CurrentPost.Title}}</div><br>
@@ -44,8 +43,10 @@
             {{ if ne .CurrentPost.Image "false"}}
             <img id="pilt" src="/web/temp-images/{{.CurrentPost.Image}}" alt="siinonkõvapilt">
             {{end}}
-            <br>
 
+            
+            <br>
+            <!-- SHOW buttons when user is logged in  -->
             {{if eq .LoggedUser.ID .CurrentPost.UserId }}
             {{template "postEditing" .}}
             {{end}}
@@ -105,8 +106,8 @@
     {{end}}
 
     {{define "postEditing"}}
-    <form  method="POST">
-        <button title="delete" class="delete" name="delete" value={{.CurrentPost.Id}}>❌ DELETE</button>
-        <button title="edit" class="edit" name="edit" data-type="edit" value={{.CurrentPost.Id}}>✏️ EDIT</button>
+    <form  method="POST"> 
+        <button title="delete" class="delete" name="delete" value="delete">❌ DELETE</button>
+        <button title="edit" class="edit" name="edit" value="edit">✏️ EDIT</button>
     </form>
     {{end}}

@@ -105,15 +105,34 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		createAndExecute(w, "forumpage.html")
 	case "POST":
+		if !Web.Loggedin {
+			createAndExecuteError(w, "You must be logged in, you 🦀")
+			return
+
+		}
 		if r.FormValue("delete") != "" {
-			id := r.FormValue("delete")
-			DeletePostById(id)
+
+			DeletePostById(strconv.Itoa(postId))
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 
 		if r.FormValue("edit") != "" {
 			Web.CurrentPost.Edit = true
 			createAndExecute(w, "forumpage.html")
+		}
+
+		if r.FormValue("cancel") != "" {
+			Web.CurrentPost.Edit = false
+			createAndExecute(w, "forumpage.html")
+		}
+
+		if r.FormValue("save") != "" {
+			title, content := r.FormValue("post_header"), r.FormValue("post_content")
+
+			Web.CurrentPost.Edit = false
+			EditPostById(postId, title, content)
+			http.Redirect(w, r, "/post/"+strconv.Itoa(postId), http.StatusSeeOther)
+
 		}
 	}
 }

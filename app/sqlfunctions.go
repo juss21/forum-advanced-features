@@ -318,6 +318,17 @@ func CanRegister(uid string, password string, email string, cpassword string, ce
 	return true
 }
 
+func EditPostById(postId int, title, content string) error {
+	// if image == "" {
+	// 	image = "false"
+	// }
+	currentTime := time.Now().Format("02.01.2006 15:04")
+
+	_, err := DataBase.Exec("UPDATE posts SET title=?, content = ?,  date = ?   where id = ? ", title, content, currentTime, postId)
+
+	return err
+}
+
 func InitDatabase() {
 	DataBase.Exec(
 		`
