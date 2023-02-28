@@ -30,7 +30,7 @@ func Server() {
 	mux.HandleFunc("/changefilter", rateLimiter(filterHandler))
 
 	mux.HandleFunc("/editPost", rateLimiter(postEditHandler))
-	mux.HandleFunc("/editComment", rateLimiter(filterHandler))	
+	mux.HandleFunc("/editComment", rateLimiter(postEditHandler))
 
 	fmt.Printf("Starting server at port " + port + "\n")
 	if http.ListenAndServe(":"+port, mux) != nil {

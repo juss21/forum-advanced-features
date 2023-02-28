@@ -21,8 +21,8 @@
 
         <div id="Poster" style="width:80%; float:right; max-width: 100%; min-width: 80%;">
             {{if .CurrentPost.Edit}}
-            <img style="width:100%; max-width:300px; height:auto; float:right;"
-            id="pilt" src="/web/temp-images/{{.CurrentPost.Image}}" alt="siinonkõvapilt">            
+            <img style="width:100%; max-width:300px; height:auto; float:right;" id="pilt"
+                src="/web/temp-images/{{.CurrentPost.Image}}" alt="siinonkõvapilt">
             <form method="POST" enctype="multipart/form-data">
                 <textarea id="header" name="post_header" cols="50" rows="1" id="title" maxlength="100" minlength="5"
                     required>{{.CurrentPost.Title}}</textarea><br>
@@ -32,8 +32,8 @@
                 <input id="newpost" class="button" type="submit" value="Save" name="save">
                 <input id="newpost" class="button" type="submit" value="Cancel" name="cancel">
             </form>
-        
-            {{ if ne .CurrentPost.Image "false"}}           
+
+            {{ if ne .CurrentPost.Image "false"}}
             {{end}}
             {{else}}
             <div id="Topictitle">Topic: {{.CurrentPost.Title}}</div><br>
@@ -44,7 +44,7 @@
             <img id="pilt" src="/web/temp-images/{{.CurrentPost.Image}}" alt="siinonkõvapilt">
             {{end}}
 
-            
+
             <br>
             <!-- SHOW buttons when user is logged in  -->
             {{if eq .LoggedUser.ID .CurrentPost.UserId }}
@@ -96,18 +96,47 @@
 
         <div id="comcontent">
             {{.Content}}
+            {{if eq .Id $.CurrentComment.Id }}
+            {{if $.CurrentComment.Edit}}
+            {{template "commentSaving" }}
+            {{ end }}
+            {{ end }}
         </div>
+
+        {{if eq $.LoggedUser.ID .UserId }}
+        {{template "commentEditing" .Id}}
+        {{end}}
 
         <br style="clear:both;" /> <!--That will force the content div to surround the two internal, floating divs.-->
 
     </div>
 
+
     {{end}}
     {{end}}
 
     {{define "postEditing"}}
-    <form  method="POST"> 
-        <button title="delete" class="delete" name="delete" value="delete">❌ DELETE</button>
-        <button title="edit" class="edit" name="edit" value="edit">✏️ EDIT</button>
+    <form method="POST">
+        <button title="deletePost" class="deletePost" name="deletePost" value="deletePost">❌ DELETE</button>
+        <button title="editPost" class="editPost" name="editPost" value="editPost">✏️ EDIT</button>
+    </form>
+    {{end}}
+
+    {{define "commentEditing"}}
+    <form method="POST" data-commentEdit="saveComment">
+        <button title="deleteComment" class="deleteComment" name="deleteComment" value={{.}}>❌ DELETE</button>
+        <button title="editComment" class="editComment" name="editComment" value={{.}}>✏️ EDIT</button>
+    </form>
+    {{end}}
+
+    {{define "commentSaving"}}
+    <form method="POST" enctype="multipart/form-data" value="saveComment" name="saveComment" data-commentSave="{{.}}">
+        <textarea id="content" value="comment_content" name="comment_content" cols="50" rows="4" id="body"
+            maxlength="1000" minlength="5" required>{{$.CurrentComment.Content}}</textarea><br>
+        <input id="saveComment" class="button" type="submit" value="Save" name="Save">
+    </form>
+    <form method="POST" enctype="multipart/form-data" value="cancelComment" name="cancelComment"
+        data-commentSave="{{.}}">
+        <input id="newpost" class="button" type="submit" value="Cancel" name="cancel">
     </form>
     {{end}}

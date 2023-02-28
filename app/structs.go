@@ -42,6 +42,7 @@ type Commentdata struct {
 	Likes          int
 	Dislikes       int
 	Username       string
+	Edit           bool
 }
 
 type PostLike struct {
@@ -68,6 +69,7 @@ type Forumstuff struct {
 	LikedStuff     []PostLike
 	LikedComments  []Likedstuff
 	CurrentPost    Forumdata
+	CurrentComment Commentdata
 	Forum_data     []Forumdata
 	User_data      []Memberlist
 	ErrorMsg       string

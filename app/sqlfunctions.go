@@ -328,6 +328,16 @@ func EditPostById(postId int, title, content string) error {
 
 	return err
 }
+func EditCommentById(commentId int, content string) error {
+	// if image == "" {
+	// 	image = "false"
+	// }
+	currentTime := time.Now().Format("02.01.2006 15:04")
+
+	_, err := DataBase.Exec("UPDATE comments SET content = ?,  datecommented = ?   where id = ? ", content, currentTime, commentId)
+
+	return err
+}
 
 func InitDatabase() {
 	DataBase.Exec(

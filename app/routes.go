@@ -105,32 +105,69 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		createAndExecute(w, "forumpage.html")
 	case "POST":
+
 		if !Web.Loggedin {
 			createAndExecuteError(w, "You must be logged in, you 🦀")
 			return
 
 		}
-		if r.FormValue("delete") != "" {
+		if r.FormValue("deletePost") != "" {
 
 			DeletePostById(strconv.Itoa(postId))
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 
-		if r.FormValue("edit") != "" {
+		if r.FormValue("editPost") != "" {
 			Web.CurrentPost.Edit = true
+
 			createAndExecute(w, "forumpage.html")
 		}
 
-		if r.FormValue("cancel") != "" {
+		if r.FormValue("cancelPost") != "" {
 			Web.CurrentPost.Edit = false
 			createAndExecute(w, "forumpage.html")
 		}
 
-		if r.FormValue("save") != "" {
+		if r.FormValue("savePost") != "" {
 			title, content := r.FormValue("post_header"), r.FormValue("post_content")
 
 			Web.CurrentPost.Edit = false
 			EditPostById(postId, title, content)
+			http.Redirect(w, r, "/post/"+strconv.Itoa(postId), http.StatusSeeOther)
+
+		}
+		if r.FormValue("deleteComment") != "" {
+			a, err := strconv.ParseInt(r.FormValue("deleteComment"), 10, 64)
+			if err != nil {
+				// handle the error in some way
+			}
+
+			DeleteCommentById(strconv.Itoa(int(a)))
+			http.Redirect(w, r, "/post/"+strconv.Itoa(postId), http.StatusSeeOther)
+		}
+
+		if r.FormValue("editComment") != "" {
+			Web.CurrentComment.Edit = true
+			Web.CurrentComment.Id, _ = strconv.Atoi(r.FormValue("editComment"))
+			createAndExecute(w, "forumpage.html")
+		}
+
+		if r.FormValue("cancel") != "" {
+			Web.CurrentComment.Edit = false
+			createAndExecute(w, "forumpage.html")
+			http.Redirect(w, r, "/post/"+strconv.Itoa(postId), http.StatusSeeOther)
+		}
+
+		if r.FormValue("Save") != "" {
+			//r.ParseForm()
+			content := r.FormValue("comment_content")
+			/* a, err := strconv.ParseInt(asd, 10, 64)
+			if err != nil {
+				fmt.Println(err)
+			} */
+			Web.CurrentComment.Edit = false
+			EditCommentById(Web.CurrentComment.Id, content)
+
 			http.Redirect(w, r, "/post/"+strconv.Itoa(postId), http.StatusSeeOther)
 
 		}
@@ -253,6 +290,7 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func commentHandler(w http.ResponseWriter, r *http.Request) {
+	//postId, _ := strconv.Atoi(path.Base(r.URL.Path))
 	switch r.Method {
 	case "GET":
 		createAndExecuteError(w, "We know where you live")
@@ -273,6 +311,35 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 			createAndExecuteError(w, "You must be logged in before you comment!")
 			return
 		}
+		/* 	if !Web.Loggedin {
+			createAndExecuteError(w, "You must be logged in, you 🦀")
+			return
+
+		}
+		if r.FormValue("delete") != "" {
+
+			DeletePostById(strconv.Itoa(postId))
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
+
+		if r.FormValue("edit") != "" {
+			Web.CurrentPost.Edit = true
+			createAndExecute(w, "forumpage.html")
+		}
+
+		if r.FormValue("cancel") != "" {
+			Web.CurrentPost.Edit = false
+			createAndExecute(w, "forumpage.html")
+		}
+
+		if r.FormValue("save") != "" {
+			title, content := r.FormValue("post_header"), r.FormValue("post_content")
+
+			Web.CurrentPost.Edit = false
+			EditPostById(postId, title, content)
+			http.Redirect(w, r, "/post/"+strconv.Itoa(postId), http.StatusSeeOther)
+
+		} */
 	}
 }
 
