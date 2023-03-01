@@ -304,42 +304,13 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 			createAndExecuteError(w, "You must be logged in before you comment!")
 			return
 		}
-		if SaveComment(comment, Web.LoggedUser.ID, Web.CurrentPost.Id) {
+		if SaveComment(comment, Web.LoggedUser.ID, Web.CurrentPost.Id, Web.CurrentPost.Title, Web.LoggedUser.Username, Web.CurrentPost.UserId) {
 			postId := strconv.Itoa(Web.CurrentPost.Id)
 			http.Redirect(w, r, "/post/"+postId, http.StatusSeeOther)
 		} else {
 			createAndExecuteError(w, "You must be logged in before you comment!")
 			return
 		}
-		/* 	if !Web.Loggedin {
-			createAndExecuteError(w, "You must be logged in, you 🦀")
-			return
-
-		}
-		if r.FormValue("delete") != "" {
-
-			DeletePostById(strconv.Itoa(postId))
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-		}
-
-		if r.FormValue("edit") != "" {
-			Web.CurrentPost.Edit = true
-			createAndExecute(w, "forumpage.html")
-		}
-
-		if r.FormValue("cancel") != "" {
-			Web.CurrentPost.Edit = false
-			createAndExecute(w, "forumpage.html")
-		}
-
-		if r.FormValue("save") != "" {
-			title, content := r.FormValue("post_header"), r.FormValue("post_content")
-
-			Web.CurrentPost.Edit = false
-			EditPostById(postId, title, content)
-			http.Redirect(w, r, "/post/"+strconv.Itoa(postId), http.StatusSeeOther)
-
-		} */
 	}
 }
 
@@ -357,7 +328,7 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		postLike := r.FormValue("button")
 		postId := strconv.Itoa(Web.CurrentPost.Id)
-		SavePostLike(postLike, Web.LoggedUser.ID, Web.CurrentPost.Id)
+		SavePostLike(postLike, Web.LoggedUser.ID, Web.CurrentPost.Id, Web.CurrentPost.Title)
 		http.Redirect(w, r, "/post/"+postId, http.StatusSeeOther)
 	}
 }
@@ -399,6 +370,9 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 		DateCreated()
 		createAndExecute(w, "account.html")
 	}
+	/* for _, el := range GetNotifications() {
+
+	} */
 }
 
 func filterHandler(w http.ResponseWriter, r *http.Request) {

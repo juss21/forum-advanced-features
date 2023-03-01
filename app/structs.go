@@ -76,6 +76,18 @@ type Forumstuff struct {
 	ErrorPage      *template.Template
 	Categories     []Category
 	SelectedFilter string
+	Notifications  []Notifications
+}
+type Notifications struct {
+	UserID         int
+	CommentID      int
+	PostLikesID    int
+	CommentLikesID int
+}
+type NotificationData struct {
+	User    string
+	Action  string
+	Content string
 }
 type MyError struct{}
 
