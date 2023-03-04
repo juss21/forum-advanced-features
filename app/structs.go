@@ -80,8 +80,8 @@ type Forumstuff struct {
 }
 type Notifications struct {
 	UserID  int
-	user    string
-	content string
+	User    string
+	Content string
 }
 
 type MyError struct{}

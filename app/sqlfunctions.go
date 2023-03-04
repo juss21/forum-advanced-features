@@ -250,7 +250,7 @@ GROUP by comments.id;
 	return rearrange
 }
 
-func GetNotifications() []Notifications {
+func GetNotifications() ([]Notifications) {
 	var notifications []Notifications
 	rows, _ := DataBase.Query("SELECT * from notifications")
 
@@ -258,8 +258,8 @@ func GetNotifications() []Notifications {
 		var notification Notifications
 		rows.Scan(
 			&notification.UserID,
-			&notification.user,
-			&notification.content,
+			&notification.User,
+			&notification.Content,
 		)
 		notifications = append(notifications, notification)
 	}

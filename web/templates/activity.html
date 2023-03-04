@@ -3,7 +3,9 @@
     <h2>activity:</h2>
     {{range .Notifications}}
     <h3>
-        {{.}} <br>
+    {{.UserID}} <br>
+    {{.User}} <br>
+    {{.Content}} <br>
     </h3>
     {{end}}
 </div>
