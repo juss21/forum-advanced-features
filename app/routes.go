@@ -370,9 +370,6 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 		DateCreated()
 		createAndExecute(w, "account.html")
 	}
-	/* for _, el := range GetNotifications() {
-
-	} */
 }
 
 func filterHandler(w http.ResponseWriter, r *http.Request) {
@@ -420,4 +417,14 @@ func uploadFile(w http.ResponseWriter, r *http.Request) (string, error) {
 	tempFile.Write(fileBytes)
 
 	return strings.Split(tempFile.Name(), "/")[2], nil
+}
+
+func notificationHandler(w http.ResponseWriter, r *http.Request) {
+	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+
+	switch r.Method {
+	case "GET":
+		Web.Notifications = GetNotifications()
+		createAndExecute(w, "activity.html")
+	}
 }

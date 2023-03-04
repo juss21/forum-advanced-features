@@ -79,16 +79,11 @@ type Forumstuff struct {
 	Notifications  []Notifications
 }
 type Notifications struct {
-	UserID         int
-	CommentID      int
-	PostLikesID    int
-	CommentLikesID int
+	UserID  int
+	user    string
+	content string
 }
-type NotificationData struct {
-	User    string
-	Action  string
-	Content string
-}
+
 type MyError struct{}
 
 var (

@@ -182,8 +182,11 @@ func SaveComment(content string, userId, postId int, title string, user string, 
 	currentTime := time.Now().Format("02.01.2006 15:04")
 	statement.Exec(userId, content, postId, currentTime)
 	notification := user + " commented on your post: " + title
-	statement, _ = DataBase.Prepare("INSERT INTO notifications VALUES(?,?,?)")
-	statement.Exec(authorUserId, user, notification)
+	
+	_,err := statement.Exec("INSERT INTO notifications VALUES(?,?,?)", authorUserId, user, notification)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return true
 }
 
@@ -249,15 +252,14 @@ GROUP by comments.id;
 
 func GetNotifications() []Notifications {
 	var notifications []Notifications
-	rows, _ := DataBase.Query("SELECT userID, commentID, postlikesID, commentLikesID from notifications")
+	rows, _ := DataBase.Query("SELECT * from notifications")
 
 	for rows.Next() {
 		var notification Notifications
 		rows.Scan(
 			&notification.UserID,
-			&notification.CommentID,
-			&notification.PostLikesID,
-			&notification.CommentLikesID,
+			&notification.user,
+			&notification.content,
 		)
 		notifications = append(notifications, notification)
 	}
