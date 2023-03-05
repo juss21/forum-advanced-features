@@ -280,7 +280,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func membersHandler(w http.ResponseWriter, r *http.Request) {
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
 
 	switch r.Method {
 	case "GET":
@@ -356,7 +356,7 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func accountDetails(w http.ResponseWriter, r *http.Request) {
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
 	Web.CreatedPosts = []Createdstuff{}
 	Web.LikedComments = []Likedstuff{}
 
@@ -420,8 +420,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) (string, error) {
 }
 
 func notificationHandler(w http.ResponseWriter, r *http.Request) {
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
-
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) //skull
 	switch r.Method {
 	case "GET":
 		Web.Notifications = GetNotifications()

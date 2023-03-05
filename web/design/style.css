@@ -29,7 +29,9 @@ a {
     color: red;
 }
 .header #Noti {
-    float:right;
+    border-radius: 100%;
+    background-color: rgba(34, 34, 34, 0.61);
+    float: right;
     overflow: hidden;
     min-width: 20px;
     min-height: 20px;

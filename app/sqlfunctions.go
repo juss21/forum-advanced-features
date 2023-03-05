@@ -252,9 +252,9 @@ GROUP by comments.id;
 
 func GetNotifications() []Notifications {
 	var notifications []Notifications
-	rows, _ := DataBase.Query("SELECT * FROM notifications WHERE UserID= ? and User!= ?", Web.LoggedUser.ID, Web.LoggedUser.Username )
 
-	/*SELECT * FROM notifications WHERE userid IN (SELECT userid FROM notifications GROUP BY userid HAVING COUNT(distinct user) > 1)*/
+	rows, _ := DataBase.Query("SELECT * FROM notifications WHERE UserID= ? and User!= ?",
+	Web.LoggedUser.ID, Web.LoggedUser.Username)
 
 	for rows.Next() {
 		var notification Notifications
