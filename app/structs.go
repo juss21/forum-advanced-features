@@ -80,6 +80,7 @@ type Forumstuff struct {
 }
 type Notifications struct {
 	UserID  int
+	PostID  int
 	User    string
 	Content string
 }

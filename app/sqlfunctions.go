@@ -23,7 +23,7 @@ func LikesSent() {
 	rows, err := DataBase.Query(`SELECT posts.id, posts.title, users.username
 	FROM postlikes
 	LEFT join users on postlikes.userId = users.id
-   LEFT JOIN posts on postlikes.postId = posts.id
+    LEFT JOIN posts on postlikes.postId = posts.id
 	where postlikes.name = "like" and users.id = ?`, userid)
 	if err != nil {
 		fmt.Println("likessent()", err)
@@ -166,24 +166,29 @@ func DeletePostById(id string) {
 	DataBase.Exec("DELETE FROM posts WHERE id= ?", id)
 }
 
-func DeleteCommentById(id string) {
+func DeleteCommentById(id string, postid int) {
 	_, err := DataBase.Exec("DELETE FROM comments WHERE id= ?", id)
 	if err != nil {
 		fmt.Println(err)
 	}
-	_, err2 := DataBase.Exec("DELETE FROM notifications WHERE commentID= ?", id)
+	_, err2 := DataBase.Exec("DELETE FROM notifications WHERE PostID= ?", postid)
 	if err2 != nil {
 		fmt.Println(err)
 	}
 }
 
-func SaveComment(content string, userId, postId int, title string, user string, authorUserId int) bool {
+func DeleteNoticfication(id int) {
+
+}
+
+func SaveComment(content string, userId int, postId int, title string, user string, authorUserId int) bool {
 	statement, _ := DataBase.Prepare("INSERT INTO comments (userId, content, postId, datecommented) VALUES (?,?,?,?)")
 	currentTime := time.Now().Format("02.01.2006 15:04")
 	statement.Exec(userId, content, postId, currentTime)
-	notification := user + " commented on your post: " + title
+	notification := " commented on your post: " + title
 
-	_, err := statement.Exec("INSERT INTO notifications VALUES(?,?,?)", authorUserId, user, notification)
+	//statement.Exec("INSERT INTO notifications VALUES(?,?,?,?)", authorUserId, postId, user, title)
+	_, err := DataBase.Exec("INSERT INTO notifications VALUES(?,?,?,?)", authorUserId, postId, user, notification)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -254,12 +259,13 @@ func GetNotifications() []Notifications {
 	var notifications []Notifications
 
 	rows, _ := DataBase.Query("SELECT * FROM notifications WHERE UserID= ? and User!= ?",
-	Web.LoggedUser.ID, Web.LoggedUser.Username)
+		Web.LoggedUser.ID, Web.LoggedUser.Username)
 
 	for rows.Next() {
 		var notification Notifications
 		rows.Scan(
 			&notification.UserID,
+			&notification.PostID,
 			&notification.User,
 			&notification.Content,
 		)
@@ -285,7 +291,8 @@ func SavePostLike(like string, userId, postId int, title string) {
 			fmt.Println(err)
 		} else {
 			content := like + "d your post: " + title
-			_, err2 := DataBase.Exec("INSERT INTO notifications VALUES((SELECT userid from posts where id = ? ),(SELECT username  FROM users WHERE id = ?),?)", postId, userId, content)
+			fmt.Print(postId)
+			_, err2 := DataBase.Exec("INSERT INTO notifications VALUES((SELECT userid from posts where id = ? ),(SELECT id FROM posts WHERE id = ? ),(SELECT username  FROM users WHERE id = ?),?)", postId, postId, userId, content)
 			if err2 != nil {
 				fmt.Println(err2)
 			}
@@ -316,7 +323,7 @@ func SaveCommentLike(like string, userId, commentId int) {
 				)
 			}
 			content := like + "d your comment: " + comment
-			_, err2 := DataBase.Exec("INSERT INTO notifications VALUES((SELECT userid from comments where id = ? ),(SELECT username  FROM users WHERE id = ?),?)", commentId, userId, content)
+			_, err2 := DataBase.Exec("INSERT INTO notifications VALUES((SELECT userid from comments where id = ? ),(SELECT postId FROM comments WHERE id = ? ),(SELECT username  FROM users WHERE id = ?),?)", commentId, commentId, userId, content)
 			if err2 != nil {
 				fmt.Println(err2)
 			}

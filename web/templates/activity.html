@@ -1,12 +1,15 @@
 {{define "content"}}
-<div>
+<div class="activity", id:="activity">
     <h2>Notifications:</h2>
+    <div id="eyo">
     {{range .Notifications}}
-    <h3>
-    {{.User}} <br>
-    {{.Content}} <br>
-    </h3>
+    <p>
+    <a href="post/{{.PostID}}">
+    {{.User}} 
+    {{.Content}}</a> <br>
+    </p>
     {{end}}
+</div>
 </div>
 
 {{end}}

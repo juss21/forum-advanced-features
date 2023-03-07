@@ -221,8 +221,6 @@ a {
 .members #Username {
     float: left;
 }
-.members #Email {
-}
 .members #Register {
     float: right;
 }
@@ -448,3 +446,24 @@ a {
     border-radius: 50%;
     background-color: wheat;
 }
+
+.activity {
+    word-wrap: break-word;
+    background-color: rgba(49, 49, 49, 0.5);
+    margin: 0 auto;
+    width: 60%;
+    resize: none;
+    text-align:center;
+    color: wheat;
+}
+
+.activity #eyo {
+    text-align: left;
+    word-wrap: break-word;
+    padding: 1%;
+    border: 3px solid;
+    border-radius: 10px;
+    border-color: rgb(0, 0, 0);
+    background-color: rgba(31, 31, 31, 0.5);
+}
+

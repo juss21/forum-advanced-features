@@ -142,7 +142,8 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 				// handle the error in some way
 			}
 
-			DeleteCommentById(strconv.Itoa(int(a)))
+			DeleteCommentById(strconv.Itoa(int(a)), postId)
+			//DeleteNoticfication(postId)
 			http.Redirect(w, r, "/post/"+strconv.Itoa(postId), http.StatusSeeOther)
 		}
 
