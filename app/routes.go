@@ -358,6 +358,7 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 
 func accountDetails(w http.ResponseWriter, r *http.Request) {
 	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+	Web.CreatedComments = []CreatedComments{}
 	Web.CreatedPosts = []CreatedPosts{}
 	Web.LikedPosts = []LikedPosts{}
 	Web.LikedComments = []LikedComments{}
@@ -367,7 +368,8 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 		UserPosted()
-		//GetCommentLikes()
+		GetCommentLikes()
+		GetCreatedComments()
 		GetPostLikes()
 		DateCreated()
 		createAndExecute(w, "account.html")

@@ -9,61 +9,69 @@ import (
 	"time"
 )
 
-func getCommentContent(pid int, cid int) string {
-	rows, err := DataBase.Query(`SELECT content	FROM comments WHERE id = ? AND postId = ?`, cid, pid)
-	if err != nil {
-		fmt.Println("getPostID()", err)
-		os.Exit(0)
-	}
-
-	var content string
-	for rows.Next() {
-		rows.Scan(
-			&content,
-		)
-		if content != "" {
-			return content
-		}
-	}
-	return "..."
-}
-
-func getPostID(commentID int) int {
-	rows, err := DataBase.Query(`SELECT id, postId
+func getPostID(commentID int) (int, string) {
+	rows, err := DataBase.Query(`SELECT id, postId, content
 	FROM comments WHERE id = ?`, commentID)
 	if err != nil {
-		fmt.Println("getPostID()", err)
+		fmt.Println("getPostID()")
 		os.Exit(0)
 	}
 
 	var cid, pid int
+	var content string
 	for rows.Next() {
 		rows.Scan(
 			&cid,
 			&pid,
+			&content,
 		)
 		if cid == commentID {
-			return pid
+			return pid, content
 		}
 	}
-	return -1
+	return 0, "..."
 }
+func GetCreatedComments() {
+	userid := Web.LoggedUser.ID
 
-func GetCommentLikes() {
-	rows, err := DataBase.Query(`SELECT commentid
-	FROM commentLikes WHERE name = "like" AND userId = ?`, Web.LoggedUser.ID)
+	rows, err := DataBase.Query(`SELECT id, content, postId FROM comments WHERE userId = ?`, userid)
 	if err != nil {
-		fmt.Println("getlikes()", err)
+		fmt.Println("GetCreatedComments()", err)
 		os.Exit(0)
 	}
 
-	var commentID int
+	var commentID, postID int
+	var content string
 	for rows.Next() {
 		rows.Scan(
 			&commentID,
+			&content,
+			&postID,
 		)
-		postid := getPostID(commentID)
-		Web.LikedComments = append(Web.LikedComments, LikedComments{CommentID: commentID, PostId: postid, Content: getCommentContent(postid, commentID)})
+
+		Web.CreatedComments = append(Web.CreatedComments, CreatedComments{CommentID: commentID, Content: content, PostID: postID})
+	}
+}
+
+func GetCommentLikes() {
+	rows, err := DataBase.Query(`SELECT comments.id, content, postId
+	FROM comments
+	LEFT join commentLikes on comments.id = commentLikes.commentId
+	where commentLikes.name = "like"`)
+	if err != nil {
+		fmt.Println("GetCommentLikes()", err)
+		os.Exit(0)
+	}
+
+	var commentID, postID int
+	var content string
+	for rows.Next() {
+		rows.Scan(
+			&commentID,
+			&content,
+			&postID,
+		)
+		Web.LikedComments = append(Web.LikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content})
 	}
 }
 
@@ -349,7 +357,7 @@ func SavePostLike(like string, userId, postId int, title string) {
 			fmt.Println(err)
 		} else {
 			content := like + "d your post: " + title
-			fmt.Print(postId)
+
 			_, err2 := DataBase.Exec("INSERT INTO notifications VALUES((SELECT userid from posts where id = ? ),(SELECT id FROM posts WHERE id = ? ),(SELECT username  FROM users WHERE id = ?),?)", postId, postId, userId, content)
 			if err2 != nil {
 				fmt.Println(err2)
@@ -381,7 +389,9 @@ func SaveCommentLike(like string, userId, commentId int) {
 				)
 			}
 			content := like + "d your comment: " + comment
-			_, err2 := DataBase.Exec("INSERT INTO notifications VALUES((SELECT userid from comments where id = ? ),(SELECT postId FROM comments WHERE id = ? ),(SELECT username  FROM users WHERE id = ?),?)", commentId, commentId, userId, content)
+			_, err2 := DataBase.Exec(`INSERT INTO notifications VALUES((SELECT userid from comments where id = ? ),
+			(SELECT postId FROM comments WHERE id = ? ),
+			(SELECT username  FROM users WHERE id = ?),?)`, commentId, commentId, userId, content)
 			if err2 != nil {
 				fmt.Println(err2)
 			}

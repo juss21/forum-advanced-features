@@ -62,26 +62,32 @@ type LikedPosts struct {
 	CommentId int
 	Title     string
 }
+type CreatedComments struct {
+	CommentID int
+	Content   string
+	PostID    int
+}
 type LikedComments struct {
 	CommentID int
 	PostId    int
 	Content   string
 }
 type Forum struct {
-	Loggedin       bool
-	LoggedUser     Memberlist
-	CreatedPosts   []CreatedPosts
-	LikedComments  []LikedComments
-	LikedPosts     []LikedPosts
-	CurrentPost    Forumdata
-	CurrentComment Commentdata
-	Forum_data     []Forumdata
-	User_data      []Memberlist
-	ErrorMsg       string
-	ErrorPage      *template.Template
-	Categories     []Category
-	SelectedFilter string
-	Notifications  []Notifications
+	Loggedin        bool
+	LoggedUser      Memberlist
+	CreatedComments []CreatedComments
+	CreatedPosts    []CreatedPosts
+	LikedComments   []LikedComments
+	LikedPosts      []LikedPosts
+	CurrentPost     Forumdata
+	CurrentComment  Commentdata
+	Forum_data      []Forumdata
+	User_data       []Memberlist
+	ErrorMsg        string
+	ErrorPage       *template.Template
+	Categories      []Category
+	SelectedFilter  string
+	Notifications   []Notifications
 }
 type Notifications struct {
 	UserID  int
