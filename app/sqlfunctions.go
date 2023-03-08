@@ -9,15 +9,65 @@ import (
 	"time"
 )
 
-func DateCreated() {
-	for i := 0; i < len(Web.User_data); i++ {
-		if Web.User_data[i].ID == Web.LoggedUser.ID {
-			Web.LoggedUser.DateCreated = Web.User_data[i].DateCreated
+func getCommentContent(pid int, cid int) string {
+	rows, err := DataBase.Query(`SELECT content	FROM comments WHERE id = ? AND postId = ?`, cid, pid)
+	if err != nil {
+		fmt.Println("getPostID()", err)
+		os.Exit(0)
+	}
+
+	var content string
+	for rows.Next() {
+		rows.Scan(
+			&content,
+		)
+		if content != "" {
+			return content
 		}
+	}
+	return "..."
+}
+
+func getPostID(commentID int) int {
+	rows, err := DataBase.Query(`SELECT id, postId
+	FROM comments WHERE id = ?`, commentID)
+	if err != nil {
+		fmt.Println("getPostID()", err)
+		os.Exit(0)
+	}
+
+	var cid, pid int
+	for rows.Next() {
+		rows.Scan(
+			&cid,
+			&pid,
+		)
+		if cid == commentID {
+			return pid
+		}
+	}
+	return -1
+}
+
+func GetCommentLikes() {
+	rows, err := DataBase.Query(`SELECT commentid
+	FROM commentLikes WHERE name = "like" AND userId = ?`, Web.LoggedUser.ID)
+	if err != nil {
+		fmt.Println("getlikes()", err)
+		os.Exit(0)
+	}
+
+	var commentID int
+	for rows.Next() {
+		rows.Scan(
+			&commentID,
+		)
+		postid := getPostID(commentID)
+		Web.LikedComments = append(Web.LikedComments, LikedComments{CommentID: commentID, PostId: postid, Content: getCommentContent(postid, commentID)})
 	}
 }
 
-func LikesSent() {
+func GetPostLikes() {
 	userid := Web.LoggedUser.ID
 
 	rows, err := DataBase.Query(`SELECT posts.id, posts.title, users.username
@@ -26,7 +76,7 @@ func LikesSent() {
     LEFT JOIN posts on postlikes.postId = posts.id
 	where postlikes.name = "like" and users.id = ?`, userid)
 	if err != nil {
-		fmt.Println("likessent()", err)
+		fmt.Println("GetPostLikes()", err)
 		os.Exit(0)
 	}
 	var id int
@@ -37,7 +87,15 @@ func LikesSent() {
 			&title,
 			&name,
 		)
-		Web.LikedComments = append(Web.LikedComments, Likedstuff{PostID: id, User: name, Title: title})
+		Web.LikedPosts = append(Web.LikedPosts, LikedPosts{PostID: id, User: name, Title: title})
+	}
+}
+
+func DateCreated() {
+	for i := 0; i < len(Web.User_data); i++ {
+		if Web.User_data[i].ID == Web.LoggedUser.ID {
+			Web.LoggedUser.DateCreated = Web.User_data[i].DateCreated
+		}
 	}
 }
 
@@ -46,7 +104,7 @@ func UserPosted() { // TODO get user data
 
 	for i := 0; i < len(Web.Forum_data); i++ {
 		if Web.Forum_data[i].Author == userid {
-			Web.CreatedPosts = append(Web.CreatedPosts, Createdstuff{PostID: Web.Forum_data[i].Id, UserID: Web.LoggedUser.ID, PostTopic: Web.Forum_data[i].Title})
+			Web.CreatedPosts = append(Web.CreatedPosts, CreatedPosts{PostID: Web.Forum_data[i].Id, UserID: Web.LoggedUser.ID, PostTopic: Web.Forum_data[i].Title})
 		}
 	}
 }

@@ -51,23 +51,28 @@ type PostLike struct {
 	UserId int
 	PostId int
 }
-type Createdstuff struct {
+type CreatedPosts struct {
 	UserID    int
 	PostID    int
 	PostTopic string
 }
-type Likedstuff struct {
+type LikedPosts struct {
 	User      string
 	PostID    int
 	CommentId int
 	Title     string
 }
-type Forumstuff struct {
+type LikedComments struct {
+	CommentID int
+	PostId    int
+	Content   string
+}
+type Forum struct {
 	Loggedin       bool
 	LoggedUser     Memberlist
-	CreatedPosts   []Createdstuff
-	LikedStuff     []PostLike
-	LikedComments  []Likedstuff
+	CreatedPosts   []CreatedPosts
+	LikedComments  []LikedComments
+	LikedPosts     []LikedPosts
 	CurrentPost    Forumdata
 	CurrentComment Commentdata
 	Forum_data     []Forumdata
@@ -89,6 +94,6 @@ type MyError struct{}
 
 var (
 	DataBase           *sql.DB
-	Web                Forumstuff
+	Web                Forum
 	userRequestAmounts = make(map[string]int)
 )

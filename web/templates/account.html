@@ -20,9 +20,17 @@
 
 <div id="postsliked">
   <h2>Posts liked by you:</h2>
-  {{range .LikedComments}}
+  {{range .LikedPosts}}
     <a href="post/{{.PostID}}">{{.Title}}</a> <br> <br>
   {{end}}
 </div>
+
+<div id="commentsliked">
+  <h2>Comments liked by you:</h2>
+  {{range .LikedComments}}
+    <a href="post/{{.PostId}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.CommentID}} {{.Content}}</a> <br> <br>
+  {{end}}
+</div>
+
 </div>
 {{end}}

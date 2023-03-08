@@ -232,8 +232,8 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	Web.Loggedin = false
 
 	Web.LoggedUser = Memberlist{}
-	Web.CreatedPosts = []Createdstuff{} // TODO vaadata mida see värk siin teeb
-	Web.LikedComments = []Likedstuff{}
+	Web.CreatedPosts = []CreatedPosts{} // TODO vaadata mida see värk siin teeb
+	Web.LikedPosts = []LikedPosts{}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -358,16 +358,17 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 
 func accountDetails(w http.ResponseWriter, r *http.Request) {
 	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
-	Web.CreatedPosts = []Createdstuff{}
-	Web.LikedComments = []Likedstuff{}
-
+	Web.CreatedPosts = []CreatedPosts{}
+	Web.LikedPosts = []LikedPosts{}
+	Web.LikedComments = []LikedComments{}
 	switch r.Method {
 	case "GET":
 		if !Web.Loggedin {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 		UserPosted()
-		LikesSent()
+		//GetCommentLikes()
+		GetPostLikes()
 		DateCreated()
 		createAndExecute(w, "account.html")
 	}
