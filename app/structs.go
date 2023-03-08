@@ -6,12 +6,13 @@ import (
 )
 
 type Memberlist struct {
-	ID          int
-	Username    string
-	Password    string
-	Email       string
-	DateCreated string
-	Session     string
+	ID            int
+	Username      string
+	Password      string
+	Email         string
+	DateCreated   string
+	Session       string
+	Notifications int
 }
 
 type Category struct {

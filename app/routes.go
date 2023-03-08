@@ -48,7 +48,8 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	Web.Forum_data = AllPosts(Web.SelectedFilter)
 	Web.Categories = getCategories()
 	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
-
+	Web.Notifications = GetNotifications()
+	Web.LoggedUser.Notifications = len(Web.Notifications)
 	switch r.Method {
 	case "GET":
 		createAndExecute(w, "homepage.html")
@@ -211,7 +212,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 		Web.Loggedin = true
 		Web.LoggedUser = user
-
+	
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }

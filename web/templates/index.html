@@ -24,7 +24,7 @@
 
                 </div>
                 <b style="float:right;">Welcome, <i>{{ .LoggedUser.Username }}</i>!</b>
-                <a href="/activity" id="Noti"> </img></a>
+                <a href="/activity" id="Noti"></img>{{.LoggedUser.Notifications}}</a>
                 <br>
                 {{ else }}
                 <div style="float:left;">

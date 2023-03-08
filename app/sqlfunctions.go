@@ -357,11 +357,9 @@ func SavePostLike(like string, userId, postId int, title string) {
 			fmt.Println(err)
 		} else {
 			content := like + "d your post: " + title
-
-			_, err2 := DataBase.Exec("INSERT INTO notifications VALUES((SELECT userid from posts where id = ? ),(SELECT id FROM posts WHERE id = ? ),(SELECT username  FROM users WHERE id = ?),?)", postId, postId, userId, content)
-			if err2 != nil {
-				fmt.Println(err2)
-			}
+			//notidata, _ := DataBase.Prepare(`SELECT * FROM notifications WHERE NOT EXISTS(SELECT * FROM notifications)`)
+			DataBase.Exec(`INSERT INTO notifications VALUES((SELECT userid from posts where id = ? ),
+			(SELECT id FROM posts WHERE id = ? ),(SELECT username  FROM users WHERE id = ?),?)`, postId, postId, userId, content)
 		}
 	}
 }
@@ -389,12 +387,10 @@ func SaveCommentLike(like string, userId, commentId int) {
 				)
 			}
 			content := like + "d your comment: " + comment
-			_, err2 := DataBase.Exec(`INSERT INTO notifications VALUES((SELECT userid from comments where id = ? ),
+			DataBase.Exec(`INSERT INTO notifications VALUES((SELECT userid from comments where id = ? ),
 			(SELECT postId FROM comments WHERE id = ? ),
 			(SELECT username  FROM users WHERE id = ?),?)`, commentId, commentId, userId, content)
-			if err2 != nil {
-				fmt.Println(err2)
-			}
+
 		}
 	}
 }
