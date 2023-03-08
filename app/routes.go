@@ -176,7 +176,7 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
 
 	switch r.Method {
 	case "GET":
@@ -222,7 +222,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
 	http.SetCookie(w, &http.Cookie{
 		Name:   "session-id",
 		Value:  "",
@@ -238,7 +238,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
 
 	switch r.Method {
 	case "GET":
@@ -296,7 +296,7 @@ func commentHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		createAndExecuteError(w, "We know where you live")
 	case "POST":
-		Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+		Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
 
 		comment := r.FormValue("forum_commentbox")
 
@@ -320,7 +320,7 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		createAndExecuteError(w, "We know where you live")
 	case "POST":
-		Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+		Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
 
 		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
 			w.WriteHeader(400)
@@ -339,7 +339,7 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		createAndExecuteError(w, "We know where you live")
 	case "POST":
-		Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+		Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
 		postLike := r.FormValue("button")
 
 		commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
@@ -377,7 +377,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 }
 
 func filterHandler(w http.ResponseWriter, r *http.Request) {
-	Web.Loggedin = hasCookie(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
 	filterstatus := r.FormValue("categoryfilter")
 
 	switch r.Method {

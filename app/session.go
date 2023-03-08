@@ -3,7 +3,6 @@ package app
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -69,21 +68,6 @@ func getUserFromSession(r *http.Request) (Memberlist, bool) {
 	}
 
 	return user, true
-}
-
-func hasCookie(r *http.Request) bool {
-	cookie, err := r.Cookie("session-id")
-	if err != nil {
-		return false
-	}
-	var count int
-	err = DataBase.QueryRow("SELECT COUNT(*) FROM session WHERE key = ?", cookie.Value).Scan(&count)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return count == 1
 }
 
 func ClearCookies(w http.ResponseWriter, r *http.Request) {
