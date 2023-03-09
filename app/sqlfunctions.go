@@ -239,6 +239,14 @@ func GetPostById(postId int) (Forumdata, error) {
 
 func DeletePostById(id string) {
 	DataBase.Exec("DELETE FROM posts WHERE id= ?", id)
+	_, err := DataBase.Exec("DELETE FROM comments WHERE postid= ?", id)
+	if err != nil {
+		fmt.Println(err)
+	}
+	_, err2 := DataBase.Exec("DELETE FROM notifications WHERE PostID= ?", id)
+	if err2 != nil {
+		fmt.Println(err)
+	}
 }
 
 func DeleteCommentById(id string, postid int) {
@@ -250,10 +258,6 @@ func DeleteCommentById(id string, postid int) {
 	if err2 != nil {
 		fmt.Println(err)
 	}
-}
-
-func DeleteNoticfication(id int) {
-
 }
 
 func SaveComment(content string, userId int, postId int, title string, user string, authorUserId int) bool {
