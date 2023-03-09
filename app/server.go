@@ -9,9 +9,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func Server() {
+func Server(port string) {
 	var err error
-	port := "8081" // webserver port
 
 	mux := http.NewServeMux()
 	fs := http.FileServer(http.Dir("./web"))
