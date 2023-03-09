@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -254,7 +255,12 @@ func DeleteCommentById(id string, postid int) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	_, err2 := DataBase.Exec("DELETE FROM notifications WHERE PostID= ?", postid)
+	commentID, erro := strconv.Atoi(id)
+	if erro != nil {
+		fmt.Println(erro)
+	}
+
+	_, err2 := DataBase.Exec("DELETE FROM notifications WHERE CommentID = ?", commentID)
 	if err2 != nil {
 		fmt.Println(err)
 	}
@@ -265,11 +271,21 @@ func SaveComment(content string, userId int, postId int, title string, user stri
 	currentTime := time.Now().Format("02.01.2006 15:04")
 	statement.Exec(userId, content, postId, currentTime)
 
+	rows, err1 := DataBase.Query("SELECT id from comments WHERE userId = ? AND content = ? AND postId = ?", userId, content, postId)
+	if err1 != nil {
+		fmt.Println(err1)
+	}
 	//authorUDIz
+	var commentID int
+
+	for rows.Next() {
+		rows.Scan(&commentID)
+	}
+	fmt.Println(commentID)
 	activity := "commented"
 	notification := "on your post: " + title
 	//statement.Exec("INSERT INTO notifications VALUES(?,?,?,?)", authorUserId, postId, user, title)
-	_, err := DataBase.Exec("INSERT INTO notifications VALUES(?,?,?,?,?)", authorUserId, postId, user, activity, notification)
+	_, err := DataBase.Exec("INSERT INTO notifications VALUES(?,?,?,?,?,?)", authorUserId, postId, user, commentID, activity, notification)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -376,7 +392,7 @@ func SavePostLike(like string, userId, postId int, title string) {
 			content := "your post: " + title
 			//notidata, _ := DataBase.Prepare(`SELECT * FROM notifications WHERE NOT EXISTS(SELECT * FROM notifications)`)
 			DataBase.Exec(`INSERT INTO notifications VALUES((SELECT userid from posts where id = ? ),
-			(SELECT id FROM posts WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?)`, postId, postId, userId, activity, content)
+			(SELECT id FROM posts WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?,?)`, postId, postId, userId, 0, activity, content)
 		}
 	}
 }
@@ -406,7 +422,7 @@ func SaveCommentLike(like string, userId, commentId int) {
 			activity := like + "s"
 			content := "your comment: " + comment
 			DataBase.Exec(`INSERT INTO notifications VALUES((SELECT userid from comments where id = ? ),
-			(SELECT postId FROM comments WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?)`, commentId, commentId, userId, activity, content)
+			(SELECT postId FROM comments WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?,?)`, commentId, commentId, userId, commentId, activity, content)
 
 		}
 	}
