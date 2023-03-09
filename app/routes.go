@@ -133,7 +133,12 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 			title, content := r.FormValue("post_header"), r.FormValue("post_content")
 
 			Web.CurrentPost.Edit = false
-			EditPostById(postId, title, content)
+			imageName, err := uploadFile(w, r)
+			if err != nil {
+				fmt.Println(err)
+				createAndExecuteError(w, "505 INTERNAL ERROR")
+			}
+			EditPostById(postId, title, imageName, content)
 			http.Redirect(w, r, "/post/"+strconv.Itoa(postId), http.StatusSeeOther)
 
 		}

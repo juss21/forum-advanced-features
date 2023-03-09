@@ -454,13 +454,13 @@ func CanRegister(uid string, password string, email string, cpassword string, ce
 	return true
 }
 
-func EditPostById(postId int, title, content string) error {
-	// if image == "" {
-	// 	image = "false"
-	// }
+func EditPostById(postId int, title, image, content string) error {
+	if image == "" {
+		image = Web.CurrentPost.Image
+	}
 	currentTime := time.Now().Format("02.01.2006 15:04")
 
-	_, err := DataBase.Exec("UPDATE posts SET title=?, content = ?,  date = ?   where id = ? ", title, content, currentTime, postId)
+	_, err := DataBase.Exec("UPDATE posts SET title=?, content = ?,  date = ?, image=?   where id = ? ", title, content, currentTime, image, postId)
 
 	return err
 }
