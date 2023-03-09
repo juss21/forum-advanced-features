@@ -260,10 +260,12 @@ func SaveComment(content string, userId int, postId int, title string, user stri
 	statement, _ := DataBase.Prepare("INSERT INTO comments (userId, content, postId, datecommented) VALUES (?,?,?,?)")
 	currentTime := time.Now().Format("02.01.2006 15:04")
 	statement.Exec(userId, content, postId, currentTime)
-	notification := " commented on your post: " + title
 
+	//authorUDIz
+	activity := "commented"
+	notification := "on your post: " + title
 	//statement.Exec("INSERT INTO notifications VALUES(?,?,?,?)", authorUserId, postId, user, title)
-	_, err := DataBase.Exec("INSERT INTO notifications VALUES(?,?,?,?)", authorUserId, postId, user, notification)
+	_, err := DataBase.Exec("INSERT INTO notifications VALUES(?,?,?,?,?)", authorUserId, postId, user, activity, notification)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -342,6 +344,7 @@ func GetNotifications() []Notifications {
 			&notification.UserID,
 			&notification.PostID,
 			&notification.User,
+			&notification.Activity,
 			&notification.Content,
 		)
 		notifications = append(notifications, notification)
@@ -365,10 +368,11 @@ func SavePostLike(like string, userId, postId int, title string) {
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			content := like + "d your post: " + title
+			activity := like + "s"
+			content := "your post: " + title
 			//notidata, _ := DataBase.Prepare(`SELECT * FROM notifications WHERE NOT EXISTS(SELECT * FROM notifications)`)
 			DataBase.Exec(`INSERT INTO notifications VALUES((SELECT userid from posts where id = ? ),
-			(SELECT id FROM posts WHERE id = ? ),(SELECT username  FROM users WHERE id = ?),?)`, postId, postId, userId, content)
+			(SELECT id FROM posts WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?)`, postId, postId, userId, activity, content)
 		}
 	}
 }
@@ -395,10 +399,10 @@ func SaveCommentLike(like string, userId, commentId int) {
 					&comment,
 				)
 			}
-			content := like + "d your comment: " + comment
+			activity := like + "s"
+			content := "your comment: " + comment
 			DataBase.Exec(`INSERT INTO notifications VALUES((SELECT userid from comments where id = ? ),
-			(SELECT postId FROM comments WHERE id = ? ),
-			(SELECT username  FROM users WHERE id = ?),?)`, commentId, commentId, userId, content)
+			(SELECT postId FROM comments WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?)`, commentId, commentId, userId, activity, content)
 
 		}
 	}

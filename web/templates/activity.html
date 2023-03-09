@@ -5,8 +5,7 @@
     {{range .Notifications}}
     <p>
     <a href="post/{{.PostID}}">
-    {{.User}} 
-    {{.Content}}</a> <br>
+    {{.User}}  {{.Activity}}  {{.Content}}</a> <br>
     </p>
     {{end}}
 </div>

@@ -11,7 +11,7 @@ import (
 
 func Server() {
 	var err error
-	port := "8080" // webserver port
+	port := "8081" // webserver port
 
 	mux := http.NewServeMux()
 	fs := http.FileServer(http.Dir("./web"))

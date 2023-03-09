@@ -93,10 +93,11 @@ type Forum struct {
 	Notifications    []Notifications
 }
 type Notifications struct {
-	UserID  int
-	PostID  int
-	User    string
-	Content string
+	UserID   int
+	PostID   int
+	User     string
+	Activity string
+	Content  string
 }
 
 type MyError struct{}
