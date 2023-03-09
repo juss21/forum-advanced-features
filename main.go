@@ -11,7 +11,7 @@ import (
 
 func main() {
 	file, err := os.Stat("database.db")
-	port := "8080" // webserver port
+	port := "8082" // webserver port
 	// if .db file deleted, it will create new one and populate with data
 	if errors.Is(err, os.ErrNotExist) {
 		app.DataBase, _ = sql.Open("sqlite3", "database.db")

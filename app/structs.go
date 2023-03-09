@@ -96,6 +96,7 @@ type Notifications struct {
 	UserID   int
 	PostID   int
 	User     string
+	TargetID int
 	Activity string
 	Content  string
 }

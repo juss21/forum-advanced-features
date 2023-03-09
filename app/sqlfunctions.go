@@ -260,7 +260,7 @@ func DeleteCommentById(id string, postid int) {
 		fmt.Println(erro)
 	}
 
-	_, err2 := DataBase.Exec("DELETE FROM notifications WHERE CommentID = ?", commentID)
+	_, err2 := DataBase.Exec("DELETE FROM notifications WHERE targetID = ?", commentID)
 	if err2 != nil {
 		fmt.Println(err)
 	}
@@ -364,6 +364,7 @@ func GetNotifications() []Notifications {
 			&notification.UserID,
 			&notification.PostID,
 			&notification.User,
+			&notification.TargetID,
 			&notification.Activity,
 			&notification.Content,
 		)
@@ -380,21 +381,38 @@ func SavePostLike(like string, userId, postId int, title string) {
 	if like == dbLike {
 		toggleLike, _ := DataBase.Prepare("DELETE FROM postlikes WHERE  userId = ? and postId = ?")
 		toggleLike.Exec(userId, postId)
+
+		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and userId = ? and postId = ?`)
+		notifyLike.Exec(userId, postId)
 	} else {
 		toggleLike, _ := DataBase.Prepare("DELETE FROM postlikes WHERE  userId = ? and postId = ?")
 		toggleLike.Exec(userId, postId)
 		saving, _ := DataBase.Prepare("INSERT INTO postlikes (name, userId, postId) VALUES (?,?,?)")
 		_, err := saving.Exec(like, userId, postId)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			activity := like + "s"
-			content := "your post: " + title
-			//notidata, _ := DataBase.Prepare(`SELECT * FROM notifications WHERE NOT EXISTS(SELECT * FROM notifications)`)
-			DataBase.Exec(`INSERT INTO notifications VALUES((SELECT userid from posts where id = ? ),
-			(SELECT id FROM posts WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?,?)`, postId, postId, userId, 0, activity, content)
+
+		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and userId = ? and postId = ?`)
+		notifyLike.Exec(userId, postId)
+		notifyUpdate, _ := DataBase.Prepare(`INSERT INTO notifications VALUES((SELECT userid from posts where id = ? ),
+		(SELECT id FROM posts WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?,?)`)
+
+		activity := like + "s"
+		content := "your post: " + title
+		_, err2 := notifyUpdate.Exec(postId, postId, userId, 0, activity, content)
+
+		if err == nil || err2 != nil {
+			return
 		}
 	}
+
+}
+
+func opposite(str string) string {
+	if str == "like" {
+		return "dislike"
+	} else if str == "dislike" {
+		return "like"
+	}
+	return ""
 }
 
 func SaveCommentLike(like string, userId, commentId int) {
@@ -404,26 +422,33 @@ func SaveCommentLike(like string, userId, commentId int) {
 	if like == dbLike {
 		toggleLike, _ := DataBase.Prepare("DELETE FROM commentLikes WHERE  userId = ? and commentId = ?")
 		toggleLike.Exec(userId, commentId)
+
+		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and userId = ? and targetID = ?`)
+		notifyLike.Exec(userId, commentId)
 	} else {
 		toggleLike, _ := DataBase.Prepare("DELETE FROM commentLikes WHERE  userId = ? and commentId = ?")
 		toggleLike.Exec(userId, commentId)
 		saving, _ := DataBase.Prepare("INSERT INTO commentLikes (name, userId, commentId) VALUES (?,?,?)")
 		_, err := saving.Exec(like, userId, commentId)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			rows, _ := DataBase.Query("SELECT content from comments where id = ?", commentId)
-			var comment string
-			for rows.Next() {
-				rows.Scan(
-					&comment,
-				)
-			}
-			activity := like + "s"
-			content := "your comment: " + comment
-			DataBase.Exec(`INSERT INTO notifications VALUES((SELECT userid from comments where id = ? ),
-			(SELECT postId FROM comments WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?,?)`, commentId, commentId, userId, commentId, activity, content)
 
+		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and userId = ? and targetID = ?`)
+		notifyLike.Exec(userId, commentId)
+		notifyUpdate, _ := DataBase.Prepare(`INSERT INTO notifications VALUES((SELECT userid from comments where id = ? ),
+		(SELECT postId FROM comments WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?,?)`)
+		rows, _ := DataBase.Query("SELECT content from comments where id = ?", commentId)
+		var comment string
+		for rows.Next() {
+			rows.Scan(
+				&comment,
+			)
+		}
+		activity := like + "s"
+		content := "your comment: " + comment
+
+		_, err2 := notifyUpdate.Exec(commentId, commentId, userId, commentId, activity, content)
+
+		if err == nil || err2 != nil {
+			return
 		}
 	}
 }
