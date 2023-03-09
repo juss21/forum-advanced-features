@@ -53,13 +53,14 @@ func GetCreatedComments() {
 	}
 }
 
-func GetCommentLikes() {
+func GetLikedComments(likeswitch string) {
+
 	rows, err := DataBase.Query(`SELECT comments.id, content, postId
 	FROM comments
 	LEFT join commentLikes on comments.id = commentLikes.commentId
-	where commentLikes.name = "like"`)
+	where commentLikes.name = ?`, likeswitch)
 	if err != nil {
-		fmt.Println("GetCommentLikes()", err)
+		fmt.Println("GetLikedComments()", err)
 		os.Exit(0)
 	}
 
@@ -71,18 +72,22 @@ func GetCommentLikes() {
 			&content,
 			&postID,
 		)
-		Web.LikedComments = append(Web.LikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content})
+		if likeswitch == "like" {
+			Web.LikedComments = append(Web.LikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content})
+		} else if likeswitch == "dislike" {
+			Web.DisLikedComments = append(Web.DisLikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content})
+		}
 	}
 }
 
-func GetPostLikes() {
+func GetLikedPosts(likeswitch string) {
 	userid := Web.LoggedUser.ID
 
 	rows, err := DataBase.Query(`SELECT posts.id, posts.title, users.username
 	FROM postlikes
 	LEFT join users on postlikes.userId = users.id
     LEFT JOIN posts on postlikes.postId = posts.id
-	where postlikes.name = "like" and users.id = ?`, userid)
+	where postlikes.name = ? and users.id = ?`, likeswitch, userid)
 	if err != nil {
 		fmt.Println("GetPostLikes()", err)
 		os.Exit(0)
@@ -95,7 +100,11 @@ func GetPostLikes() {
 			&title,
 			&name,
 		)
-		Web.LikedPosts = append(Web.LikedPosts, LikedPosts{PostID: id, User: name, Title: title})
+		if likeswitch == "like" {
+			Web.LikedPosts = append(Web.LikedPosts, LikedPosts{PostID: id, User: name, Title: title})
+		} else if likeswitch == "dislike" {
+			Web.DisLikedPosts = append(Web.DisLikedPosts, LikedPosts{PostID: id, User: name, Title: title})
+		}
 	}
 }
 

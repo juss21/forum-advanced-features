@@ -192,13 +192,16 @@ a {
 }
 
 .account #postscreated {
+    text-decoration: none;
     border-radius: 10px;
     border: 4px solid;
     border-color: rgb(0, 0, 0);
     background-color: rgba(31, 31, 31, 0.5);
 
 }
-
+.account #postscreated a {
+    text-decoration: none;
+}
 .account #postsliked {
     border-radius: 10px;
     border: 4px solid;

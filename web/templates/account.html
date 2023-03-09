@@ -8,40 +8,47 @@
     </h2>
   </div>
 
-<div id="postscreated">
-      <h2>Posts created by you:</h2>
-      {{range .CreatedPosts}}
-      <a href="post/{{.PostID}}">{{.PostTopic}}</a> <br> <br>
-      {{end}}
+  <div id="postscreated">
+    <h2>Posts created by you:</h2>
+    {{range .CreatedPosts}}
+    <a href="post/{{.PostID}}">{{.PostTopic}}</a> <br> <br>
+    {{end}}
+
+    <h2>Posts liked by you:</h2>
+    {{range .LikedPosts}}
+    <a href="post/{{.PostID}}">{{.Title}}</a> <br> <br>
+    {{end}}
+
+
+    <h2>Posts disliked by you:</h2>
+    {{range .DisLikedPosts}}
+    <a href="post/{{.PostID}}">{{.Title}}</a> <br> <br>
+    {{end}}
+
+    <br>
   </div>
 
   <br>
 
+  <div id="postscreated">
+    <h2>Comments created by you:</h2>
+    {{range .CreatedComments}}
+    <a href="post/{{.PostID}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.CommentID}} {{.Content}}</a>
+    <br> <br>
+    {{end}}
+    <br>
 
-<div id="postsliked">
-  <h2>Posts liked by you:</h2>
-  {{range .LikedPosts}}
-    <a href="post/{{.PostID}}">{{.Title}}</a> <br> <br>
-  {{end}}
-</div>
-<br>
-<br>
-
-<div id="postscreated">
-  <h2>Comments created by you:</h2>
-  {{range .CreatedComments}}
-    <a href="post/{{.PostID}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.CommentID}} {{.Content}}</a> <br> <br>
-  {{end}}
-</div>
-<br>
-
-
-<div id="postsliked">
-  <h2>Comments liked by you:</h2>
-  {{range .LikedComments}}
-    <a href="post/{{.PostId}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.CommentID}} {{.Content}}</a> <br> <br>
-  {{end}}
-</div>
+    <h2>Comments liked by you:</h2>
+    {{range .LikedComments}}
+    <a href="post/{{.PostId}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.CommentID}} {{.Content}}</a>
+    <br> <br>
+    {{end}}
+    <h2>Comments disliked by you:</h2>
+    {{range .DisLikedComments}}
+    <a href="post/{{.PostId}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.CommentID}} {{.Content}}</a>
+    <br> <br>
+    {{end}}
+  </div>
 
 
 </div>

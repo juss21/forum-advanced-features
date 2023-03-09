@@ -212,7 +212,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 		Web.Loggedin = true
 		Web.LoggedUser = user
-	
+
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
@@ -362,16 +362,21 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 	Web.CreatedComments = []CreatedComments{}
 	Web.CreatedPosts = []CreatedPosts{}
 	Web.LikedPosts = []LikedPosts{}
+	Web.DisLikedPosts = []LikedPosts{}
 	Web.LikedComments = []LikedComments{}
+	Web.DisLikedComments = []LikedComments{}
+
 	switch r.Method {
 	case "GET":
 		if !Web.Loggedin {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 		UserPosted()
-		GetCommentLikes()
+		GetLikedComments("like")
+		GetLikedComments("dislike")
 		GetCreatedComments()
-		GetPostLikes()
+		GetLikedPosts("like")
+		GetLikedPosts("dislike")
 		DateCreated()
 		createAndExecute(w, "account.html")
 	}

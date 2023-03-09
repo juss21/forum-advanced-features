@@ -74,21 +74,23 @@ type LikedComments struct {
 	Content   string
 }
 type Forum struct {
-	Loggedin        bool
-	LoggedUser      Memberlist
-	CreatedComments []CreatedComments
-	CreatedPosts    []CreatedPosts
-	LikedComments   []LikedComments
-	LikedPosts      []LikedPosts
-	CurrentPost     Forumdata
-	CurrentComment  Commentdata
-	Forum_data      []Forumdata
-	User_data       []Memberlist
-	ErrorMsg        string
-	ErrorPage       *template.Template
-	Categories      []Category
-	SelectedFilter  string
-	Notifications   []Notifications
+	Loggedin         bool
+	LoggedUser       Memberlist
+	CreatedComments  []CreatedComments
+	CreatedPosts     []CreatedPosts
+	LikedComments    []LikedComments
+	LikedPosts       []LikedPosts
+	DisLikedPosts    []LikedPosts
+	DisLikedComments []LikedComments
+	CurrentPost      Forumdata
+	CurrentComment   Commentdata
+	Forum_data       []Forumdata
+	User_data        []Memberlist
+	ErrorMsg         string
+	ErrorPage        *template.Template
+	Categories       []Category
+	SelectedFilter   string
+	Notifications    []Notifications
 }
 type Notifications struct {
 	UserID  int
