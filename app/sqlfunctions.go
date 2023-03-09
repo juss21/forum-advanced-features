@@ -281,7 +281,7 @@ func SaveComment(content string, userId int, postId int, title string, user stri
 	for rows.Next() {
 		rows.Scan(&commentID)
 	}
-	fmt.Println(commentID)
+	//fmt.Println(commentID)
 	activity := "commented"
 	notification := "on your post: " + title
 	//statement.Exec("INSERT INTO notifications VALUES(?,?,?,?)", authorUserId, postId, user, title)
@@ -382,7 +382,7 @@ func SavePostLike(like string, userId, postId int, title string) {
 		toggleLike, _ := DataBase.Prepare("DELETE FROM postlikes WHERE  userId = ? and postId = ?")
 		toggleLike.Exec(userId, postId)
 
-		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and userId = ? and postId = ?`)
+		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and user = (SELECT username FROM users WHERE id = ?) and postId = ?`)
 		notifyLike.Exec(userId, postId)
 	} else {
 		toggleLike, _ := DataBase.Prepare("DELETE FROM postlikes WHERE  userId = ? and postId = ?")
@@ -390,7 +390,7 @@ func SavePostLike(like string, userId, postId int, title string) {
 		saving, _ := DataBase.Prepare("INSERT INTO postlikes (name, userId, postId) VALUES (?,?,?)")
 		_, err := saving.Exec(like, userId, postId)
 
-		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and userId = ? and postId = ?`)
+		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and user = (SELECT username FROM users WHERE id = ?) and postId = ?`)
 		notifyLike.Exec(userId, postId)
 		notifyUpdate, _ := DataBase.Prepare(`INSERT INTO notifications VALUES((SELECT userid from posts where id = ? ),
 		(SELECT id FROM posts WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?,?)`)
@@ -423,7 +423,7 @@ func SaveCommentLike(like string, userId, commentId int) {
 		toggleLike, _ := DataBase.Prepare("DELETE FROM commentLikes WHERE  userId = ? and commentId = ?")
 		toggleLike.Exec(userId, commentId)
 
-		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and userId = ? and targetID = ?`)
+		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and user = (SELECT username FROM users WHERE id = ?) and targetID = ?`)
 		notifyLike.Exec(userId, commentId)
 	} else {
 		toggleLike, _ := DataBase.Prepare("DELETE FROM commentLikes WHERE  userId = ? and commentId = ?")
@@ -431,7 +431,7 @@ func SaveCommentLike(like string, userId, commentId int) {
 		saving, _ := DataBase.Prepare("INSERT INTO commentLikes (name, userId, commentId) VALUES (?,?,?)")
 		_, err := saving.Exec(like, userId, commentId)
 
-		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and userId = ? and targetID = ?`)
+		notifyLike, _ := DataBase.Prepare(`DELETE FROM notifications WHERE activity != 'commented' and user = (SELECT username FROM users WHERE id = ?) and targetID = ?`)
 		notifyLike.Exec(userId, commentId)
 		notifyUpdate, _ := DataBase.Prepare(`INSERT INTO notifications VALUES((SELECT userid from comments where id = ? ),
 		(SELECT postId FROM comments WHERE id = ? ), (SELECT username  FROM users WHERE id = ?),?,?,?)`)
