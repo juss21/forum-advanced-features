@@ -4,7 +4,7 @@
     <div id="eyo">
     {{range .Notifications}}
     <p>
-    <a href="post/{{.PostID}}">
+    <a href="post/{{.PostID}}" id="NotificationID" value="deletenoti">
     {{.User}}  {{.Activity}}  {{.Content}}</a> <br>
     </p>
     {{end}}

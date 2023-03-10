@@ -28,20 +28,25 @@ a {
 .header i {
     color: red;
 }
+.header #notinumb {
+    background-color: rgba(255, 0, 0, 0.63);
+    color: rgb(255, 255, 255);
+    border-radius: 100%;
+    max-width: 15px;
+    max-height: 15px;
+    font-size: 12px;
+    text-align: center;
+    background-size: 100%;
+}
 .header #Noti {
     border-radius: 100%;
     background-color: rgba(34, 34, 34, 0.61);
     float: right;
-    overflow: hidden;
-    min-width: 20px;
-    min-height: 20px;
-    max-width: 20px;
-    max-height: 20px;
+    min-width: 25px;
+    min-height: 25px;
     border-color: red;
     color: red;
-    padding: 5px;
-    font-size: 17px;
-    text-align: right;   /*<img src="../images/yellow-notification-bell-icon-png-11638985050goiowxiw8o.png"></img>*/
+   /*<img src="../images/yellow-notification-bell-icon-png-11638985050goiowxiw8o.png"></img>*/
     background-position: center;
     background-image: url("../images/yellow-notification-bell-icon-png-11638985050goiowxiw8o.png");
     background-size: 20px;
@@ -177,6 +182,7 @@ a {
 .index #filter:hover {
     border-color: rgb(255, 190, 70);
 }
+
 
 /*personal accountpage*/
 .account {

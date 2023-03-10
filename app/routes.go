@@ -91,7 +91,8 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	postId, _ := strconv.Atoi(path.Base(r.URL.Path))
 	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
-
+	Web.Notifications = GetNotifications()
+	Web.LoggedUser.Notifications = len(Web.Notifications)
 	post, err := GetPostById(postId)
 	if err != nil {
 		w.WriteHeader(400)
@@ -291,6 +292,8 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "GET":
+		Web.Notifications = GetNotifications()
+		Web.LoggedUser.Notifications = len(Web.Notifications)
 		Web.User_data = GetUsers()
 		createAndExecute(w, "members.html")
 	}
@@ -376,6 +379,8 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 		if !Web.Loggedin {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
+		Web.Notifications = GetNotifications()
+		Web.LoggedUser.Notifications = len(Web.Notifications)
 		UserPosted()
 		GetLikedComments("like")
 		GetLikedComments("dislike")
@@ -439,6 +444,20 @@ func notificationHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		Web.Notifications = GetNotifications()
+		Web.LoggedUser.Notifications = len(Web.Notifications)
 		createAndExecute(w, "activity.html")
-	}
+
+	case "POST":
+		if r.FormValue("deletenoti") != "" {
+			NotificationID := r.FormValue("NotificationID")
+			fmt.Println(NotificationID)
+			/*DeleteNoticfication(Web.Notifications[1].UserID,
+				 Web.Notifications[1].PostID,
+				  Web.Notifications[1].User,
+				   Web.Notifications[1].TargetID,
+				   Web.Notifications[1].Content)*/
+			//http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
+	} 
+	
 }

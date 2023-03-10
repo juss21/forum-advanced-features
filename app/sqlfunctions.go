@@ -237,6 +237,13 @@ func GetPostById(postId int) (Forumdata, error) {
 
 	return post, err
 }
+func DeleteNoticfication(UserID int, PostID int, User string, TargetID int, Content string) {
+	_, err := DataBase.Exec(`DELETE FROM notifications WHERE UserID= ? AND PostID= ? AND User= ?
+	 AND TargetID= ? AND Content=?`, UserID, PostID, User, TargetID, Content)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
 
 func DeletePostById(id string) {
 	DataBase.Exec("DELETE FROM posts WHERE id= ?", id)
@@ -246,7 +253,7 @@ func DeletePostById(id string) {
 	}
 	_, err2 := DataBase.Exec("DELETE FROM notifications WHERE PostID= ?", id)
 	if err2 != nil {
-		fmt.Println(err)
+		fmt.Println(err2)
 	}
 }
 

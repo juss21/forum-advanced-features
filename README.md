@@ -2,19 +2,25 @@
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger) 
 Authors: Juss Märtson, Andrei Redi, Rain-Ander Laagus, Aleksandr Lavronenko, Joel Meeks
 
-This project consists in creating a web forum that allows :
+This bonus task consists of making our forum more interactive :
 
-- communication between users.
-- associating categories to posts.
-- liking and disliking posts and comments.
-- filtering posts.
+- Comment and Post Removal/Editing.
+- Saves all user activity and displays it on "Account" page.
+- Notifications from other users activity, who liked/commented your post or comment.
 
-This project is handled with Docker 
+## Useful links
+### audit page: https://github.com/01-edu/public/blob/master/subjects/forum/advanced-features/audit.md
+
 # Usage
+#### The Easy Way
+```
+~/j/go/forum-forum-advanced-features > go run .
+```
+
 #### Docker script 🐋
 - ##### Try running bash script `bash start_Docker.sh`
 ```
-~/j/go/forum > bash start_Docker.sh
+~/j/go/forum-advanced-features > bash start_Docker.sh
 Building docker image and container
 
 🎉🎉🎉To stop server, press CTRL+C🎉🎉🎉
@@ -24,19 +30,7 @@ Starting server at port 8080
 ```
 Docker image and container are deleted afterwards. 
 
-#### By hand ⚒️
-- ##### Try running command `go build`
-
-    Now you should have file named `forum` 
-```bash
-~/j/go/forum > go build
-~/j/go/forum > ls
-Dockerfile   forum   main.go     sqlfunctions.go  web
-...
-```
-- ##### Now, that you’ve created your executable you can run it `./forum`
-```
-~/j/go/forum > ./forum
-Starting server at port 8080
-~/j/go/forum >
-```
+# Good to know
+- All your account activity (Posts, comments, likes, dislikes) is under "Account" page.
+- All notifications from other users are under "Activity" page, you can go there by clicking the bell button on top right corner. 
+- Notification will disappear once you click on it.
