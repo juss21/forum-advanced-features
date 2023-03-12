@@ -6,7 +6,7 @@ This bonus task consists of making our forum more interactive :
 
 - Comment and Post Removal/Editing.
 - Saves all user activity and displays it on "Account" page.
-- Notifications from other users activity, who liked/commented your post or comment.
+- Displays notifications from other users, who liked/disliked/commented your post or comment.
 
 ## Useful links
 ### audit page: https://github.com/01-edu/public/blob/master/subjects/forum/advanced-features/audit.md
@@ -31,6 +31,6 @@ Starting server at port 8080
 Docker image and container are deleted afterwards. 
 
 # Good to know
-- All your account activity (Posts, comments, likes, dislikes) is under "Account" page.
+- All your account activity (Posts, comments, likes, dislikes) are under "Account" page.
 - All notifications from other users are under "Activity" page, you can go there by clicking the bell button on top right corner. 
-- Notification will disappear once you click on it.
+- Notification will disappear once you go on the post it's from.
