@@ -106,6 +106,7 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		createAndExecute(w, "forumpage.html")
+		DeleteNoticfication(Web.LoggedUser.ID, postId)
 	case "POST":
 
 		if !Web.Loggedin {
@@ -441,23 +442,11 @@ func uploadFile(w http.ResponseWriter, r *http.Request) (string, error) {
 
 func notificationHandler(w http.ResponseWriter, r *http.Request) {
 	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) //skull
+	Web.Notifications = GetNotifications()
+	Web.LoggedUser.Notifications = len(Web.Notifications)
+
 	switch r.Method {
 	case "GET":
-		Web.Notifications = GetNotifications()
-		Web.LoggedUser.Notifications = len(Web.Notifications)
 		createAndExecute(w, "activity.html")
-
-	case "POST":
-		if r.FormValue("deletenoti") != "" {
-			NotificationID := r.FormValue("NotificationID")
-			fmt.Println(NotificationID)
-			/*DeleteNoticfication(Web.Notifications[1].UserID,
-				 Web.Notifications[1].PostID,
-				  Web.Notifications[1].User,
-				   Web.Notifications[1].TargetID,
-				   Web.Notifications[1].Content)*/
-			//http.Redirect(w, r, "/", http.StatusSeeOther)
-		}
-	} 
-	
+	}
 }

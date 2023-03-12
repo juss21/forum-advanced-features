@@ -237,9 +237,8 @@ func GetPostById(postId int) (Forumdata, error) {
 
 	return post, err
 }
-func DeleteNoticfication(UserID int, PostID int, User string, TargetID int, Content string) {
-	_, err := DataBase.Exec(`DELETE FROM notifications WHERE UserID= ? AND PostID= ? AND User= ?
-	 AND TargetID= ? AND Content=?`, UserID, PostID, User, TargetID, Content)
+func DeleteNoticfication(UserID, PostID int) {
+	_, err := DataBase.Exec(`DELETE FROM notifications WHERE UserID= ? AND PostID= ?`, UserID, PostID)
 	if err != nil {
 		fmt.Println(err)
 	}
