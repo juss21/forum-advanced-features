@@ -55,11 +55,13 @@ func GetCreatedComments() {
 }
 
 func GetLikedComments(likeswitch string) {
+	UserID := Web.LoggedUser.ID
 
 	rows, err := DataBase.Query(`SELECT comments.id, content, postId
 	FROM comments
+	LEFT join users on commentLikes.userId = users.id
 	LEFT join commentLikes on comments.id = commentLikes.commentId
-	where commentLikes.name = ?`, likeswitch)
+	where commentLikes.name = ? and users.id = ?`, likeswitch, UserID)
 	if err != nil {
 		fmt.Println("GetLikedComments()", err)
 		os.Exit(0)
@@ -77,6 +79,8 @@ func GetLikedComments(likeswitch string) {
 			Web.LikedComments = append(Web.LikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content})
 		} else if likeswitch == "dislike" {
 			Web.DisLikedComments = append(Web.DisLikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content})
+
+			//Web.DisLikedComments =
 		}
 	}
 }
@@ -246,14 +250,13 @@ func DeleteNoticfication(UserID, PostID int) {
 
 func DeletePostById(id string) {
 	DataBase.Exec("DELETE FROM posts WHERE id= ?", id)
-	_, err := DataBase.Exec("DELETE FROM comments WHERE postid= ?", id)
-	if err != nil {
-		fmt.Println(err)
-	}
-	_, err2 := DataBase.Exec("DELETE FROM notifications WHERE PostID= ?", id)
-	if err2 != nil {
-		fmt.Println(err2)
-	}
+	DataBase.Exec("DELETE FROM postlikes WHERE postId= ?", id)
+	DataBase.Exec("DELETE FROM commentLikes WHERE commentId= (SELECT id FROM comments WHERE postId= ?)", id)
+	DataBase.Exec("DELETE FROM comments WHERE postid= ?", id)
+	DataBase.Exec("DELETE FROM notifications WHERE PostID= ?", id)
+	DataBase.Exec("DELETE FROM postlikes WHERE postId= ?", id)
+
+	
 }
 
 func DeleteCommentById(id string, postid int) {
@@ -265,6 +268,7 @@ func DeleteCommentById(id string, postid int) {
 	if erro != nil {
 		fmt.Println(erro)
 	}
+	DataBase.Exec("DELETE FROM commentLikes WHERE commentId= ?", commentID)
 
 	_, err2 := DataBase.Exec("DELETE FROM notifications WHERE targetID = ?", commentID)
 	if err2 != nil {

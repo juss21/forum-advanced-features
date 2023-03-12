@@ -33,19 +33,18 @@
   <div id="postscreated">
     <h2>Comments created by you:</h2>
     {{range .CreatedComments}}
-    <a href="post/{{.PostID}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.CommentID}} {{.Content}}</a>
+    <a href="post/{{.PostID}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.Content}}</a>
     <br> <br>
     {{end}}
-    <br>
 
     <h2>Comments liked by you:</h2>
     {{range .LikedComments}}
-    <a href="post/{{.PostId}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.CommentID}} {{.Content}}</a>
+    <a href="post/{{.PostId}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.Content}}</a>
     <br> <br>
     {{end}}
     <h2>Comments disliked by you:</h2>
     {{range .DisLikedComments}}
-    <a href="post/{{.PostId}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.CommentID}} {{.Content}}</a>
+    <a href="post/{{.PostId}}" style="overflow: hidden; max-width: 50%; max-lines: 1;">{{.Content}}</a>
     <br> <br>
     {{end}}
   </div>

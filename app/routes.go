@@ -91,6 +91,8 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	postId, _ := strconv.Atoi(path.Base(r.URL.Path))
 	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+
+	DeleteNoticfication(Web.LoggedUser.ID, postId)
 	Web.Notifications = GetNotifications()
 	Web.LoggedUser.Notifications = len(Web.Notifications)
 	post, err := GetPostById(postId)
@@ -106,7 +108,6 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		createAndExecute(w, "forumpage.html")
-		DeleteNoticfication(Web.LoggedUser.ID, postId)
 	case "POST":
 
 		if !Web.Loggedin {
