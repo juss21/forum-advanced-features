@@ -56,7 +56,8 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		title := r.FormValue("post_header")
 		content := r.FormValue("post_content")
-		category, _ := strconv.Atoi(r.FormValue("category"))
+		//category, _ := strconv.Atoi(r.FormValue("category"))
+		category := (r.Form["category"])
 		filterstatus := r.FormValue("categoryfilter")
 
 		Web.SelectedFilter = filterstatus
@@ -79,12 +80,21 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if !SavePost(title, Web.LoggedUser.ID, content, category, imageName) {
+		/*if !SavePost(title, Web.LoggedUser.ID, content, category, imageName) {
 			createAndExecuteError(w, "You must be logged in before you post!")
 			return
-		}
+		}*/
+		for _, v := range category {
+			convert, _ := strconv.Atoi(v)
+			if !SavePost(title, Web.LoggedUser.ID, content, convert, imageName) {
+				Web.ErrorMsg = "You must be logged in before you post!"
+				createAndExecute(w, "homepage.html")
+				Web.ErrorMsg = ""
+				return
+			}
 
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
 	}
 }
 

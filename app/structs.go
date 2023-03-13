@@ -56,6 +56,7 @@ type CreatedPosts struct {
 	UserID    int
 	PostID    int
 	PostTopic string
+	PostCat   string
 }
 type LikedPosts struct {
 	User      string
@@ -72,6 +73,7 @@ type LikedComments struct {
 	CommentID int
 	PostId    int
 	Content   string
+	PostCat   string
 }
 type Forum struct {
 	Loggedin         bool

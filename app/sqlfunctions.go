@@ -75,12 +75,16 @@ func GetLikedComments(likeswitch string) {
 			&content,
 			&postID,
 		)
-		if likeswitch == "like" {
-			Web.LikedComments = append(Web.LikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content})
-		} else if likeswitch == "dislike" {
-			Web.DisLikedComments = append(Web.DisLikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content})
+		for i := 0; i < len(Web.Forum_data); i++ {
+			if Web.Forum_data[i].Id == postID {
+				if likeswitch == "like" {
+					Web.LikedComments = append(Web.LikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content, PostCat: Web.Forum_data[i].Category})
+				} else if likeswitch == "dislike" {
+					Web.DisLikedComments = append(Web.DisLikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content, PostCat: Web.Forum_data[i].Category})
 
-			//Web.DisLikedComments =
+					//Web.DisLikedComments =
+				}
+			}
 		}
 	}
 }
@@ -126,7 +130,8 @@ func UserPosted() { // TODO get user data
 
 	for i := 0; i < len(Web.Forum_data); i++ {
 		if Web.Forum_data[i].Author == userid {
-			Web.CreatedPosts = append(Web.CreatedPosts, CreatedPosts{PostID: Web.Forum_data[i].Id, UserID: Web.LoggedUser.ID, PostTopic: Web.Forum_data[i].Title})
+			//Web.CreatedPosts = append(Web.CreatedPosts, CreatedPosts{PostID: Web.Forum_data[i].Id, UserID: Web.LoggedUser.ID, PostTopic: Web.Forum_data[i].Title})
+			Web.CreatedPosts = append(Web.CreatedPosts, CreatedPosts{PostID: Web.Forum_data[i].Id, UserID: Web.LoggedUser.ID, PostTopic: Web.Forum_data[i].Title, PostCat: Web.Forum_data[i].Category})
 		}
 	}
 }
@@ -144,7 +149,6 @@ func AllPosts(category string) []Forumdata {
 		FROM posts
 		LEFT JOIN users on posts.userId = users.id
 		LEFT JOIN category on posts.categoryId = category.id		
-		ORDER BY date DESC
 		`)
 		rows, _ = statement.Query()
 
@@ -155,7 +159,6 @@ func AllPosts(category string) []Forumdata {
 		LEFT JOIN users on posts.userId = users.id
 		LEFT JOIN category on posts.categoryId = category.id
 		WHERE posts.categoryId = ? 
-		ORDER BY date DESC
 		`)
 		rows, _ = statement.Query(category)
 
@@ -174,8 +177,12 @@ func AllPosts(category string) []Forumdata {
 		)
 		data = append(data, post)
 	}
+	var temp []Forumdata
+	for i := 0; i < len(data); i++ {
+		temp = append(temp, data[len(data)-i-1])
+	}
 
-	return data
+	return temp
 }
 
 func getCategories() []Category {
@@ -256,7 +263,6 @@ func DeletePostById(id string) {
 	DataBase.Exec("DELETE FROM notifications WHERE PostID= ?", id)
 	DataBase.Exec("DELETE FROM postlikes WHERE postId= ?", id)
 
-	
 }
 
 func DeleteCommentById(id string, postid int) {

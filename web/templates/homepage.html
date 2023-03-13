@@ -12,7 +12,8 @@
                 required></textarea><br>
             TEXT : <textarea id="content" name="post_content" cols="50" rows="4" id="body" maxlength="1000"
                 minlength="5" required></textarea><br>
-            CATEGORY : <select id="categories" name="category" required>
+                CATEGORY : <select multiple multiselect-search="true" multiselect-select-all="true" id="categories"
+                name="category" required>
                 {{range .Categories}}
                 <option value="{{.Id}}">{{.Name}}</option>
                 {{end}}
