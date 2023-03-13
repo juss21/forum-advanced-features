@@ -6,6 +6,7 @@
     <h1>Welcome to our forum!</h1>
 
     {{ if .Loggedin }}
+    <script type="text/javascript" src="web/templates/multiselect-dropdown.js"></script>
     <div id="createpost">
         <form method="POST" enctype="multipart/form-data">
             TITLE : <textarea id="header" name="post_header" cols="50" rows="1" id="title" maxlength="100" minlength="5"

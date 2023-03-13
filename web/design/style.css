@@ -477,7 +477,7 @@ a {
 }
 
 .multiselect-dropdown {
-    color: #666;
+    color: #000000;
     background-color: wheat;
     display: inline-block;
     padding: 2px 5px 0px 5px;
@@ -496,7 +496,7 @@ a {
 }
 
 .multiselect-dropdown span.optext {
-    color: wheat;
+    color: #000000;
     background-color: #666;
     padding: 1px 0.75em;
 }
@@ -507,15 +507,15 @@ a {
     font-size: 0.7em;
     margin-top: 2px;
     cursor: pointer;
-    color: #666;
+    color: #000000;
 }
 
 .multiselect-dropdown span.optext .optdel:hover {
-    color: #c66;
+    color: #000000;
 }
 
 .multiselect-dropdown span.placeholder {
-    color: #ced4da;
+    color: #000000;
 }
 
 .multiselect-dropdown-list-wrapper {
@@ -564,7 +564,7 @@ a {
 }
 
 .multiselect-dropdown-list div:hover {
-    color: wheat;
+    color: #000000;
     background-color: #777;
 }
 
@@ -574,5 +574,5 @@ a {
 
 .multiselect-dropdown-all-selector {
     border-bottom: solid 1px #999;
-    color: wheat;
+    color: #000000;
 }
