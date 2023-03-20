@@ -190,6 +190,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 		createAndExecute(w, "login.html")
+		if Web.ErrorMsg == "You have successfully registered! Please log in." {
+			Web.ErrorMsg = ""
+		}
 	case "POST":
 		user_name := r.FormValue("user_name")
 		user_password := r.FormValue("user_password")

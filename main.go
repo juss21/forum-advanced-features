@@ -18,7 +18,6 @@ func main() {
 		app.InitDatabase()
 		fmt.Println("New database created ", file)
 	} else {
-		fmt.Println("masiin")
 		app.DataBase, _ = sql.Open("sqlite3", "./database.db")
 	}
 

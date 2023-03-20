@@ -84,7 +84,7 @@
     <div class="comments">
         <div id="commentdata" style="width:20%; float:left;">
             <img id="pilt" src="/web/profilepictures/blank.png" alt="profilepicture"
-                style="width:80%; height: 80%; border-radius: 5%;">
+                style="width:80%; height: 80%; border-radius: 5%;"><br>
             {{.Username}}:<br>{{.Date_commented}} <br>
             <form method="POST" , action="/likeComment/{{.Id}}">
                 <button {{ if not $.Loggedin }} disabled {{end}} id="like" name="button" value="like">👍

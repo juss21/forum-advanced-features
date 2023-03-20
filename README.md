@@ -34,3 +34,7 @@ Docker image and container are deleted afterwards.
 - All your account activity (Posts, comments, likes, dislikes) are under "Account" page.
 - All notifications from other users are under "Activity" page, you can go there by clicking the bell button on top right corner. 
 - Notification will disappear once you go on the post it's from.
+
+# Accounts for testing
+- isabella 
+- Isabella200

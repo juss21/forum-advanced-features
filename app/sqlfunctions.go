@@ -239,8 +239,28 @@ func GetPostById(postId int) (Forumdata, error) {
 		&post.Author,
 		&post.Image,
 		&post.Category,
-		&post.Likes,	// if .db file deleted, it will create new one and populate with data
+		&post.Likes,
+		&post.Dislikes,
+	)
 
+	return post, err
+}
+func DeleteNoticfication(UserID, PostID int) {
+	_, err := DataBase.Exec(`DELETE FROM notifications WHERE UserID= ? AND PostID= ?`, UserID, PostID)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func DeletePostById(id string) {
+	DataBase.Exec("DELETE FROM posts WHERE id= ?", id)
+	DataBase.Exec("DELETE FROM postlikes WHERE postId= ?", id)
+	DataBase.Exec("DELETE FROM commentLikes WHERE commentId= (SELECT id FROM comments WHERE postId= ?)", id)
+	DataBase.Exec("DELETE FROM comments WHERE postid= ?", id)
+	DataBase.Exec("DELETE FROM notifications WHERE PostID= ?", id)
+	DataBase.Exec("DELETE FROM postlikes WHERE postId= ?", id)
+
+}
 
 func DeleteCommentById(id string, postid int) {
 	_, err := DataBase.Exec("DELETE FROM comments WHERE id= ?", id)
