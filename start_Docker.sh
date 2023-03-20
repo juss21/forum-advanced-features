@@ -15,7 +15,21 @@ read "part"
 
 
 docker image build -f Dockerfile -t dockerize-image .
-docker container run -p 8080:8080 --detach --name dockerize-container dockerize-image
+docker container run -p 8080:8080 --detach  --name dockerize-container dockerize-image
+
+echo ""
+echo "Server is running in http://www.localhost:8080/"
+echo ""
+echo "Here on can acces to files in container. "
+echo "In case you need check data from database"
+echo "database filename is database.db"
+echo "To exit, write \"exit\""
+echo ""
+echo ""
+
+docker exec -it dockerize-container /bin/bash
+
+
 
 echo ""
 echo ""
