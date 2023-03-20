@@ -15,7 +15,7 @@ read "part"
 
 
 docker image build -f Dockerfile -t dockerize-image .
-docker container run -p 8080:8080  --name dockerize-container dockerize-image
+docker container run -p 8080:8080 --detach --name dockerize-container dockerize-image
 
 echo ""
 echo ""

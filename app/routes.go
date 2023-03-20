@@ -56,7 +56,6 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		title := r.FormValue("post_header")
 		content := r.FormValue("post_content")
-		//category, _ := strconv.Atoi(r.FormValue("category"))
 		category := (r.Form["category"])
 		filterstatus := r.FormValue("categoryfilter")
 
@@ -67,7 +66,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
+		if !Web.Loggedin {
 			w.WriteHeader(400)
 			createAndExecuteError(w, "You must be logged in before you post!")
 			return
@@ -80,10 +79,6 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		/*if !SavePost(title, Web.LoggedUser.ID, content, category, imageName) {
-			createAndExecuteError(w, "You must be logged in before you post!")
-			return
-		}*/
 		for _, v := range category {
 			convert, _ := strconv.Atoi(v)
 			if !SavePost(title, Web.LoggedUser.ID, content, convert, imageName) {
@@ -100,7 +95,7 @@ func homePageHandle(w http.ResponseWriter, r *http.Request) {
 
 func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 	postId, _ := strconv.Atoi(path.Base(r.URL.Path))
-	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 
 	DeleteNoticfication(Web.LoggedUser.ID, postId)
 	Web.Notifications = GetNotifications()
@@ -156,13 +151,9 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 
 		}
 		if r.FormValue("deleteComment") != "" {
-			a, err := strconv.ParseInt(r.FormValue("deleteComment"), 10, 64)
-			if err != nil {
-				// handle the error in some way
-			}
+			a, _ := strconv.ParseInt(r.FormValue("deleteComment"), 10, 64)
 
 			DeleteCommentById(strconv.Itoa(int(a)), postId)
-			//DeleteNoticfication(postId)
 			http.Redirect(w, r, "/post/"+strconv.Itoa(postId), http.StatusSeeOther)
 		}
 
@@ -179,12 +170,8 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if r.FormValue("Save") != "" {
-			//r.ParseForm()
+
 			content := r.FormValue("comment_content")
-			/* a, err := strconv.ParseInt(asd, 10, 64)
-			if err != nil {
-				fmt.Println(err)
-			} */
 			Web.CurrentComment.Edit = false
 			EditCommentById(Web.CurrentComment.Id, content)
 
@@ -195,7 +182,7 @@ func forumPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 
 	switch r.Method {
 	case "GET":
@@ -241,7 +228,7 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 	http.SetCookie(w, &http.Cookie{
 		Name:   "session-id",
 		Value:  "",
@@ -251,13 +238,13 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	Web.Loggedin = false
 
 	Web.LoggedUser = Memberlist{}
-	Web.CreatedPosts = []CreatedPosts{} // TODO vaadata mida see värk siin teeb
+	Web.CreatedPosts = []CreatedPosts{}
 	Web.LikedPosts = []LikedPosts{}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 
 	switch r.Method {
 	case "GET":
@@ -271,7 +258,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		user_password_confirmation := r.FormValue("user_password_confirmation")
 
 		user_email := r.FormValue("user_email")
-		user_email_confirmation := r.FormValue("user_email_confirmation") // TODO Teha miskit kui molemad oleksid katki
+		user_email_confirmation := r.FormValue("user_email_confirmation")
 
 		if user_password != user_password_confirmation {
 			Web.ErrorMsg = "Passwords must be same"
@@ -300,7 +287,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func membersHandler(w http.ResponseWriter, r *http.Request) {
-	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 
 	switch r.Method {
 	case "GET":
@@ -312,16 +299,15 @@ func membersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func commentHandler(w http.ResponseWriter, r *http.Request) {
-	//postId, _ := strconv.Atoi(path.Base(r.URL.Path))
 	switch r.Method {
 	case "GET":
 		createAndExecuteError(w, "We know where you live")
 	case "POST":
-		Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+		Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 
 		comment := r.FormValue("forum_commentbox")
 
-		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
+		if !Web.Loggedin {
 			w.WriteHeader(400)
 			createAndExecuteError(w, "You must be logged in before you comment!")
 			return
@@ -341,9 +327,9 @@ func postLikeHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		createAndExecuteError(w, "We know where you live")
 	case "POST":
-		Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+		Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 
-		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
+		if !Web.Loggedin {
 			w.WriteHeader(400)
 			createAndExecuteError(w, "You must be logged in before you Like!")
 			return
@@ -360,12 +346,12 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		createAndExecuteError(w, "We know where you live")
 	case "POST":
-		Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+		Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 		postLike := r.FormValue("button")
 
 		commentId, _ := strconv.Atoi(path.Base(r.URL.Path))
 
-		if !Web.Loggedin { // kui objekt on tühi, siis pole keegi sisse loginud
+		if !Web.Loggedin {
 			w.WriteHeader(400)
 			createAndExecuteError(w, "You must be logged in before you Like!")
 			return
@@ -378,7 +364,7 @@ func commentLikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func accountDetails(w http.ResponseWriter, r *http.Request) {
-	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 	Web.CreatedComments = []CreatedComments{}
 	Web.CreatedPosts = []CreatedPosts{}
 	Web.LikedPosts = []LikedPosts{}
@@ -405,7 +391,7 @@ func accountDetails(w http.ResponseWriter, r *http.Request) {
 }
 
 func filterHandler(w http.ResponseWriter, r *http.Request) {
-	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) // setting loggedin bool status depending on hasCookie result
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 	filterstatus := r.FormValue("categoryfilter")
 
 	switch r.Method {
@@ -452,7 +438,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) (string, error) {
 }
 
 func notificationHandler(w http.ResponseWriter, r *http.Request) {
-	Web.LoggedUser, Web.Loggedin = getUserFromSession(r) //skull
+	Web.LoggedUser, Web.Loggedin = getUserFromSession(r)
 	Web.Notifications = GetNotifications()
 	Web.LoggedUser.Notifications = len(Web.Notifications)
 

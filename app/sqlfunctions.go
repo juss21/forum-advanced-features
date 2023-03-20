@@ -81,8 +81,6 @@ func GetLikedComments(likeswitch string) {
 					Web.LikedComments = append(Web.LikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content, PostCat: Web.Forum_data[i].Category})
 				} else if likeswitch == "dislike" {
 					Web.DisLikedComments = append(Web.DisLikedComments, LikedComments{CommentID: commentID, PostId: postID, Content: content, PostCat: Web.Forum_data[i].Category})
-
-					//Web.DisLikedComments =
 				}
 			}
 		}
@@ -125,12 +123,11 @@ func DateCreated() {
 	}
 }
 
-func UserPosted() { // TODO get user data
+func UserPosted() {
 	userid := Web.LoggedUser.Username
 
 	for i := 0; i < len(Web.Forum_data); i++ {
 		if Web.Forum_data[i].Author == userid {
-			//Web.CreatedPosts = append(Web.CreatedPosts, CreatedPosts{PostID: Web.Forum_data[i].Id, UserID: Web.LoggedUser.ID, PostTopic: Web.Forum_data[i].Title})
 			Web.CreatedPosts = append(Web.CreatedPosts, CreatedPosts{PostID: Web.Forum_data[i].Id, UserID: Web.LoggedUser.ID, PostTopic: Web.Forum_data[i].Title, PostCat: Web.Forum_data[i].Category})
 		}
 	}
@@ -297,10 +294,9 @@ func SaveComment(content string, userId int, postId int, title string, user stri
 	for rows.Next() {
 		rows.Scan(&commentID)
 	}
-	//fmt.Println(commentID)
 	activity := "commented"
 	notification := "on your post: " + title
-	//statement.Exec("INSERT INTO notifications VALUES(?,?,?,?)", authorUserId, postId, user, title)
+
 	_, err := DataBase.Exec("INSERT INTO notifications VALUES(?,?,?,?,?,?)", authorUserId, postId, user, commentID, activity, notification)
 	if err != nil {
 		fmt.Println(err)
