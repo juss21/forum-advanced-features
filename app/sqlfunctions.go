@@ -239,28 +239,8 @@ func GetPostById(postId int) (Forumdata, error) {
 		&post.Author,
 		&post.Image,
 		&post.Category,
-		&post.Likes,
-		&post.Dislikes,
-	)
+		&post.Likes,	// if .db file deleted, it will create new one and populate with data
 
-	return post, err
-}
-func DeleteNoticfication(UserID, PostID int) {
-	_, err := DataBase.Exec(`DELETE FROM notifications WHERE UserID= ? AND PostID= ?`, UserID, PostID)
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
-func DeletePostById(id string) {
-	DataBase.Exec("DELETE FROM posts WHERE id= ?", id)
-	DataBase.Exec("DELETE FROM postlikes WHERE postId= ?", id)
-	DataBase.Exec("DELETE FROM commentLikes WHERE commentId= (SELECT id FROM comments WHERE postId= ?)", id)
-	DataBase.Exec("DELETE FROM comments WHERE postid= ?", id)
-	DataBase.Exec("DELETE FROM notifications WHERE PostID= ?", id)
-	DataBase.Exec("DELETE FROM postlikes WHERE postId= ?", id)
-
-}
 
 func DeleteCommentById(id string, postid int) {
 	_, err := DataBase.Exec("DELETE FROM comments WHERE id= ?", id)
@@ -577,6 +557,20 @@ CREATE TABLE IF NOT EXISTS "posts" (
 	"categoryId"	INTEGER,
 	"date"	TEXT,
 	"image"	TEXT
+);
+CREATE TABLE IF NOT EXISTS "notifications" (
+    userid   INTEGER,
+    PostID   INTEGER,
+    user     TEXT,
+    targetID INTEGER,
+    activity TEXT,
+    content  TEXT,
+    UNIQUE (
+        user,
+        content,
+        activity,
+        targetID
+    )
 );
 INSERT INTO "users" VALUES (2,'isabella','$2a$14$5VY414NmXYll0cNJVk71l.vEpj2/DF/JZ/vCfr8PRuQZkeU9N5BBO','isabella@gmail.com','12.02.2023');
 INSERT INTO "users" VALUES (4,'sinisterObtuse','$2a$14$3ceCJAGSpb813jupNxTZSOghkTVDZ7/j32zFT9WmrnePGDKWxGvEC','sinister@gmail.com','12.02.2023');
