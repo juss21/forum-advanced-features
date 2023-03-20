@@ -36,5 +36,5 @@ Docker image and container are deleted afterwards.
 - Notification will disappear once you go on the post it's from.
 
 # Accounts for testing
-- isabella 
-- Isabella200
+-User Name: isabella 
+-Password: Isabella200
